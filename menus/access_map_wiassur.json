@@ -1,0 +1,51 @@
+[
+    {
+        "path": "/property/model/list",
+        "name": "admin_get_routes",
+        "options": {
+            "compiler_class": "Symfony\\Component\\Routing\\RouteCompiler",
+            "description": "Liste des endpoints",
+            "utf8": true
+        },
+        "roles": [
+            [
+                {
+                    "code": "ROLE_PUBLIC"
+                }
+            ]
+        ]
+    },
+
+    {
+        "path": "/property/model/edit",
+        "name": "edit_property_model",
+        "options": {
+            "compiler_class": "Symfony\\Component\\Routing\\RouteCompiler",
+            "description": "Liste des endpoints",
+            "utf8": true
+        },
+        "roles": [
+            [
+                {
+                    "code": "ROLE_PUBLIC"
+                }
+            ]
+        ]
+    },
+    {
+        "path": "/property/model/delete/{id}",
+        "name": "delet_property_model",
+        "options": {
+            "compiler_class": "Symfony\\Component\\Routing\\RouteCompiler",
+            "description": "Liste des endpoints",
+            "utf8": true
+        },
+        "roles": [
+            [
+                {
+                    "code": "ROLE_PUBLIC"
+                }
+            ]
+        ]
+    }
+]

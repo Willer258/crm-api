@@ -1,17 +1,45 @@
 security:
+    access_decision_manager:
+            service: App\Security\AccessDecisionManager
+    # enable_authenticator_manager: true
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+        App\Entity\User:
+            algorithm: auto
+
+    role_hierarchy:
+        ROLE_CUSTOMER: ['ROLE_PRE_AUTH']
+        ROLE_MANAGER: ['ROLE_USER','ROLE_CUSTOMER']
+        ROLE_ADMIN: ['ROLE_MANAGER']
+
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
-        users_in_memory: { memory: null }
+        # used to reload user from session & other features (e.g. switch_user)
+        jwt:
+            lexik_jwt:
+                class: App\Entity\User
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+
+
+        service:
+            pattern: ^/service
+            stateless: true
+            custom_authenticators:
+                - App\Security\ApiKeyAuthenticator
+
+
         main:
             lazy: true
-            provider: users_in_memory
+            stateless: true
+            provider: jwt
+            jwt: ~
+#            guard:
+#                authenticator:
+#                    - lexik_jwt_authentication.jwt_token_authenticator
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -22,8 +50,11 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+#        - { path: ^/*, roles: PUBLIC_ACCESS }
+        # - { path: ^/api, roles: PUBLIC_ACCESS }
+        # - { path: ^/service, roles: ROLE_SERVICE }
+        # - { path: ^/*, roles: ROLE_MANAGER }
+        - { path: ^/*, roles: PUBLIC_ACCESS }
 
 when@test:
     security:

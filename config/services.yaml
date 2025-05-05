@@ -4,7 +4,25 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    TOP_DOMAIN: '%env(TOP_DOMAIN)%'
+    APP_ENV: '%env(APP_ENV)%'
+    # SHARED_FOLDER: '%env(SHARED_FOLDER)%'
+    CHROME_BINARY: '%env(CHROME_BINARY)%'
+    MASTER_API_URL: '%env(MASTER_API_URL)%'
+    COMPARATOR_URL: '%env(COMPARATOR_URL)%'
+    COMPARATOR_PUBLIC_URL: '%env(COMPARATOR_PUBLIC_URL)%'
+    AUTH_API_URL: '%env(AUTH_API_URL)%'
+    ADMIN_API_URL: '%env(ADMIN_API_URL)%'
+    CHAT_API_URL: '%env(CHAT_API_URL)%'
+    CORE_API_URL: '%env(CORE_API_URL)%'
+    SERVICE_API_KEY: '%env(SERVICE_API_KEY)%'
+    CORS_ALLOW_ORIGIN: '%env(CORS_ALLOW_ORIGIN)%'
+    SHORTENER_API_URL: '%env(SHORTENER_API_URL)%'
+    SELL_API_URL: '%env(SELL_API_URL)%'
 
+    SERVICE_PREFIX: '%env(SERVICE_PREFIX)%'
+    SERVICE_SUFFIX: '%env(SERVICE_SUFFIX)%'
+    
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -20,5 +38,35 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+
+    App\Security\MasterAuthenticator:
+        parent: lexik_jwt_authentication.security.jwt_authenticator
+
+
+    App\MultiTenancy\ConnectionWrapper:
+        parent: Doctrine\DBAL\Connection
+
+    App\MultiTenancy\KernelListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 10000 }
+            - { name: kernel.event_listener, event: console.command, method: onKernelRequest }
+
+    # App\Listeners\PopupExceptionHandler:
+    #     tags:
+    #         - {name: kernel.event_listener, event: kernel.exception, method: onKernelException}
+
+    App\Listeners\UserEvent:
+        tags:
+            - { name: doctrine.event_listener, event: prePersist }
+            - { name: doctrine.event_listener, event: postPersist}
+            - { name: doctrine.event_listener, event: preUpdate }
+            - { name: doctrine.event_listener, event: preRemove }
+            - { name: doctrine.event_listener, event: preFlush }
+            - { name: doctrine.event_listener, event: postFlush }
+            - { name: doctrine.event_listener, event: preRemove }
+            
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    App\Security\Voter\UserVoter:
+        public: false
+        arguments: ['@security.role_hierarchy']
