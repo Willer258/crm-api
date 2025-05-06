@@ -54,6 +54,28 @@ class ContactManager extends Manager
 
 
 
+    public function merge(Contact $source, Contact $target): void
+    {
+        $this->em->beginTransaction();
+        try {
+            // 1. Transfert des propriétés
+            foreach ($source->getProperties() as $property) {
+                $property->setContact($target);
+                $this->em->persist($property);
+            }
+
+            // 2. Suppression du contact source
+            $this->em->remove($source);
+
+            // 3. Enregistrement en base
+            $this->em->flush();
+            $this->em->commit();
+        } catch (\Throwable $e) {
+            $this->em->rollback();
+            throw $e;
+        }
+    }
+
     public function delete($idProperty)
     {
         $contact = null;

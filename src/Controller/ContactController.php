@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Contact;
 use App\Managers\ContactManager;
+use App\Repository\CompanyRepository;
+use App\Repository\ContactRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,13 +17,14 @@ final class ContactController extends AbstractController
 {
 
     public function __construct(private ManagerRegistry $managerRegistry) {}
-    
+
     #[Route('/list', name: 'list')]
-    public function getContacts(): Response
+    public function getContacts(ContactRepository $contactRepository, Request $request): Response
     {
-        $contacts = $this->managerRegistry->getRepository(Contact::class)->findAll();
-        return $this->json(['status' => 'success', 'contacts' => $contacts], 200, [], ['groups' => 'contact:list']);
-   
+        $data = json_decode($request->getContent(), true);
+        $contacts = $contactRepository->listContacts($data);
+        $total = $contactRepository->getCount();
+        return $this->json(['status' => 'success', 'contacts' => $contacts['data'], 'page' => $contacts['page'], 'limit' => $contacts['limit'], 'count' => $contacts['count'], 'total' => $total], 200, [], ['groups' => 'contact:list']);
     }
 
 
@@ -46,13 +49,70 @@ final class ContactController extends AbstractController
     }
 
 
-    #[Route('/delete/{id}', name: 'delete', methods: ['DELETE'])]
-    public function deleteContact(int $id, ContactManager $contactManager): Response
-    {
-       $contactManager->delete($id);
+    #[Route('/associate/contact/{id}/{idCompany}', name: 'associate',  methods: ['GET'])]
+    public function associateCompany(
+        int $id,
+        int $idCompany,
+        Request $request,
+        ContactRepository $contacts,
+        CompanyRepository $companies,
+    ): Response {
+        $contact = $contacts->find($id);
+        $data    = json_decode($request->getContent(), true);
+        $company = $companies->find($idCompany);
 
-        return $this->json(['status' => 'success', 'message' => 'Contact supprimé']);
+        if (!$contact || !$company) {
+            return $this->json(['error' => 'Contact ou entreprise introuvable'], 404);
+        }
+
+        $contact->setCompany($company);
+
+        $this->managerRegistry->getManager()->flush();
+
+        return $this->json(['status' => 'success', 'company' => $company->getName()]);
     }
 
 
+    #[Route('/merge/{sourceId}/{targetId}', name: 'contact_merge', methods: ['POST'])]
+    public function mergeContacts(
+        Request $request,
+        ContactRepository $contactRepository,
+        ContactManager $contactManager,
+        $sourceId,
+        $targetId
+    ): Response {
+        $source = $contactRepository->find($sourceId);
+        $target = $contactRepository->find($targetId);
+
+        if (!$source || !$target) {
+            return $this->json([
+                'status'  => 'error',
+                'message' => 'Contact source ou cible introuvable'
+            ], 404);
+        }
+        try {
+            $contactManager->merge($source, $target);
+            return $this->json([
+                'status'  => 'success',
+                'message' => "Fusion réussie : Proceder au nettoyage des donnees"
+            ], 200);
+        } catch (\Throwable $e) {
+            return $this->json([
+                'status'  => 'error',
+                'message' => 'Erreur pendant la fusion : ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+
+
+
+    #[Route('/delete/{id}', name: 'delete', methods: ['DELETE'])]
+    public function deleteContact(int $id, ContactManager $contactManager): Response
+    {
+        $contactManager->delete($id);
+
+        return $this->json(['status' => 'success', 'message' => 'Contact supprimé']);
+    }
 }

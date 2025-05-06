@@ -42,6 +42,9 @@ class Contact
     #[ORM\ManyToOne(inversedBy: 'contacts')]
     private ?Company $company = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $manager = null;
+
 
     public function __construct()
     {
@@ -134,6 +137,18 @@ class Contact
     public function setCompany(?Company $company): static
     {
         $this->company = $company;
+
+        return $this;
+    }
+
+    public function getManager(): ?string
+    {
+        return $this->manager;
+    }
+
+    public function setManager(?string $manager): static
+    {
+        $this->manager = $manager;
 
         return $this;
     }
