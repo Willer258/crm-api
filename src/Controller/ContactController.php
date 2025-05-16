@@ -19,7 +19,7 @@ final class ContactController extends AbstractController
 
 
 
-    #[Route('/list', name: 'list')]
+    #[Route('/list', name: 'list', options: ['description' => 'Liste tous les contacts'])]
     public function getContacts(ContactRepository $contactRepository, Request $request): Response
     {
         $data = json_decode($request->getContent(), true);
@@ -29,7 +29,7 @@ final class ContactController extends AbstractController
     }
 
 
-    #[Route('/import', name: 'import', methods: ['POST'])]
+    #[Route('/import', name: 'import', methods: ['POST'], options: ['description' => 'Importe des contacts depuis un fichier'])]
     public function importContacts(Request $request): Response
     {
         $file = $request->files->get('file');
@@ -40,7 +40,7 @@ final class ContactController extends AbstractController
         return $this->json($result);
     }
 
-    #[Route('/edit', name: 'edit')]
+    #[Route('/edit', name: 'edit', options: ['description' => 'Crée ou modifie un contact'])]
     public function editContact(ContactManager $contactManager, Request $request): Response
     {
         $data = json_decode($request->getContent(), true);
@@ -61,7 +61,7 @@ final class ContactController extends AbstractController
     }
 
 
-    #[Route('/associate/{id}/{idCompany}', name: 'associate_to_company',  methods: ['GET'])]
+    #[Route('/associate/{id}/{idCompany}', name: 'associate_to_company',  methods: ['GET'], options: ['description' => 'Associe un contact à une entreprise'])]
     public function associateCompany(
         int $id,
         int $idCompany,

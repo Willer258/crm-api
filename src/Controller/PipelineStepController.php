@@ -19,14 +19,14 @@ final class PipelineStepController extends AbstractController
     public function __construct(private ManagerRegistry $registry)
     {
     }
-    #[Route('/list', name: 'list')]
+    #[Route('/list', name: 'list', options: ['description' => 'Liste toutes les étapes de pipeline'])]
     public function list(): Response
     {
         $pipelineSteps = $this->registry->getManager()->getRepository(PipelineStep::class)->findAll();
         return $this->json(['status' => 'success', 'pipelineSteps' => $pipelineSteps], 200, [], ['groups' => 'pipelineStep:list']);
     }
 
-    #[Route('/list/{pipelineId}', name: 'list_by_pipeline')]
+    #[Route('/list/{pipelineId}', name: 'list_by_pipeline', options: ['description' => 'Liste les étapes d\'un pipeline spécifique'])]
     public function listByPipeline(int $pipelineId): Response
     {
         $pipeline = $this->registry->getManager()->getRepository(Pipeline::class)->findOneBy(['id' => $pipelineId]);

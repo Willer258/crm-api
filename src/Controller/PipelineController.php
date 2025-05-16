@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class PipelineController extends AbstractController
 {
    
-    #[Route('/list', name: 'list')]
+    #[Route('/list', name: 'list', options: ['description' => 'Liste tous les pipelines'])]
     public function list(PipelineRepository $pipelineRepository): Response
     {
         $pipelines = $pipelineRepository->findAll();
@@ -42,7 +42,7 @@ final class PipelineController extends AbstractController
         return $this->json(['status' => 'error', 'message' => 'Impossible de creer une pipeline'], 500);
     }
 
-    #[Route('/info/{id}', name: 'info')]
+    #[Route('/info/{id}', name: 'info', options: ['description' => 'Affiche les informations d\'un pipeline'])]
     public function info(PipelineRepository $pipelineRepository, int $id): Response
     {
         $pipeline = $pipelineRepository->findOneBy(['id' => $id]);

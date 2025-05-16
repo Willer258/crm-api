@@ -31,14 +31,14 @@ final class TagController extends AbstractController
         $this->tagManager = $tagManager;
     }
 
-    #[Route('/list', name: 'list', methods: ['GET'])]
+    #[Route('/list', name: 'list', methods: ['GET'], options: ['description' => 'Liste tous les tags'])]
     public function listTags(): JsonResponse
     {
         $tags = $this->tagRepository->findAll();
         return $this->json($tags, 200, [], ['groups' => 'tag:list']);
     }
 
-    #[Route('/create', name: 'create', methods: ['POST'])]
+    #[Route('/create', name: 'create', methods: ['POST'], options: ['description' => 'Crée un nouveau tag'])]
     public function createTag(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -49,7 +49,7 @@ final class TagController extends AbstractController
         return $this->json(['status' => 'success', 'tag' => $tag], 201, [], ['groups' => 'tag:list']);
     }
 
-    #[Route('/assign', name: 'assign', methods: ['POST', 'PATCH'])]
+    #[Route('/assign', name: 'assign', methods: ['POST', 'PATCH'], options: ['description' => 'Assigne un tag à une entité'])]
     public function assignTag(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
