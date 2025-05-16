@@ -3,40 +3,72 @@
 namespace App\Entity;
 
 use App\Repository\ActivityRepository;
+use App\Traits\UserObjectTrait;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ActivityRepository::class)]
 class Activity
 {
+
+    use UserObjectTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["activity:read"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["activity:read"])]
     private ?string $type = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(["activity:read"])]
     private ?\DateTimeInterface $startDate = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(["activity:read"])]
     private ?\DateTimeInterface $endDate = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["activity:read"])]
     private ?string $location = null;
 
     #[ORM\Column]
+    #[Groups(["activity:read"])]
     private ?bool $performed = null;
 
     #[ORM\Column]
+    #[Groups(["activity:read"])]
     private ?bool $notify = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(["activity:read"])]
     private ?\DateTimeInterface $nofifyDate = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(["activity:read"])]
     private ?string $description = null;
+
+    #[ORM\ManyToOne(inversedBy: 'activities')]
+    private ?Deal $deal = null;
+
+    /**
+     * @var Collection<int, Note>
+     */
+    #[ORM\OneToMany(targetEntity: Note::class, mappedBy: 'activity')]
+    private Collection $notes;
+
+    #[ORM\Column(length: 255)]
+    private ?string $manager = null;
+
+    public function __construct()
+    {
+        $this->notes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -135,6 +167,60 @@ class Activity
     public function setDescription(?string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getDeal(): ?Deal
+    {
+        return $this->deal;
+    }
+
+    public function setDeal(?Deal $deal): static
+    {
+        $this->deal = $deal;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Note>
+     */
+    public function getNotes(): Collection
+    {
+        return $this->notes;
+    }
+
+    public function addNote(Note $note): static
+    {
+        if (!$this->notes->contains($note)) {
+            $this->notes->add($note);
+            $note->setActivity($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNote(Note $note): static
+    {
+        if ($this->notes->removeElement($note)) {
+            // set the owning side to null (unless already changed)
+            if ($note->getActivity() === $this) {
+                $note->setActivity(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getManager(): ?string
+    {
+        return $this->manager;
+    }
+
+    public function setManager(string $manager): static
+    {
+        $this->manager = $manager;
 
         return $this;
     }

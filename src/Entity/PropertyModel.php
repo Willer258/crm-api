@@ -14,26 +14,38 @@ class PropertyModel
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['property_model:list', 'property_model:edit' , 'contact:edit', 'contact:list'])]
+    #[Groups(['property_model:list', 'property_model:edit' , 'contact:edit', 'contact:list' , 'company:edit' , 'company:list' ,'deal:info' , 'deal:edit'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['property_model:list', 'property_model:edit' , 'contact:edit' ,  'contact:list'])]
+    #[Groups(['property_model:list', 'property_model:edit' , 'contact:edit' ,  'contact:list' , 'company:edit' , 'company:list' ,'deal:info' , 'deal:edit'])]
     private ?string $label = null;
 
     #[ORM\Column]
     #[Groups(['property_model:list',' property_model:edit'])]
     private ?bool $identifier = null;
 
+    
+    public const TYPE_TEXT = 'text';
+    public const TYPE_NUMBER = 'number';
+    public const TYPE_DATETIME = 'datetime';
+    public const TYPE_SITE = 'site';
+    public const TYPE_LOCALISATION = 'localisation';
+
     #[ORM\Column(length: 255)]
-    #[Groups(['property_model:list', 'property_model:edit'])]
+    #[Groups(['property_model:list', 'property_model:edit' , 'deal:info' , 'deal:edit'])]
     private ?string $type = null;
+
 
     /**
      * @var Collection<int, Property>
      */
     #[ORM\OneToMany(targetEntity: Property::class, mappedBy: 'propertyModel')]
     private Collection $properties;
+
+    #[ORM\ManyToOne(inversedBy: 'propertyModels')]
+    #[Groups(['property_model:list', 'property_model:edit'])]
+    private ?ItemType $itemType = null;
 
     public function __construct()
     {
@@ -107,6 +119,18 @@ class PropertyModel
                 $property->setPropertyModel(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getItemType(): ?ItemType
+    {
+        return $this->itemType;
+    }
+
+    public function setItemType(?ItemType $itemType): static
+    {
+        $this->itemType = $itemType;
 
         return $this;
     }

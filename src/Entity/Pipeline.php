@@ -3,34 +3,41 @@
 namespace App\Entity;
 
 use App\Repository\PipelineRepository;
+use App\Traits\UserObjectTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: PipelineRepository::class)]
 class Pipeline
 {
+
+    use UserObjectTrait;
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['pipeline:edit', 'pipeline:list', 'pipeline:info'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['pipeline:edit', 'pipeline:list', 'pipeline:info'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['pipeline:edit', 'pipeline:list', 'pipeline:info'])]
     private ?string $description = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['pipeline:edit', 'pipeline:list', 'pipeline:info'])]
     private ?array $roles = null;
-
-    #[ORM\Column]
-    private ?int $rank = null;
 
     /**
      * @var Collection<int, PipelineStep>
      */
     #[ORM\OneToMany(targetEntity: PipelineStep::class, mappedBy: 'pipeline')]
+    #[Groups(['pipeline:edit', 'pipeline:list', 'pipeline:info'])]
     private Collection $pipelineSteps;
 
     public function __construct()
@@ -79,17 +86,6 @@ class Pipeline
         return $this;
     }
 
-    public function getRank(): ?int
-    {
-        return $this->rank;
-    }
-
-    public function setRank(int $rank): static
-    {
-        $this->rank = $rank;
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, PipelineStep>

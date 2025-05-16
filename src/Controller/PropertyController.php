@@ -7,11 +7,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/property', name: 'app_property_')]
+#[Route('/property', name: 'app_property_', options: ['description' => 'Gestion des propriétés'])]
 final class PropertyController extends AbstractController
 {
 
-    #[Route('/list', name: 'list')]
+    #[Route('/list', name: 'list', methods: ['GET'], options: ['description' => 'Liste toutes les propriétés'])]
     public function listProperties(): Response
     {
         return $this->render('property/index.html.twig', [
@@ -19,7 +19,7 @@ final class PropertyController extends AbstractController
         ]);
     }
 
-    #[Route('/delete/{id}', name: 'delete')]
+    #[Route('/delete/{id}', name: 'delete', options: ['description' => 'Supprime une propriété'])]
     public function deleteProperty(PropertyManager $propertyManager, $id): Response
     {
 

@@ -9,7 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 
-class ContactManager extends Manager
+class CompanyManager extends Manager
 {
 
 
@@ -17,38 +17,29 @@ class ContactManager extends Manager
         $this->em = $em;
     }
 
-    public function edit($data): ?Contact
+    public function edit($data): ?Company
     {
-        $contact = null;
+        $company = null;
 
         if (isset($data['id'])) {
-            $contact = $this->registry->getManager()->getRepository(Contact::class)->findOneBy(['id' => $data['id']]);
+            $company = $this->registry->getManager()->getRepository(Company::class)->findOneBy(['id' => $data['id']]);
         }
 
-        if (!($contact instanceof Contact)) {
-            $contact = new Contact();
+        if (!($company instanceof Company)) {
+            $company = new Company();
         }
 
-        $contact->setSource($data['source'] ?? 'manuel');
-
-
-
-        if (isset($data['company'])) {
-            $companyId = basename($data['company']);
-            $company = $this->registry->getManager()->getRepository(Company::class)->find($companyId);
-            $contact->setCompany($company);
-        }
-
-        $itemType = $this->registry->getManager()->getRepository(ItemType::class)->findOneBy(['code' => 'contact']);
-        $contact->setItemType($itemType);
-
-        $this->registry->getManager()->persist($contact);
+    
+            $itemType = $this->registry->getManager()->getRepository(ItemType::class)->findOneBy(['code' => 'company']);
+            $company->setItemType($itemType);
+            
+        $this->registry->getManager()->persist($company);
 
         if (!empty($data['properties'])) {
             foreach ($data['properties'] as $p) {
                 $property = $this->propertyManager->edit($p);
                 if (isset($property)) {
-                    $contact->addProperty($property);
+                    $company->addProperty($property);
                 }
             }
         }
@@ -56,27 +47,33 @@ class ContactManager extends Manager
 
         $this->registry->getManager()->flush();
 
-        return $contact;
+        return $company;
     }
 
 
 
-    public function merge(Contact $source, Contact $target): void
+    public function merge(Company $source, Company $target): void
     {
         $this->em->beginTransaction();
         try {
             
             // 1. Transfert des propriétés
             foreach ($source->getProperties() as $property) {
-                $property->setContact($target);
+                $property->setCompany($target);
                 $this->em->persist($property);
+            }
+
+
+            foreach ($source->getContacts() as $company) {
+                $company->setCompany($target);
+                $this->em->persist($company);
             }
 
 
              // ". Transfert des cotations et contrats
             
 
-            // 2. Suppression du contact source
+            // 2. Suppression du company source
             $this->em->remove($source);
 
             // 3. Enregistrement en base
@@ -90,26 +87,26 @@ class ContactManager extends Manager
 
     public function delete($idProperty)
     {
-        $contact = null;
+        $company = null;
 
-        $contact = $this->registry->getManager()->getRepository(Contact::class)->findOneBy(['id' => $idProperty]);
+        $company = $this->registry->getManager()->getRepository(Company::class)->findOneBy(['id' => $idProperty]);
 
 
 
-        if ($contact instanceof Contact) {
+        if ($company instanceof Company) {
 
-            $contact->setRemoveAt(new \DateTime());
-            $this->registry->getManager()->persist($contact);
+            $company->setRemoveAt(new \DateTime());
+            $this->registry->getManager()->persist($company);
             $this->registry->getManager()->flush();
 
             return true;
         } else {
-            throw new Exception('Contact introuvable');
+            throw new Exception('Entreprise introuvable');
         }
     }
 
     public function getGroups(): array
     {
-        return ['property_model_list'];
+        return ['company:list'];
     }
 }

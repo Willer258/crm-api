@@ -3,42 +3,54 @@
 namespace App\Entity;
 
 use App\Repository\PipelineStepRepository;
+use App\Traits\UserObjectTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: PipelineStepRepository::class)]
 class PipelineStep
 {
+
+    use UserObjectTrait;
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['pipelineStep:list', 'pipelineStep:edit','pipeline:info','deal:edit'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['pipelineStep:list', 'pipelineStep:edit','pipeline:info','deal:edit'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['pipelineStep:list', 'pipelineStep:edit','pipeline:info'])]
     private ?string $description = null;
 
     #[ORM\Column(nullable: true)]
-    private ?float $successProbabity = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $lostDate = null;
-
-    #[ORM\Column]
-    private ?int $rank = null;
+    #[Groups(['pipelineStep:list', 'pipelineStep:edit','pipeline:info'])]
+    private ?float $successProbability = null;
 
     #[ORM\ManyToOne(inversedBy: 'pipelineSteps')]
-    private ?Pipeline $pipeline = null;
+        private ?Pipeline $pipeline = null;
 
     /**
      * @var Collection<int, Deal>
      */
     #[ORM\OneToMany(targetEntity: Deal::class, mappedBy: 'step')]
+    #[Groups(['pipelineStep:list','pipeline:info'])]
     private Collection $deals;
+
+    #[ORM\Column(length: 255)]
+    #[Groups(['pipelineStep:list', 'pipelineStep:edit','pipeline:info'])]
+    private ?string $color = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['pipelineStep:list', 'pipelineStep:edit','pipeline:info'])]
+    private ?string $ranking = null;
 
     public function __construct()
     {
@@ -74,38 +86,14 @@ class PipelineStep
         return $this;
     }
 
-    public function getSuccessProbabity(): ?float
+    public function getSuccessProbability(): ?float
     {
-        return $this->successProbabity;
+        return $this->successProbability;
     }
 
-    public function setSuccessProbabity(?float $successProbabity): static
+    public function setSuccessProbability(?float $successProbability): static
     {
-        $this->successProbabity = $successProbabity;
-
-        return $this;
-    }
-
-    public function getLostDate(): ?\DateTimeInterface
-    {
-        return $this->lostDate;
-    }
-
-    public function setLostDate(?\DateTimeInterface $lostDate): static
-    {
-        $this->lostDate = $lostDate;
-
-        return $this;
-    }
-
-    public function getRank(): ?int
-    {
-        return $this->rank;
-    }
-
-    public function setRank(int $rank): static
-    {
-        $this->rank = $rank;
+        $this->successProbability = $successProbability;
 
         return $this;
     }
@@ -148,6 +136,30 @@ class PipelineStep
                 $deal->setStep(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getColor(): ?string
+    {
+        return $this->color;
+    }
+
+    public function setColor(string $color): static
+    {
+        $this->color = $color;
+
+        return $this;
+    }
+
+    public function getRanking(): ?string
+    {
+        return $this->ranking;
+    }
+
+    public function setRanking(?string $ranking): static
+    {
+        $this->ranking = $ranking;
 
         return $this;
     }

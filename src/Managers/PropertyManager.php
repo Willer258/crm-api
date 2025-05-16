@@ -15,22 +15,17 @@ class PropertyManager extends Manager
     public function edit($data) : ?Property
     {
         $property = null;
-
         if (isset($data['id'])) {
             $property = $this->registry->getManager()->getRepository(Property::class)->findOneBy(['id' => $data['id']]);
         }
-
         if (!($property instanceof Property)) {
             $property = new Property();
         }
-
         if (isset($data['modelId'])) {
             $propertyModel = $this->registry->getManager()->getRepository(PropertyModel::class)->findOneBy(['id' => $data['modelId']]);
             $property->setPropertyModel($propertyModel);
         }
-
         $value = $data['value'] ?? null;
-
         if ($value === '' || $value === null) {
             if ($property->getId()) {
                 $this->delete($property->getId(), false);
@@ -39,10 +34,7 @@ class PropertyManager extends Manager
         }
     
         // Affectation de la valeur
-        $property->setValue($value);
-      
-
-       
+        $property->setValue($value);       
         $this->registry->getManager()->persist($property);
 
         return $property;

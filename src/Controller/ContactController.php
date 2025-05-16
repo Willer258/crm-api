@@ -15,8 +15,9 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/contact', name: 'app_contact_')]
 final class ContactController extends AbstractController
 {
+    public function __construct(private ManagerRegistry $managerRegistry, private \App\Managers\ContactImportManager $contactImportManager) {}
 
-    public function __construct(private ManagerRegistry $managerRegistry) {}
+
 
     #[Route('/list', name: 'list')]
     public function getContacts(ContactRepository $contactRepository, Request $request): Response
@@ -27,6 +28,17 @@ final class ContactController extends AbstractController
         return $this->json(['status' => 'success', 'contacts' => $contacts['data'], 'page' => $contacts['page'], 'limit' => $contacts['limit'], 'count' => $contacts['count'], 'total' => $total], 200, [], ['groups' => 'contact:list']);
     }
 
+
+    #[Route('/import', name: 'import', methods: ['POST'])]
+    public function importContacts(Request $request): Response
+    {
+        $file = $request->files->get('file');
+        if (!$file) {
+            return $this->json(['status' => 'error', 'message' => 'Aucun fichier envoyé'], 400);
+        }
+        $result = $this->contactImportManager->importFromFile($file);
+        return $this->json($result);
+    }
 
     #[Route('/edit', name: 'edit')]
     public function editContact(ContactManager $contactManager, Request $request): Response
@@ -49,7 +61,7 @@ final class ContactController extends AbstractController
     }
 
 
-    #[Route('/associate/contact/{id}/{idCompany}', name: 'associate',  methods: ['GET'])]
+    #[Route('/associate/{id}/{idCompany}', name: 'associate_to_company',  methods: ['GET'])]
     public function associateCompany(
         int $id,
         int $idCompany,
@@ -73,9 +85,8 @@ final class ContactController extends AbstractController
     }
 
 
-    #[Route('/merge/{sourceId}/{targetId}', name: 'contact_merge', methods: ['POST'])]
+    #[Route('/merge/{sourceId}/{targetId}', name: 'merge', methods: ['GET'], options: ['description' => 'Fusionne deux contacts'])]
     public function mergeContacts(
-        Request $request,
         ContactRepository $contactRepository,
         ContactManager $contactManager,
         $sourceId,
@@ -104,11 +115,7 @@ final class ContactController extends AbstractController
         }
     }
 
-
-
-
-
-    #[Route('/delete/{id}', name: 'delete', methods: ['DELETE'])]
+    #[Route('/delete/{id}', name: 'delete', methods: ['DELETE'], options: ['description' => 'Supprime un contact'])]
     public function deleteContact(int $id, ContactManager $contactManager): Response
     {
         $contactManager->delete($id);

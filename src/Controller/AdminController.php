@@ -44,7 +44,7 @@ class AdminController extends AbstractController
         return $this->json(['status' => 'success', 'routes' => $routes]);
     }
 
-    #[Route('/save/route/requirements', name: 'save_route_requirements', options: ['description' => 'Enregistrer les droits nécessaires pour accéder à une route'])]
+    #[Route('/save/route/requirements', name: 'save_route_requirements', options: ['description' => 'Enregistre les droits nécessaires pour accéder à une route'])]
     public function saveRouteRequirements(Request $request): Response
     {
         $data = json_decode($request->getContent(), true);

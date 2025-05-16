@@ -2,6 +2,7 @@
 
 namespace App\Managers;
 
+use App\Entity\ItemType;
 use App\Entity\PropertyModel;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -18,7 +19,7 @@ class PropertyModelManager extends Manager
         $propertyModel = null;
 
         if (isset($data['id'])) {
-            $propertyModel = $this->em->getRepository(PropertyModel::class)->findOneBy(['id' => $data['id']]);
+            $propertyModel = $this->registry->getManager()->getRepository(PropertyModel::class)->findOneBy(['id' => $data['id']]);
         }
 
         if (!($propertyModel instanceof PropertyModel)) {
@@ -35,6 +36,11 @@ class PropertyModelManager extends Manager
 
         if (isset($data['type'])) {
             $propertyModel->setType($data['type']);
+        }
+
+        if (isset($data['itemType'])) {
+            $itemType = $this->registry->getManager()->getRepository(ItemType::class)->findOneBy(['id' => $data['itemType']]);
+            $propertyModel->setItemType($itemType);
         }
 
        
