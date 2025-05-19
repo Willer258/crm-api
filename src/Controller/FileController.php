@@ -62,3 +62,4 @@ final class FileController extends AbstractController
         return $this->json(['status' => 'success', 'message' => 'Fichier supprimé']);
     }
 }
+

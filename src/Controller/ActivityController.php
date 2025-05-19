@@ -52,8 +52,12 @@ final class ActivityController extends AbstractController
     }
 
     #[Route('/{id}', name: 'activity_show', requirements: ['id' => '\d+'], methods: ['GET'], options: ['description' => 'Affiche le détail d\'une activité'])]
-    public function show(Activity $activity, SerializerInterface $serializer): JsonResponse
+    public function show(int $id, ActivityRepository $activityRepository, SerializerInterface $serializer): JsonResponse
     {
+        $activity = $activityRepository->find($id);
+        if (!$activity) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Activité non trouvée'], 404);
+        }
         $json = $serializer->serialize($activity, 'json', ['groups' => ['activity:read']]);
         return new JsonResponse($json, 200, [], true);
     }

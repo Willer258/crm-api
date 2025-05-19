@@ -186,14 +186,6 @@ final class DealController extends AbstractController
            'status' => 'error',
            'message' => 'Impossible de supprimer une affaire'
        ], 500, [], ['groups' => 'deal:edit']);
-    }
-
-
-
-
-
-
-
-
-    
+    }    
 }
+
