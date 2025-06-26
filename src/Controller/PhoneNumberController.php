@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\PhoneNumber;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -10,7 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 use App\Managers\PhoneNumberManager;
 // Ce contrôleur suppose que tu ajouteras l'entité PhoneNumber plus tard
-#[Route('/phone-number')]
+#[Route('/phone/number')]
 final class PhoneNumberController extends AbstractController
 {
     public function __construct(
@@ -41,26 +42,19 @@ final class PhoneNumberController extends AbstractController
         }
         if (isset($data['id'])) {
             $phoneNumber = $this->phoneNumberRepository->find($data['id']);
-            if ($phoneNumber instanceof \App\Entity\PhoneNumber) {
+            if ($phoneNumber instanceof PhoneNumber) {
                 $phoneNumber = $this->phoneNumberManager->updateFromArray($phoneNumber, $data);
+          
             }
         } else {
             $phoneNumber = $this->phoneNumberManager->createFromArray($data);
         }
-        if ($phoneNumber instanceof \App\Entity\PhoneNumber) {
-            return $this->json(['status' => 'success', 'phoneNumber' => $phoneNumber], 200);
+        if ($phoneNumber instanceof PhoneNumber) {
+            return $this->json(['status' => 'success', 'phoneNumber' => $phoneNumber ], 200, [], ['groups' => 'contact:info']);
         }
         return $this->json(['status' => 'error', 'message' => 'Impossible de créer ou modifier un numéro'], 500);
     }
 
-    #[Route('/{id}', name: 'phone_number_update', methods: ['PUT', 'PATCH'])]
-    public function update(Request $request, \App\Entity\PhoneNumber $phoneNumber, EntityManagerInterface $em): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
-        $phoneNumber->setNumber($data['number'] ?? $phoneNumber->getNumber());
-        $em->flush();
-        return $this->json($phoneNumber);
-    }
 
     #[Route('/delete/{id}', name: 'phone_number_delete', methods: ['DELETE'])]
     public function deletePhoneNumber(int $id): JsonResponse

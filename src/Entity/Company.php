@@ -17,62 +17,123 @@ class Company
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['company:edit', 'company:list'])]
+    #[Groups(['company:edit', 'company:list' , 'contact:info', 'company:info'])]
     private ?int $id = null;
 
     /**
      * @var Collection<int, Property>
      */
-    #[ORM\OneToMany(targetEntity: Property::class, mappedBy: 'company')]
-    #[Groups(['company:edit', 'company:list'])]
+    #[ORM\OneToMany(targetEntity: Property::class, mappedBy: 'company', cascade: ['persist'])]
+    #[Groups(['company:edit', 'company:list' , 'company:info', 'contact:info' , 'contact:list'])]
     private Collection $properties;
 
     /**
      * @var Collection<int, Contact>
      */
     #[ORM\OneToMany(targetEntity: Contact::class, mappedBy: 'company')]
-        private Collection $members;
+    #[Groups(['company:edit', 'company:list' , 'company:info' ])]
+    private Collection $contacts;
 
     #[ORM\ManyToOne(inversedBy: 'companies')]
     private ?ItemType $itemType = null;
 
     /**
-     * @var Collection<int, File>
+     * @var Collection<int, PhoneNumber>
      */
-    #[ORM\OneToMany(targetEntity: File::class, mappedBy: 'company')]
-    private Collection $files;
+    #[ORM\OneToMany(targetEntity: PhoneNumber::class, mappedBy: 'company', cascade: ['persist', 'remove'])]
+    #[Groups(['company:edit', 'company:list' , 'company:info', 'contact:info'])]
+    private Collection $phones;
+
+    /**
+     * @var Collection<int, Asset>
+     */
+    #[ORM\OneToMany(targetEntity: Asset::class, mappedBy: 'company')]
+    #[Groups(['company:edit','company:info'])]
+    private Collection $assets;
 
     /**
      * @var Collection<int, Mail>
      */
     #[ORM\OneToMany(targetEntity: Mail::class, mappedBy: 'company')]
+    #[Groups(['company:edit', 'company:list' , 'company:info', 'contact:info'])]
     private Collection $mails;
 
     /**
      * @var Collection<int, Note>
      */
     #[ORM\OneToMany(targetEntity: Note::class, mappedBy: 'company')]
+    #[Groups(['company:edit','company:info'])]
     private Collection $notes;
 
     /**
      * @var Collection<int, Tag>
      */
     #[ORM\ManyToMany(targetEntity: Tag::class, mappedBy: 'companies')]
+    #[Groups(['company:edit','company:info'])]
     private Collection $tags;
+
+    /**
+     * @var Collection<int, Activity>
+     */
+    #[ORM\OneToMany(targetEntity: Activity::class, mappedBy: 'company')]
+    #[Groups(['company:edit','company:info'])]
+    private Collection $activities;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['company:edit','company:info'])]
+    private ?string $photo = null;
+
+    /**
+     * @var Collection<int, Deal>
+     */
+    #[ORM\OneToMany(targetEntity: Deal::class, mappedBy: 'company')]
+    #[Groups(['company:edit', 'company:list' , 'company:info', 'contact:info' , 'contact:list'])]
+    private Collection $deals;
 
     public function __construct()
     {
         $this->properties = new ArrayCollection();
-        $this->members = new ArrayCollection();
-        $this->files = new ArrayCollection();
+        $this->contacts = new ArrayCollection();
+        $this->phones = new ArrayCollection();
+        $this->assets = new ArrayCollection();
         $this->mails = new ArrayCollection();
         $this->notes = new ArrayCollection();
         $this->tags = new ArrayCollection();
+        $this->activities = new ArrayCollection();
+        $this->deals = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /**
+     * @return Collection<int, PhoneNumber>
+     */
+    public function getPhones(): Collection
+    {
+        return $this->phones;
+    }
+
+    public function addPhone(PhoneNumber $phone): static
+    {
+        if (!$this->phones->contains($phone)) {
+            $this->phones->add($phone);
+            // Pour la relation inverse :
+            // $phone->setCompany($this);
+        }
+        return $this;
+    }
+
+    public function removePhone(PhoneNumber $phone): static
+    {
+        $this->phones->removeElement($phone);
+        // Pour la relation inverse :
+        // if ($phone->getCompany() === $this) {
+        //     $phone->setCompany(null);
+        // }
+        return $this;
     }
 
     /**
@@ -110,13 +171,13 @@ class Company
      */
     public function getContacts(): Collection
     {
-        return $this->members;
+        return $this->contacts;
     }
 
     public function addContact(Contact $contact): static
     {
-        if (!$this->members->contains($contact)) {
-            $this->members->add($contact);
+        if (!$this->contacts->contains($contact)) {
+            $this->contacts->add($contact);
             $contact->setCompany($this);
         }
 
@@ -125,7 +186,7 @@ class Company
 
     public function removeContact(Contact $contact): static
     {
-        if ($this->members->removeElement($contact)) {
+        if ($this->contacts->removeElement($contact)) {
             // set the owning side to null (unless already changed)
             if ($contact->getCompany() === $this) {
                 $contact->setCompany(null);
@@ -148,29 +209,29 @@ class Company
     }
 
     /**
-     * @return Collection<int, File>
+     * @return Collection<int, Asset>
      */
-    public function getFiles(): Collection
+    public function getAssets(): Collection
     {
-        return $this->files;
+        return $this->assets;
     }
 
-    public function addFile(File $file): static
+    public function addAsset(Asset $asset): static
     {
-        if (!$this->files->contains($file)) {
-            $this->files->add($file);
-            $file->setCompany($this);
+        if (!$this->assets->contains($asset)) {
+            $this->assets->add($asset);
+            $asset->setCompany($this);
         }
 
         return $this;
     }
 
-    public function removeFile(File $file): static
+    public function removeAsset(Asset $asset): static
     {
-        if ($this->files->removeElement($file)) {
+        if ($this->assets->removeElement($asset)) {
             // set the owning side to null (unless already changed)
-            if ($file->getCompany() === $this) {
-                $file->setCompany(null);
+            if ($asset->getCompany() === $this) {
+                $asset->setCompany(null);
             }
         }
 
@@ -259,6 +320,78 @@ class Company
     {
         if ($this->tags->removeElement($tag)) {
             $tag->removeCompany($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Activity>
+     */
+    public function getActivities(): Collection
+    {
+        return $this->activities;
+    }
+
+    public function addActivity(Activity $activity): static
+    {
+        if (!$this->activities->contains($activity)) {
+            $this->activities->add($activity);
+            $activity->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeActivity(Activity $activity): static
+    {
+        if ($this->activities->removeElement($activity)) {
+            // set the owning side to null (unless already changed)
+            if ($activity->getCompany() === $this) {
+                $activity->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getPhoto(): ?string
+    {
+        return $this->photo;
+    }
+
+    public function setPhoto(?string $photo): static
+    {
+        $this->photo = $photo;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Deal>
+     */
+    public function getDeals(): Collection
+    {
+        return $this->deals;
+    }
+
+    public function addDeal(Deal $deal): static
+    {
+        if (!$this->deals->contains($deal)) {
+            $this->deals->add($deal);
+            $deal->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDeal(Deal $deal): static
+    {
+        if ($this->deals->removeElement($deal)) {
+            // set the owning side to null (unless already changed)
+            if ($deal->getCompany() === $this) {
+                $deal->setCompany(null);
+            }
         }
 
         return $this;

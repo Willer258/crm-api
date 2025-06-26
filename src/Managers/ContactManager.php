@@ -5,16 +5,33 @@ namespace App\Managers;
 use App\Entity\Company;
 use App\Entity\Contact;
 use App\Entity\ItemType;
+use App\Entity\Tag;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 
+use App\Managers\PhoneNumberManager;
+use App\Managers\MailManager;
+use App\Managers\TagManager;
+
 class ContactManager extends Manager
 {
+    private PhoneNumberManager $phoneManager;
+    private MailManager $mailManager;
+    private TagManager $tagManager;
 
-
-    public function __construct(private ManagerRegistry $registry, private PropertyManager $propertyManager ,  EntityManagerInterface $em) {
+    public function __construct(
+        private ManagerRegistry $registry,
+        private PropertyManager $propertyManager,
+        PhoneNumberManager $phoneManager,
+        EntityManagerInterface $em,
+        MailManager $mailManager,
+        TagManager $tagManager
+    ) {
         $this->em = $em;
+        $this->phoneManager = $phoneManager;
+        $this->mailManager = $mailManager;
+        $this->tagManager = $tagManager;
     }
 
     public function edit($data): ?Contact
@@ -46,12 +63,42 @@ class ContactManager extends Manager
 
         if (!empty($data['properties'])) {
             foreach ($data['properties'] as $p) {
-                $property = $this->propertyManager->edit($p);
+                $property = $this->propertyManager->edit($p , $itemType);
                 if (isset($property)) {
                     $contact->addProperty($property);
                 }
             }
         }
+
+        if (!empty($data['phones'])) {
+            foreach ($data['phones'] as $p) {
+                $phone = $this->phoneManager->edit($p);
+                if (isset($phone)) {
+                    $contact->addPhone($phone);
+                }
+            }
+        }
+
+
+        if (!empty($data['mails'])) {
+            foreach ($data['mails'] as $m) {
+                $mail = $this->mailManager->edit($m);
+                if (isset($mail)) {
+                    $contact->addMail($mail);
+                }
+            }
+        }
+
+        if (!empty($data['tags'])) {
+            foreach ($data['tags'] as $t) {
+               $tag = $this->registry->getManager()->getRepository(Tag::class)->find($t['id']);
+                if (isset($tag)) {
+                    $contact->addTag($tag);
+                }
+            }
+        }
+
+
 
 
         $this->registry->getManager()->flush();
@@ -86,6 +133,19 @@ class ContactManager extends Manager
             $this->em->rollback();
             throw $e;
         }
+    }
+
+    public function addPhoto($data)
+    {
+        $contact = $this->registry->getManager()->getRepository(Contact::class)->findOneBy(['id' => $data['contact']]);
+        if (!$contact instanceof Contact) {
+            throw new Exception('Contact introuvable');
+        }
+        $contact->setPhoto($data['photo']);
+
+        $this->registry->getManager()->persist($contact);
+        $this->registry->getManager()->flush();
+        return true;
     }
 
     public function delete($idProperty)

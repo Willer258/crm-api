@@ -45,11 +45,12 @@ final class DealController extends AbstractController
         }
 
         $deal = $this->dealManager->editDeal($data);
+        
         if ($deal instanceof Deal) {
             return $this->json([
                 'status' => 'success',
                 'deal' => $deal
-            ], 200, [], ['groups' => 'deal:edit']);
+            ], 200, [], ['groups' => 'contact:info']);
         }
         return $this->json([
             'status' => 'error',

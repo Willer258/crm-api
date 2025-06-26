@@ -3,6 +3,8 @@
 namespace App\Managers;
 
 use App\Entity\Activity;
+use App\Entity\Company;
+use App\Entity\Contact;
 use App\Entity\Deal;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -36,12 +38,14 @@ class ActivityManager
     {
         
         if (isset($data['type'])) $activity->setType($data['type']);
+
+        if (isset($data['name'])) $activity->setName($data['name']);
         if (isset($data['startDate'])) $activity->setStartDate(new \DateTime($data['startDate']));
         if (isset($data['endDate'])) $activity->setEndDate(new \DateTime($data['endDate']));
         if (isset($data['location'])) $activity->setLocation($data['location']);
-        if (isset($data['performed'])) $activity->setPerformed($data['performed']);
-        if (isset($data['notify'])) $activity->setNotify($data['notify']);
-        if (isset($data['nofifyDate'])) $activity->setNofifyDate(new \DateTime($data['nofifyDate']));
+        (isset($data['performed'])) ? $activity->setPerformed($data['performed']) : $activity->setPerformed(false);
+        (isset($data['notify'])) ? $activity->setNotify($data['notify']) : $activity->setNotify(false);
+        if (isset($data['notifyDate'])) $activity->setNotifyDate(new \DateTime($data['notifyDate']));
         if (isset($data['description'])) $activity->setDescription($data['description']);
         if (isset($data['manager'])) $activity->setManager($data['manager']);
 
@@ -54,23 +58,23 @@ class ActivityManager
                     throw new \Exception("L'affaire n'existe pas");
                 }
             }
-            // if (isset($data['contact'])) {
-            //     $contact = $this->em->find(Contact::class, $data['contact']);
-            //     if ($contact instanceof Contact) {
-            //         $activity->setContact($contact);
-            //     }else{
-            //         throw new \Exception("Le contact n'existe pas");
-            //     }
-            // }
+            if (isset($data['contact'])) {
+                $contact = $this->em->find(Contact::class, $data['contact']);
+                if ($contact instanceof Contact) {
+                    $activity->setContact($contact);
+                }else{
+                    throw new \Exception("Le contact n'existe pas");
+                }
+            }
             
-            // if (isset($data['company'])) {
-            //     $company = $this->em->find(Company::class, $data['company']);
-            //     if ($company instanceof Company) {
-            //         $activity->setCompany($company);
-            //     }else{
-            //         throw new \Exception("L'entreprise n'existe pas");
-            //     }
-            // }
+            if (isset($data['company'])) {
+                $company = $this->em->find(Company::class, $data['company']);
+                if ($company instanceof Company) {
+                    $activity->setCompany($company);
+                }else{
+                    throw new \Exception("L'entreprise n'existe pas");
+                }
+            }
         }
         else{
             throw new \Exception("Une activité doit etre liée à une affaire, un contact ou une entreprise");

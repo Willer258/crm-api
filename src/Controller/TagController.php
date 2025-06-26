@@ -35,7 +35,7 @@ final class TagController extends AbstractController
     public function listTags(): JsonResponse
     {
         $tags = $this->tagRepository->findAll();
-        return $this->json($tags, 200, [], ['groups' => 'tag:list']);
+        return $this->json(['status' => 'success', 'tags' => $tags], 200, [], ['groups' => 'tag:list']);
     }
 
     #[Route('/create', name: 'create', methods: ['POST'], options: ['description' => 'Crée un nouveau tag'])]

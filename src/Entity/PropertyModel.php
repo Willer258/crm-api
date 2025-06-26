@@ -14,26 +14,27 @@ class PropertyModel
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['property_model:list', 'property_model:edit' , 'contact:edit', 'contact:list' , 'company:edit' , 'company:list' ,'deal:info' , 'deal:edit'])]
+    #[Groups(['property_model:list', 'property_model:edit' , 'contact:edit', 'contact:list' , 'company:edit' , 'company:list' ,'deal:info' , 'deal:edit' , 'itemType:show' , 'contact:info', 'company:info'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['property_model:list', 'property_model:edit' , 'contact:edit' ,  'contact:list' , 'company:edit' , 'company:list' ,'deal:info' , 'deal:edit'])]
+    #[Groups(['property_model:list', 'property_model:edit' , 'contact:edit' ,  'contact:list' , 'company:edit' , 'company:list' ,'deal:info' , 'deal:edit' , 'itemType:show' , 'contact:info', 'company:info'])]
     private ?string $label = null;
 
     #[ORM\Column]
-    #[Groups(['property_model:list',' property_model:edit'])]
+    #[Groups(['property_model:list',' property_model:edit', 'itemType:show' , 'contact:info', 'company:info'])]
     private ?bool $identifier = null;
 
     
     public const TYPE_TEXT = 'text';
+
     public const TYPE_NUMBER = 'number';
     public const TYPE_DATETIME = 'datetime';
     public const TYPE_SITE = 'site';
     public const TYPE_LOCALISATION = 'localisation';
 
     #[ORM\Column(length: 255)]
-    #[Groups(['property_model:list', 'property_model:edit' , 'deal:info' , 'deal:edit'])]
+    #[Groups(['property_model:list', 'property_model:edit' , 'deal:info' , 'deal:edit' , 'itemType:show' , 'contact:info', 'company:info'])]
     private ?string $type = null;
 
 
@@ -46,6 +47,10 @@ class PropertyModel
     #[ORM\ManyToOne(inversedBy: 'propertyModels')]
     #[Groups(['property_model:list', 'property_model:edit'])]
     private ?ItemType $itemType = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['property_model:list', 'property_model:edit', 'itemType:show' , 'contact:info', 'company:info' , 'company:list' , 'contact:list'])]
+    private ?string $class = null;
 
     public function __construct()
     {
@@ -131,6 +136,18 @@ class PropertyModel
     public function setItemType(?ItemType $itemType): static
     {
         $this->itemType = $itemType;
+
+        return $this;
+    }
+
+    public function getClass(): ?string
+    {
+        return $this->class;
+    }
+
+    public function setClass(?string $class): static
+    {
+        $this->class = $class;
 
         return $this;
     }

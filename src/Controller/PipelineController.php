@@ -27,8 +27,6 @@ final class PipelineController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
 
-        // dd($data);
-
         if (empty($data)) {
             return $this->json(['status' => 'error', 'message' => 'Invalid data'], 400);
         }

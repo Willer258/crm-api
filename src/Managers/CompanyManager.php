@@ -3,8 +3,10 @@
 namespace App\Managers;
 
 use App\Entity\Company;
-use App\Entity\Contact;
 use App\Entity\ItemType;
+use App\Entity\Tag;
+use App\Managers\MailManager;
+use App\Managers\PhoneNumberManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Exception;
@@ -13,7 +15,7 @@ class CompanyManager extends Manager
 {
 
 
-    public function __construct(private ManagerRegistry $registry, private PropertyManager $propertyManager ,  EntityManagerInterface $em) {
+    public function __construct(private ManagerRegistry $registry, private PropertyManager $propertyManager ,  EntityManagerInterface $em, private PhoneNumberManager $phoneManager, private MailManager $mailManager) {
         $this->em = $em;
     }
 
@@ -43,6 +45,36 @@ class CompanyManager extends Manager
                 }
             }
         }
+
+
+        if (!empty($data['phones'])) {
+            foreach ($data['phones'] as $p) {
+                $phone = $this->phoneManager->edit($p);
+                if (isset($phone)) {
+                    $company->addPhone($phone);
+                }
+            }
+        }
+
+        if (!empty($data['mails'])) {
+            foreach ($data['mails'] as $m) {
+                $mail = $this->mailManager->edit($m);
+                if (isset($mail)) {
+                    $company->addMail($mail);
+                }
+            }
+        }
+
+
+        if (!empty($data['tags'])) {
+            foreach ($data['tags'] as $t) {
+               $tag = $this->registry->getManager()->getRepository(Tag::class)->find($t['id']);
+                if (isset($tag)) {
+                    $company->addTag($tag);
+                }
+            }
+        }
+
 
 
         $this->registry->getManager()->flush();
@@ -103,6 +135,18 @@ class CompanyManager extends Manager
         } else {
             throw new Exception('Entreprise introuvable');
         }
+    }
+
+    public function addPhoto($data)
+    {
+        $company = $this->registry->getManager()->getRepository(Company::class)->findOneBy(['id' => $data['company']]);
+        if (!$company instanceof Company) {
+            throw new Exception('Entreprise introuvable');
+        }
+        $company->setPhoto($data['photo']);
+        $this->registry->getManager()->persist($company);
+        $this->registry->getManager()->flush();
+        return true;
     }
 
     public function getGroups(): array

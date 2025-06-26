@@ -12,11 +12,11 @@ class Property
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['contact:edit' , 'contact:list' , 'company:edit' , 'company:list','deal:info' , 'deal:edit'])]
+    #[Groups(['contact:edit' , 'contact:list' , 'company:edit' , 'company:list','deal:info' , 'deal:edit' , 'contact:info', 'company:info', ])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['contact:edit', 'contact:list' , 'company:edit' , 'company:list','deal:info' , 'deal:edit'])]
+    #[Groups(['contact:edit', 'contact:list' , 'company:edit' , 'company:list','deal:info' , 'deal:edit' , 'contact:info', 'company:info'])]
     private ?string $value = null;
 
     #[ORM\ManyToOne(inversedBy: 'properties')]
@@ -28,8 +28,9 @@ class Property
     private ?Company $company = null;
 
     #[ORM\ManyToOne(inversedBy: 'properties')]
-    #[Groups(['contact:edit', 'contact:list' , 'company:edit' , 'company:list','deal:info' , 'deal:edit'])]
+    #[Groups(['contact:edit', 'contact:list' , 'company:edit' , 'company:list','deal:info' , 'deal:edit' , 'contact:info', 'company:info'])]
     private ?PropertyModel $propertyModel = null;
+
 
     public function getId(): ?int
     {
@@ -83,4 +84,5 @@ class Property
 
         return $this;
     }
+
 }

@@ -16,7 +16,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 #[Route('/activity', name: 'app_activity')]
 final class ActivityController extends AbstractController
 {
-    
+
     #[Route('/list', name: 'activity_index', methods: ['GET'], options: ['description' => 'Liste toutes les activités avec filtres'])]
     public function index(Request $request, ActivityRepository $activityRepository, SerializerInterface $serializer): JsonResponse
     {
@@ -63,33 +63,30 @@ final class ActivityController extends AbstractController
     }
 
     #[Route('/edit', name: 'activity_edit', methods: ['POST'], options: ['description' => 'Crée une nouvelle activité'])]
-    public function edit(Request $request, ActivityManager $activityManager, SerializerInterface $serializer, ActivityRepository $activityRepository): JsonResponse
+    public function edit(Request $request, ActivityManager $activityManager, ActivityRepository $activityRepository): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
-
+        $activity = null;
         if (isset($data['id'])) {
             $activity = $activityRepository->findOneBy(['id' => $data['id']]);
-            
         }
 
-         if (!$activity instanceof Activity) {
+        if (!$activity instanceof Activity) {
             $activity = new Activity();
         }
 
         $activity = $activityManager->updateFromArray($activity, $data);
-        $json = $serializer->serialize($activity, 'json', ['groups' => ['activity:read']]);
-        return new JsonResponse($json, 200, [], true);
+        return $this->json(['status' => 'success', 'activity' => $activity], 200, [], ['groups' => ['contact:info' , 'userManagement', 'infos']]);
     }
 
-   
+
 
     #[Route('/delete/{id}', name: 'activity_delete', requirements: ['id' => '\d+'], methods: ['DELETE'], options: ['description' => 'Supprime une activité'])]
     public function delete($id, ActivityManager $activityManager): JsonResponse
     {
         if ($id) {
-          $activityManager->delete($id);
+            $activityManager->delete($id);
         }
-        return $this->json(['status' => 'Activité supprimée'], 200);
+        return $this->json(['status' => 'success', 'message' => 'Activité supprimée'], 200);
     }
 }
-

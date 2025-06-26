@@ -2,6 +2,8 @@
 
 namespace App\Managers;
 
+use App\Entity\Contact;
+use App\Entity\Company;
 use App\Entity\Mail;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -9,11 +11,46 @@ class MailManager
 {
     public function __construct(private EntityManagerInterface $em) {}
 
+
+    public function edit($data): ?Mail
+    {
+        $mail = null;
+        if (isset($data['id'])) {
+            $mail = $this->em->getRepository(Mail::class)->find($data['id']);
+        }
+        if (!($mail instanceof Mail)) {
+            $mail = new Mail();
+        }
+        if (isset($data['email'])) {
+            $mail->setEmail($data['email']);
+        }
+        $this->em->persist($mail);
+        return $mail;
+    }
+
     public function createFromArray(array $data): Mail
     {
         $mail = new Mail();
-        $mail->setEmail($data['email'] ?? '');
-        // Associer Contact ou Company ici si besoin
+        if (isset($data['email'])) {
+            $mail->setEmail($data['email']);
+        }else{
+            throw new \Exception('Email is required');
+        }
+        if (isset($data['contactId'])) {
+            $contact = $this->em->getRepository(Contact::class)->find($data['contactId']);
+            if ($contact instanceof Contact) {
+                $mail->setContact($contact);
+            }
+        }
+        if (isset($data['companyId'])) {
+            $company = $this->em->getRepository(Company::class)->find($data['companyId']);
+            if ($company instanceof Company) {
+                $mail->setCompany($company);
+            }
+        }
+        if(isset($data['type'])){
+            $mail->setType($data['type']);
+        }
         $this->em->persist($mail);
         $this->em->flush();
         return $mail;
@@ -21,7 +58,26 @@ class MailManager
 
     public function updateFromArray(Mail $mail, array $data): Mail
     {
-        $mail->setEmail($data['email'] ?? $mail->getEmail());
+        if (isset($data['email'])) {
+            $mail->setEmail($data['email']);
+        }else{
+            throw new \Exception('Email is required');
+        }
+        if (isset($data['contactId'])) {
+            $contact = $this->em->getRepository(Contact::class)->find($data['contactId']);
+            if ($contact instanceof Contact) {
+                $mail->setContact($contact);
+            }
+        }
+        if (isset($data['companyId'])) {
+            $company = $this->em->getRepository(Company::class)->find($data['companyId']);
+            if ($company instanceof Company) {
+                $mail->setCompany($company);
+            }
+        }
+        if(isset($data['type'])){
+            $mail->setType($data['type']);
+        }
         $this->em->flush();
         return $mail;
     }

@@ -2,6 +2,9 @@
 
 namespace App\Managers;
 
+use App\Entity\Company;
+use App\Entity\Contact;
+use App\Entity\ItemType;
 use App\Entity\Property;
 use App\Entity\PropertyModel;
 use Doctrine\Persistence\ManagerRegistry;
@@ -12,8 +15,10 @@ class PropertyManager extends Manager
 
      public function __construct(private ManagerRegistry $registry) {}
 
-    public function edit($data) : ?Property
+    public function edit($data, $itemType = null , $flush = false ) : ?Property
     {
+       
+
         $property = null;
         if (isset($data['id'])) {
             $property = $this->registry->getManager()->getRepository(Property::class)->findOneBy(['id' => $data['id']]);
@@ -23,8 +28,17 @@ class PropertyManager extends Manager
         }
         if (isset($data['modelId'])) {
             $propertyModel = $this->registry->getManager()->getRepository(PropertyModel::class)->findOneBy(['id' => $data['modelId']]);
-            $property->setPropertyModel($propertyModel);
+            if ($propertyModel instanceof PropertyModel) {
+              if ( $itemType instanceof ItemType && $itemType->getCode() !== $propertyModel->getItemType()->getCode()) {
+                throw new \Exception('Le type de propriété ne correspond pas au type d\'item');
+              }
+                $property->setPropertyModel($propertyModel);
+            }
+        }else{
+            throw new \Exception('Le model de propriété n\'est pas defini');
         }
+        
+
         $value = $data['value'] ?? null;
         if ($value === '' || $value === null) {
             if ($property->getId()) {
@@ -32,11 +46,23 @@ class PropertyManager extends Manager
             }
             return null;
         }
-    
-        // Affectation de la valeur
-        $property->setValue($value);       
-        $this->registry->getManager()->persist($property);
+        $property->setValue($value);
 
+
+        if (isset($data['companyId'])) {
+            $company = $this->registry->getManager()->getRepository(Company::class)->findOneBy(['id' => $data['companyId']]);
+            if ($company instanceof Company) {
+                $property->setCompany($company);
+            }
+        }
+        if (isset($data['contactId'])) {
+            $contact = $this->registry->getManager()->getRepository(Contact::class)->findOneBy(['id' => $data['contactId']]);
+            if ($contact instanceof Contact) {
+                $property->setContact($contact);
+            }
+        }
+       
+        
         return $property;
     }
 

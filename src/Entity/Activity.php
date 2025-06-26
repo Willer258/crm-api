@@ -18,39 +18,39 @@ class Activity
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["activity:read"])]
+    #[Groups(["activity:read", "company:info", "contact:info"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["activity:read"])]
+    #[Groups(["activity:read", "company:info", "contact:info"])]
     private ?string $type = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(["activity:read"])]
+    #[Groups(["activity:read", "company:info", "contact:info"])]
     private ?\DateTimeInterface $startDate = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(["activity:read"])]
+    #[Groups(["activity:read", "company:info", "contact:info"])]
     private ?\DateTimeInterface $endDate = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["activity:read"])]
+    #[Groups(["activity:read", "company:info", "contact:info"])]
     private ?string $location = null;
 
     #[ORM\Column]
-    #[Groups(["activity:read"])]
+    #[Groups(["activity:read", "company:info", "contact:info"])]
     private ?bool $performed = null;
 
     #[ORM\Column]
-    #[Groups(["activity:read"])]
+    #[Groups(["activity:read", "company:info", "contact:info"])]
     private ?bool $notify = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    #[Groups(["activity:read"])]
-    private ?\DateTimeInterface $nofifyDate = null;
+    #[Groups(["activity:read", "company:info", "contact:info"])]
+    private ?\DateTimeInterface $notifyDate = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["activity:read"])]
+    #[Groups(["activity:read", "company:info", "contact:info"])]
     private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'activities')]
@@ -60,10 +60,22 @@ class Activity
      * @var Collection<int, Note>
      */
     #[ORM\OneToMany(targetEntity: Note::class, mappedBy: 'activity')]
+    #[Groups(["activity:read", "company:info", "contact:info"])]
     private Collection $notes;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["activity:read", "company:info", "contact:info"])]
     private ?string $manager = null;
+
+    #[ORM\ManyToOne(inversedBy: 'activities')]
+    private ?Contact $contact = null;
+
+    #[ORM\ManyToOne(inversedBy: 'activities')]
+    private ?Company $company = null;
+
+    #[ORM\Column(length: 255)]
+    #[Groups(["activity:read", "company:info", "contact:info"])]
+    private ?string $name = null;
 
     public function __construct()
     {
@@ -147,14 +159,14 @@ class Activity
         return $this;
     }
 
-    public function getNofifyDate(): ?\DateTimeInterface
+    public function getNotifyDate(): ?\DateTimeInterface
     {
-        return $this->nofifyDate;
+        return $this->notifyDate;
     }
 
-    public function setNofifyDate(?\DateTimeInterface $nofifyDate): static
+    public function setNotifyDate(?\DateTimeInterface $notifyDate): static
     {
-        $this->nofifyDate = $nofifyDate;
+        $this->notifyDate = $notifyDate;
 
         return $this;
     }
@@ -221,6 +233,42 @@ class Activity
     public function setManager(string $manager): static
     {
         $this->manager = $manager;
+
+        return $this;
+    }
+
+    public function getContact(): ?Contact
+    {
+        return $this->contact;
+    }
+
+    public function setContact(?Contact $contact): static
+    {
+        $this->contact = $contact;
+
+        return $this;
+    }
+
+    public function getCompany(): ?Company
+    {
+        return $this->company;
+    }
+
+    public function setCompany(?Company $company): static
+    {
+        $this->company = $company;
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
 
         return $this;
     }

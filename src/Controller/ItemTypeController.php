@@ -32,6 +32,17 @@ final class ItemTypeController extends AbstractController
         ], 200, [], ['groups' => 'itemType:list']);
     }
 
+    #[Route('/{code}', name: 'show', methods: ['GET'], options: ['description' => 'Affiche un type d\'élément'])]
+    public function show($code, ItemTypeRepository $itemTypeRepository): Response
+    {
+        $itemType = $itemTypeRepository->findOneBy(['code' => $code]);
+        if (!$itemType) {
+            return $this->json(['status' => 'error', 'message' => 'Type d\'élément non trouvé'], 404);
+        }
+        return $this->json(['status' => 'success', 'itemType' => $itemType], 200, [], ['groups' => 'itemType:show']);
+    }
+    
+
     #[Route('/edit', name: 'edit', options: ['description' => 'Créer ou modifier un type d\'élément'])]
     public function edit(ItemTypeManager $itemTypeManager, Request $request): Response
     {

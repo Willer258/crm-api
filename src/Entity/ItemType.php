@@ -14,15 +14,15 @@ class ItemType
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['itemType:list' , 'itemType:edit'])]
+    #[Groups(['itemType:list' , 'itemType:edit', 'itemType:show'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['itemType:list' , 'itemType:edit', 'property_model:list' , 'property_model:edit'])]
+    #[Groups(['itemType:list' , 'itemType:edit', 'property_model:list' , 'property_model:edit', 'itemType:show'])]
     private ?string $code = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['itemType:list' , 'itemType:edit'])]
+    #[Groups(['itemType:list' , 'itemType:edit', 'itemType:show'])]
     private ?string $description = null;
 
     /**
@@ -41,7 +41,7 @@ class ItemType
      * @var Collection<int, PropertyModel>
      */
     #[ORM\OneToMany(targetEntity: PropertyModel::class, mappedBy: 'itemType')]
-    #[Groups(['itemType:list'])]
+    #[Groups(['itemType:list' , 'itemType:edit', 'itemType:show'])]
     private Collection $propertyModels;
 
     public function __construct()

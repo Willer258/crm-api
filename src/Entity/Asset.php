@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: FileRepository::class)]
-class File
+class Asset
 {
     // Types de fichiers supportés
     public const TYPE_IMAGE = 'image';
@@ -19,11 +19,11 @@ class File
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['file:edit', 'file:list'])]
+    #[Groups(['file:edit', 'file:list', 'contact:info', 'contact:edit', 'contact:list', 'deal:info', 'deal:edit', 'company:info'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['file:edit', 'file:list'])]
+    #[Groups(['file:edit', 'file:list', 'contact:info', 'contact:edit', 'contact:list', 'deal:info', 'deal:edit', 'company:info'])]
     private ?string $src = null;
 
     #[ORM\ManyToOne(inversedBy: 'files')]
@@ -38,6 +38,10 @@ class File
     #[ORM\Column(length: 255)]
     #[Groups(['file:edit', 'file:list'])]
     private ?string $type = null;
+
+    #[ORM\Column(length: 255)]
+    #[Groups(['file:edit', 'file:list', 'contact:info', 'contact:edit', 'contact:list', 'deal:info', 'deal:edit', 'company:info'])]
+    private ?string $name = null;
 
     public function getId(): ?int
     {
@@ -100,6 +104,18 @@ class File
     public function setType(string $type): static
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
 
         return $this;
     }

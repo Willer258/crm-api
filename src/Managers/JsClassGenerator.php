@@ -240,7 +240,7 @@ class JsClassGenerator
 
         $content = $this->imports[$entity] ?? [];
         array_unshift($content, '/* eslint-disabled */');
-        $content[] = 'import ' . $entity . 'Extend from "@/entity/extends/' . $entity . 'Extend";';
+        $content[] = 'import ' . $entity . 'Extend from "./extends/' . $entity . 'Extend";';
         $content[] = '';
         $content[] = 'export default class ' . $entity . ' extends ' . $entity . 'Extend {';
         $content[] = '';

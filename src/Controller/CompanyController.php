@@ -13,17 +13,32 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/company', name: 'app_company_')]
 final class CompanyController extends AbstractController
 {
-    public function __construct(private \App\Managers\CompanyImportManager $companyImportManager) {}
+    public function __construct(private \App\Managers\CompanyImportManager $companyImportManager, private CompanyRepository $companyRepository , private CompanyManager $companyManager) {}
 
     #[Route('/list', name: 'list')]
-    public function getContacts(CompanyRepository $companyRepository, Request $request): Response
+    public function getCompanies(Request $request): Response
     {
         $data = json_decode($request->getContent(), true);
-        $companies = $companyRepository->listCompany($data);
-        $total = $companyRepository->getCount();
-        return $this->json(['status' => 'success', 'contacts' => $companies['data'], 'page' => $companies['page'], 'limit' => $companies['limit'], 'count' => $companies['count'], 'total' => $total], 200, [], ['groups' => 'company:list']);
+        $companies = $this->companyRepository->listCompany($data);
+        $total = $this->companyRepository->getCount();
+        return $this->json(['status' => 'success', 'companies' => $companies, 'page' => $data ['pagination']['page'] ?? 1, 'limit' => $data['pagination']['limit'] ?? 25, 'total' => $total], 200, [], ['groups' => 'company:list']);
+  
     }
 
+    #[Route('/search/{contains}', name: 'search', methods: ['GET'])]
+    public function searchCompanies($contains): Response
+    {
+        $companies = $this->companyRepository->searchCompanies($contains);
+        // dd($companies);
+        return $this->json(['status' => 'success', 'companies' => $companies], 200, [], ['groups' => 'company:list']);
+    }
+
+    #[Route('/info/{id}', name: 'info', methods: ['GET'])]
+    public function infoCompany(int $id): Response
+    {
+        $company = $this->companyRepository->find($id);
+        return $this->json(['status' => 'success', 'company' => $company], 200, [], ['groups' => ['company:info' ,'userManagement', 'infos']]);
+    }
 
 
 
@@ -39,7 +54,7 @@ final class CompanyController extends AbstractController
     }
 
     #[Route('/edit', name: 'edit')]
-    public function editContact(CompanyManager $contactManager, Request $request): Response
+    public function editCompany(Request $request): Response
     {
         $data = json_decode($request->getContent(), true);
 
@@ -48,7 +63,7 @@ final class CompanyController extends AbstractController
         if (empty($data)) {
             return $this->json(['status' => 'error', 'message' => 'Invalid data'], 400);
         }
-        $company = $contactManager->edit($data);
+        $company = $this->companyManager->edit($data);
 
 
         if ($company instanceof Company) {
@@ -59,17 +74,27 @@ final class CompanyController extends AbstractController
     }
 
 
+    #[Route('/addPhoto', name: 'addPhoto', methods: ['POST'], options: ['description' => 'Ajoute une photo a un contact'])]
+    public function addPhoto(Request $request, ): Response
+    {
+        $data = json_decode($request->getContent(), true);
+       
+        $this->companyManager->addPhoto($data);
+
+        return $this->json(['status' => 'success', 'message' => 'Photo ajoutée']);
+    }
+
+
 
 
     #[Route('/merge/{sourceId}/{targetId}', name: 'merge', methods: ['GET'], options: ['description' => 'Fusionne deux sociétés'])]
     public function mergeCompany(
-        CompanyRepository $companyRepository,
-        CompanyManager $companyManager,
+        
         $sourceId,
         $targetId
     ): Response {
-        $source = $companyRepository->find($sourceId);
-        $target = $companyRepository->find($targetId);
+        $source = $this->companyRepository->find($sourceId);
+        $target = $this->companyRepository->find($targetId);
 
         if (!$source || !$target) {
             return $this->json([
@@ -78,7 +103,7 @@ final class CompanyController extends AbstractController
             ], 404);
         }
         try {
-            $companyManager->merge($source, $target);
+            $this->companyManager->merge($source, $target);
             return $this->json([
                 'status'  => 'success',
                 'message' => "Fusion réussie : Proceder au nettoyage des donnees"
@@ -93,9 +118,9 @@ final class CompanyController extends AbstractController
 
 
     #[Route('/delete/{id}', name: 'delete', methods: ['DELETE'], options: ['description' => 'Supprime une société'])]
-    public function deleteContact(int $id, CompanyManager $companyManager): Response
+    public function deleteCompany(int $id, ): Response
     {
-        $companyManager->delete($id);
+        $this->companyManager->delete($id);
 
         return $this->json(['status' => 'success', 'message' => 'Entreprise supprimé']);
     }

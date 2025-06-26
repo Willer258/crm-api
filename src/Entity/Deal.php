@@ -18,80 +18,86 @@ class Deal
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['deal:edit', 'deal:list', 'deal:info'])]
+    #[Groups(['contact:info' , 'deal:info', 'company:info'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'deals')]
-    #[Groups(['deal:edit', 'deal:list', 'deal:info'])]
+    #[Groups(['deal:info'])]
     private ?Contact $contact = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['deal:edit', 'deal:list', 'deal:info'])]
-    private ?string $objet = null;
+    #[Groups(['contact:info', 'company:info', 'deal:info'])]
+
+    private ?string $object = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['deal:edit', 'deal:list', 'deal:info'])]
+    #[Groups(['contact:info', 'company:info', 'deal:info'])]
     private ?string $manager = null;
 
     #[ORM\ManyToOne(inversedBy: 'deals')]
-    #[Groups(['deal:edit', 'deal:list', 'deal:info'])]
+    #[Groups(['contact:info', 'company:info', 'deal:info'])]
     private ?PipelineStep $step = null;
 
     /**
      * @var Collection<int, Tag>
      */
     #[ORM\ManyToMany(targetEntity: Tag::class, mappedBy: 'deals')]
-    #[Groups(['deal:edit', 'deal:list', 'deal:info'])]
+    #[Groups(['contact:info', 'company:info', 'deal:info'])]
     private Collection $tags;
 
     /**
      * @var Collection<int, Contact>
      */
     #[ORM\ManyToMany(targetEntity: Contact::class, inversedBy: 'dealsAsParticipant')]
-    #[Groups(['deal:edit', 'deal:list', 'deal:info'])]
+    #[Groups(['deal:info'])]
     private Collection $participants;
 
     /**
      * @var Collection<int, Activity>
      */
     #[ORM\OneToMany(targetEntity: Activity::class, mappedBy: 'deal')]
-    #[Groups(['deal:edit', 'deal:list', 'deal:info'])]
+    #[Groups(['deal:info'])]
     private Collection $activities;
 
     #[ORM\Column(nullable: true)]
     private ?array $products = null;
 
     /**
-     * @var Collection<int, File>
+     * @var Collection<int, Asset>
      */
-    #[ORM\OneToMany(targetEntity: File::class, mappedBy: 'deal')]
-    #[Groups(['deal:edit', 'deal:list', 'deal:info'])]
-    private Collection $files;
+    #[ORM\OneToMany(targetEntity: Asset::class, mappedBy: 'deal')]
+    #[Groups(['deal:info'])]
+    private Collection $assets;
 
     /**
      * @var Collection<int, Note>
      */
     #[ORM\OneToMany(targetEntity: Note::class, mappedBy: 'deal')]
-    #[Groups(['deal:edit', 'deal:list', 'deal:info'])]
+    #[Groups(['deal:info'])]
     private Collection $notes;
 
     
 
     
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['contact:info', 'company:info'])]
     public const STATUS_WIN = 'win';
     public const STATUS_LOST = 'lost';
 
 
-    #[Groups(['deal:edit', 'deal:list', 'deal:info'])]
+    #[Groups(['contact:info', 'company:info'])]
     private ?string $status = null;
+
+    #[ORM\ManyToOne(inversedBy: 'deals')]
+    #[Groups(['deal:info'])]
+    private ?Company $company = null;
 
     public function __construct()
     {
         $this->tags = new ArrayCollection();
         $this->participants = new ArrayCollection();
         $this->activities = new ArrayCollection();
-        $this->files = new ArrayCollection();
+        $this->assets = new ArrayCollection();
         $this->notes = new ArrayCollection();
     }
 
@@ -112,14 +118,14 @@ class Deal
         return $this;
     }
 
-    public function getObjet(): ?string
+    public function getObject(): ?string
     {
-        return $this->objet;
+        return $this->object;
     }
 
-    public function setObjet(string $objet): static
+    public function setObject(string $object): static
     {
-        $this->objet = $objet;
+        $this->object = $object;
 
         return $this;
     }
@@ -242,29 +248,29 @@ class Deal
     }
 
     /**
-     * @return Collection<int, File>
+     * @return Collection<int, Asset>
      */
-    public function getFiles(): Collection
+    public function getAssets(): Collection
     {
-        return $this->files;
+        return $this->assets;
     }
 
-    public function addFile(File $file): static
+    public function addAsset(Asset $asset): static
     {
-        if (!$this->files->contains($file)) {
-            $this->files->add($file);
-            $file->setDeal($this);
+        if (!$this->assets->contains($asset)) {
+            $this->assets->add($asset);
+            $asset->setDeal($this);
         }
 
         return $this;
     }
 
-    public function removeFile(File $file): static
+    public function removeAsset(Asset $asset): static
     {
-        if ($this->files->removeElement($file)) {
+        if ($this->assets->removeElement($asset)) {
             // set the owning side to null (unless already changed)
-            if ($file->getDeal() === $this) {
-                $file->setDeal(null);
+            if ($asset->getDeal() === $this) {
+                $asset->setDeal(null);
             }
         }
 
@@ -312,6 +318,18 @@ class Deal
             throw new \InvalidArgumentException('Le statut doit être soit "win" soit "lost".');
         }
         $this->status = $status;
+        return $this;
+    }
+
+    public function getCompany(): ?Company
+    {
+        return $this->company;
+    }
+
+    public function setCompany(?Company $company): static
+    {
+        $this->company = $company;
+
         return $this;
     }
 }

@@ -19,11 +19,11 @@ class PipelineStep
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['pipelineStep:list', 'pipelineStep:edit','pipeline:info','deal:edit'])]
+    #[Groups(['pipelineStep:list', 'pipelineStep:edit','pipeline:list','pipeline:info','deal:edit' , 'contact:info' , 'company:info' ])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['pipelineStep:list', 'pipelineStep:edit','pipeline:info','deal:edit'])]
+    #[Groups(['pipelineStep:list', 'pipelineStep:edit','pipeline:list','pipeline:info','deal:edit' , 'contact:info', 'company:info'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]

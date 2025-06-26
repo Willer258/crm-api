@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\MailRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: MailRepository::class)]
 class Mail
@@ -11,9 +12,11 @@ class Mail
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['contact:edit' , 'contact:list' , 'company:edit' , 'company:list','deal:info' , 'deal:edit' , 'contact:info', 'company:info' , 'company:list'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['contact:edit', 'contact:list', 'deal:info' , 'deal:edit' , 'contact:info', 'company:info' , 'company:list'])]
     private ?string $email = null;
 
     #[ORM\ManyToOne(inversedBy: 'mails')]
@@ -21,6 +24,10 @@ class Mail
 
     #[ORM\ManyToOne(inversedBy: 'mails')]
     private ?Company $company = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['contact:edit', 'contact:list', 'deal:info' , 'deal:edit' , 'contact:info', 'company:info' , 'company:list'])]
+    private ?string $type = null;
 
     public function getId(): ?int
     {
@@ -59,6 +66,18 @@ class Mail
     public function setCompany(?Company $company): static
     {
         $this->company = $company;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(?string $type): static
+    {
+        $this->type = $type;
 
         return $this;
     }

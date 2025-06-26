@@ -19,8 +19,8 @@ class CompanyRepository extends ServiceEntityRepository
     //    /**
     //     * @return Company[] Returns an array of Company objects
     //     */
-       public function listCompany($data)
-       {
+    public function listCompany($data)
+    {
         $qb = $this->createQueryBuilder('c');
 
         $qb->leftJoin('c.properties', 'p')
@@ -88,51 +88,34 @@ class CompanyRepository extends ServiceEntityRepository
 
         $qb->setFirstResult($offset)->setMaxResults($limit);
 
-        $companies = $qb->getQuery()->getResult();
+        return $qb->getQuery()->getResult();
 
-        // 🔁 Formatage
-        $result = [];
+       
+    }
 
-        foreach ($companies as $company) {
-            $entry = [
-                'id' => $company->getId(),
-                'createdAt' => $company->getCreatedAt()?->format('Y-m-d'),
-                'label' => null,
-                'properties' => []
-            ];
-
-            foreach ($company->getProperties() as $prop) {
-                // if ($prop->isDeleted()) continue;
-
-                $model = $prop->getPropertyModel();
-                $entry['properties'][] = [
-                    'model' => $model?->getLabel(),
-                    'value' => $prop->getValue()
-                ];
-
-                if ($model && $model->isIdentifier()) {
-                    $entry['label'] = $prop->getValue();
-                }
-            }
-
-            $result[] = $entry;
-        }
-
-
-        return [
-            'page' => $page,
-            'limit' => $limit,
-            'count' => count($result),
-            'data' => $result
-        ];
-
-       }
-
-       public function getCount (){
+    public function getCount()
+    {
         $qb = $this->createQueryBuilder('c');
         return $qb->select($qb->expr()->countDistinct('c.id'))
             ->andWhere('c.removeAt IS NULL')
             ->getQuery()->getSingleScalarResult();
+    }
+
+
+    public function searchCompanies($data)
+    {
+        $qb = $this->createQueryBuilder('c');
+        $qb->leftJoin('c.properties', 'p')
+            ->leftJoin('p.propertyModel', 'm')
+            ->where('c.removeAt IS NULL');
+
+        // 🔍 Recherche globale
+        if (!empty($data)) {
+            $qb->andWhere('p.value LIKE :q')
+                ->setParameter('q', '%' . $data . '%');
+        }
+
+        return $qb->getQuery()->getResult();
     }
 
     //    public function findOneBySomeField($value): ?Company

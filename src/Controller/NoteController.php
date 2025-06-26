@@ -41,7 +41,7 @@ final class NoteController extends AbstractController
         }
 
         if ($note instanceof Note) {
-            return $this->json(['status' => 'success', 'note' => $note], 200, [], ['groups' => 'note:edit']);
+            return $this->json(['status' => 'success', 'note' => $note], 200, [], ['groups' => ['note:edit' , 'userManagement', 'infos']]);
         }
         return $this->json(['status' => 'error', 'message' => 'Impossible de créer ou modifier une note'], 500);
     }

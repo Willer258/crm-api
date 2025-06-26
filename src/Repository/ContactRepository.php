@@ -23,9 +23,12 @@ class ContactRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('c');
 
+        
+
         $qb->leftJoin('c.properties', 'p')
             ->leftJoin('p.propertyModel', 'm')
             ->leftJoin('c.company', 'co')
+            ->leftJoin('c.tags', 't')
             ->where('c.removeAt IS NULL');
 
 
@@ -97,43 +100,8 @@ class ContactRepository extends ServiceEntityRepository
 
         $contacts = $qb->getQuery()->getResult();
 
-        // 🔁 Formatage
-        $result = [];
+        return $contacts;   
 
-        foreach ($contacts as $contact) {
-            $entry = [
-                'id' => $contact->getId(),
-                'source' => $contact->getSource(),
-                'company' => $contact->getCompany()?->getId(),
-                'createdAt' => $contact->getCreatedAt()?->format('Y-m-d'),
-                'label' => null,
-                'properties' => []
-            ];
-
-            foreach ($contact->getProperties() as $prop) {
-                // if ($prop->isDeleted()) continue;
-
-                $model = $prop->getPropertyModel();
-                $entry['properties'][] = [
-                    'model' => $model?->getLabel(),
-                    'value' => $prop->getValue()
-                ];
-
-                if ($model && $model->isIdentifier()) {
-                    $entry['label'] = $prop->getValue();
-                }
-            }
-
-            $result[] = $entry;
-        }
-
-
-        return [
-            'page' => $page,
-            'limit' => $limit,
-            'count' => count($result),
-            'data' => $result
-        ];
     }
 
 

@@ -2,6 +2,7 @@
 
 namespace App\Managers;
 
+use App\Entity\Company;
 use App\Entity\Deal;
 use App\Entity\Contact;
 use App\Entity\PipelineStep;
@@ -39,16 +40,16 @@ class DealManager
         if (!($deal instanceof Deal)) {
             $deal = new Deal(); 
         }
-        if (isset($data['objet'])) {
-            $deal->setObjet($data['objet']);
+        if (isset($data['object'])) {
+            $deal->setObject($data['object']);
         }
         if (isset($data['manager'])) {
             $deal->setManager($data['manager']);
         }else{
             $deal->setManager('unknown');
         }
-        if (isset($data['contact_id'])) {
-            $contact = $em->getRepository(Contact::class)->find($data['contact_id']);
+        if (isset($data['contact']) && !empty($data['contact']) ) {
+            $contact = $em->getRepository(Contact::class)->find($data['contact']);
             if ($contact instanceof Contact) {
                 $deal->setContact($contact);
             }
@@ -56,8 +57,18 @@ class DealManager
                 throw new Exception('Il faut un contact a l\'affaire');
             }
         } 
-        if (isset($data['step_id'])) {
-            $step = $em->getRepository(PipelineStep::class)->find($data['step_id']);
+
+        if (isset($data['company']) && !empty($data['company'])) {
+            $company = $em->getRepository(Company::class)->find($data['company']);
+            if ($company instanceof Company) {
+                $deal->setCompany($company);
+            }
+            else{
+                throw new Exception('Il faut une entreprise a l\'affaire');
+            }
+        } 
+        if (isset($data['step'])) {
+            $step = $em->getRepository(PipelineStep::class)->find($data['step']);
             if ($step instanceof PipelineStep) {
                 $deal->setStep($step);
             }
@@ -65,14 +76,11 @@ class DealManager
                 throw new Exception('Il faut un etape de pipeline a l\'affaire');
             }
         }
-        if (isset($data['tag_ids']) && is_array($data['tag_ids'])) {
-            foreach ($data['tag_ids'] as $tagId) {
-                $tag = $em->getRepository(Tag::class)->find($tagId);
-                if ($tag instanceof Tag) {
-                    $deal->getTags()->add($tag);
-                }
-                else{
-                    throw new Exception('Il faut des tags a l\'affaire');
+        if (!empty($data['tags'])) {
+            foreach ($data['tags'] as $t) {
+               $tag = $this->registry->getManager()->getRepository(Tag::class)->find($t['id']);
+                if (isset($tag)) {
+                    $deal->addTag($tag);
                 }
             }
         }

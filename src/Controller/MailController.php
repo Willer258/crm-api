@@ -25,11 +25,6 @@ final class MailController extends AbstractController
         return $this->json($mails);
     }
 
-    #[Route('/{id}', name: 'mail_show', methods: ['GET'])]
-    public function show(Mail $mail): JsonResponse
-    {
-        return $this->json($mail);
-    }
 
     #[Route('/edit', name: 'mail_edit', methods: ['POST'])]
     public function editMail(Request $request): JsonResponse
@@ -47,19 +42,11 @@ final class MailController extends AbstractController
             $mail = $this->mailManager->createFromArray($data);
         }
         if ($mail instanceof Mail) {
-            return $this->json(['status' => 'success', 'mail' => $mail], 200);
+            return $this->json(['status' => 'success', 'mail' => $mail], 200, [], ['groups' => 'contact:info']);
         }
         return $this->json(['status' => 'error', 'message' => 'Impossible de créer ou modifier un mail'], 500);
     }
 
-    #[Route('/{id}', name: 'mail_update', methods: ['PUT', 'PATCH'])]
-    public function update(Request $request, Mail $mail, EntityManagerInterface $em): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
-        $mail->setEmail($data['email'] ?? $mail->getEmail());
-        $em->flush();
-        return $this->json($mail);
-    }
 
     #[Route('/delete/{id}', name: 'mail_delete', methods: ['DELETE'])]
     public function deleteMail(int $id): JsonResponse

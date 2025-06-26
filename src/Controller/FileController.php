@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\File;
+use App\Entity\Asset;
 use App\Managers\FileManager;
 use App\Repository\FileRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -39,14 +39,14 @@ final class FileController extends AbstractController
 
         if (isset($data['id'])) {
             $file = $this->fileRepository->find($data['id']);
-            if ($file instanceof File) {
+            if ($file instanceof Asset) {
                 $file = $this->fileManager->updateFromArray($file, $data);
             }
         } else {
             $file = $this->fileManager->createFromArray($data);
         }
 
-        if ($file instanceof File) {
+        if ($file instanceof Asset) {
             return $this->json(['status' => 'success', 'file' => $file], 200, [], ['groups' => 'file:edit']);
         }
         return $this->json(['status' => 'error', 'message' => 'Impossible de créer ou modifier un fichier'], 500);
@@ -56,7 +56,7 @@ final class FileController extends AbstractController
     public function deleteFile(int $id): JsonResponse
     {
         $file = $this->fileRepository->find($id);
-        if ($file instanceof File) {
+        if ($file instanceof Asset) {
             $this->fileManager->delete($file);
         }
         return $this->json(['status' => 'success', 'message' => 'Fichier supprimé']);
