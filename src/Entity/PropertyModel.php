@@ -49,7 +49,7 @@ class PropertyModel
     private ?ItemType $itemType = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['property_model:list', 'property_model:edit', 'itemType:show' , 'contact:info', 'company:info' , 'company:list' , 'contact:list'])]
+    #[Groups(['property_model:list', 'property_model:edit', 'itemType:show' , 'contact:info', 'company:info' , 'company:list' , 'contact:list' , 'pipeline:info' , 'deal:info'])]
     private ?string $class = null;
 
     public function __construct()

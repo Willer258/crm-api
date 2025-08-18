@@ -22,7 +22,7 @@ class ActivityRepository extends ServiceEntityRepository
      * @param string|null $endDate
      * @return array<string, Activity[]>
      */
-    public function findByDateRangeGrouped($startDate, $endDate, $dealId = null): array
+    public function findByDateRangeGrouped($startDate, $endDate, $dealId = null , $data = null): array
     {
         $qb = $this->createQueryBuilder('a');
         if ($startDate) {
@@ -31,8 +31,12 @@ class ActivityRepository extends ServiceEntityRepository
         if ($endDate) {
             $qb->andWhere('a.endDate <= :endDate')->setParameter('endDate', new \DateTime($endDate));
         }
-        if ($dealId) {
+        if (isset($dealId)) {
             $qb->andWhere('a.deal = :dealId')->setParameter('dealId', $dealId);
+        }
+
+        if (!empty($data['managers'])) {
+            $qb->andWhere('a.manager IN (:managers)')->setParameter('managers', $data['managers']);
         }
         $qb->orderBy('a.startDate', 'ASC');
         $results = $qb->getQuery()->getResult();

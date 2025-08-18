@@ -18,20 +18,20 @@ class Deal
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['contact:info' , 'deal:info', 'company:info'])]
+    #[Groups(['contact:info' , 'deal:info', 'company:info', 'activity:read','pipeline:info' ])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'deals')]
-    #[Groups(['deal:info'])]
+    #[Groups(['deal:info' , 'pipeline:info'])]
     private ?Contact $contact = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['contact:info', 'company:info', 'deal:info'])]
+    #[Groups(['contact:info', 'company:info', 'deal:info' , 'pipeline:info'])]
 
     private ?string $object = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['contact:info', 'company:info', 'deal:info'])]
+    #[Groups(['contact:info', 'company:info', 'deal:info' , 'pipeline:info'])]
     private ?string $manager = null;
 
     #[ORM\ManyToOne(inversedBy: 'deals')]
@@ -42,7 +42,7 @@ class Deal
      * @var Collection<int, Tag>
      */
     #[ORM\ManyToMany(targetEntity: Tag::class, mappedBy: 'deals')]
-    #[Groups(['contact:info', 'company:info', 'deal:info'])]
+    #[Groups(['contact:info', 'company:info', 'deal:info' , 'pipeline:info'])]
     private Collection $tags;
 
     /**
@@ -56,7 +56,7 @@ class Deal
      * @var Collection<int, Activity>
      */
     #[ORM\OneToMany(targetEntity: Activity::class, mappedBy: 'deal')]
-    #[Groups(['deal:info'])]
+    #[Groups(['deal:info' , 'pipeline:info'])]
     private Collection $activities;
 
     #[ORM\Column(nullable: true)]
@@ -80,16 +80,16 @@ class Deal
 
     
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['contact:info', 'company:info'])]
+    #[Groups(['contact:info', 'company:info' , 'pipeline:info'])]
     public const STATUS_WIN = 'win';
     public const STATUS_LOST = 'lost';
 
 
-    #[Groups(['contact:info', 'company:info'])]
+    #[Groups(['contact:info', 'company:info', 'pipeline:info'])]
     private ?string $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'deals')]
-    #[Groups(['deal:info'])]
+    #[Groups(['deal:info' , 'pipeline:info'])]
     private ?Company $company = null;
 
     public function __construct()

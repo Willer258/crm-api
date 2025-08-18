@@ -18,19 +18,19 @@ class Activity
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["activity:read", "company:info", "contact:info"])]
+    #[Groups(["activity:read", "company:info", "contact:info", "pipeline:info"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["activity:read", "company:info", "contact:info"])]
+    #[Groups(["activity:read", "company:info", "contact:info","pipeline:info"])]
     private ?string $type = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(["activity:read", "company:info", "contact:info"])]
+    #[Groups(["activity:read", "company:info", "contact:info" , "pipeline:info"])]
     private ?\DateTimeInterface $startDate = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(["activity:read", "company:info", "contact:info"])]
+    #[Groups(["activity:read", "company:info", "contact:info" , "pipeline:info"])]
     private ?\DateTimeInterface $endDate = null;
 
     #[ORM\Column(length: 255)]
@@ -74,7 +74,7 @@ class Activity
     private ?Company $company = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["activity:read", "company:info", "contact:info"])]
+    #[Groups(["activity:read", "company:info", "contact:info", "pipeline:info"])]
     private ?string $name = null;
 
     public function __construct()

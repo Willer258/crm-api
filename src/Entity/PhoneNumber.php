@@ -17,15 +17,15 @@ class PhoneNumber
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['contact:edit', 'contact:list', 'deal:info', 'deal:edit', 'contact:info',  'company:list', 'company:info'])]
+    #[Groups(['contact:edit', 'contact:list', 'deal:info', 'deal:edit', 'contact:info',  'company:list', 'company:info', 'deal:info'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['contact:edit', 'contact:list', 'deal:info', 'deal:edit', 'contact:info',  'company:list', 'company:info'])]
+    #[Groups(['contact:edit', 'contact:list', 'deal:info', 'deal:edit', 'contact:info',  'company:list', 'company:info', 'deal:info'])]
     private ?string $number = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['contact:edit', 'contact:list', 'deal:info', 'deal:edit', 'contact:info',  'company:list', 'company:info'])]
+    #[Groups(['contact:edit', 'contact:list', 'deal:info', 'deal:edit', 'contact:info',  'company:list', 'company:info', 'deal:info'])]
     private ?string $type = null;
 
     public function getId(): ?int

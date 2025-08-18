@@ -16,7 +16,7 @@ class Property
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['contact:edit', 'contact:list' , 'company:edit' , 'company:list','deal:info' , 'deal:edit' , 'contact:info', 'company:info'])]
+    #[Groups(['contact:edit', 'contact:list' , 'company:edit' , 'company:list','deal:info' , 'deal:edit' , 'contact:info', 'company:info' , 'pipeline:info'])]
     private ?string $value = null;
 
     #[ORM\ManyToOne(inversedBy: 'properties')]
@@ -28,7 +28,7 @@ class Property
     private ?Company $company = null;
 
     #[ORM\ManyToOne(inversedBy: 'properties')]
-    #[Groups(['contact:edit', 'contact:list' , 'company:edit' , 'company:list','deal:info' , 'deal:edit' , 'contact:info', 'company:info'])]
+    #[Groups(['contact:edit', 'contact:list' , 'company:edit' , 'company:list','deal:info' , 'deal:edit' , 'contact:info', 'company:info' , 'pipeline:info'])]
     private ?PropertyModel $propertyModel = null;
 
 

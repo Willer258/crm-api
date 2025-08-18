@@ -30,6 +30,17 @@ class NoteManager
         return $note;
     }
 
+    public function edit($data): Note
+    {
+      $note = $this->em->find(Note::class, $data['id']);
+      if (!$note instanceof Note) {
+        throw new \Exception('Note non trouvée');
+      }
+      $this->hydrate($note, $data);
+      $this->em->flush();
+      return $note;
+    }
+
     /**
      * Met à jour une note existante à partir d'un tableau de données
      */
@@ -53,7 +64,9 @@ class NoteManager
     {
         if (isset($data['content'])) $note->setContent($data['content']);
 
-        if ($create && isset($data['company']) || isset($data['contact']) || isset($data['deal']) || isset($data['activity'])) {
+        
+        
+        if ($create && (isset($data['company']) || isset($data['contact']) || isset($data['deal']) || isset($data['activity']))) {
             if (isset($data['company'])) {
                 $company = $this->em->find(Company::class, $data['company']);
                 if ($company instanceof Company) {
@@ -93,8 +106,11 @@ class NoteManager
 
 
             
-        }else{
+        }
+        elseif(!$note->getActivity() && !$note->getCompany() && !$note->getContact() && !$note->getDeal()){
             throw new \Exception('Ta note doit etre liée à une activité, une entreprise, un contact ou une affaire');
         }
+        
+       
     }
 }

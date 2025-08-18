@@ -12,11 +12,11 @@ class Mail
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['contact:edit' , 'contact:list' , 'company:edit' , 'company:list','deal:info' , 'deal:edit' , 'contact:info', 'company:info' , 'company:list'])]
+    #[Groups(['contact:edit' , 'contact:list' , 'company:edit' , 'company:list','deal:info' , 'deal:edit' , 'contact:info', 'company:info' , 'company:list', 'deal:info'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['contact:edit', 'contact:list', 'deal:info' , 'deal:edit' , 'contact:info', 'company:info' , 'company:list'])]
+    #[Groups(['contact:edit', 'contact:list', 'deal:info' , 'deal:edit' , 'contact:info', 'company:info' , 'company:list', 'deal:info'])]
     private ?string $email = null;
 
     #[ORM\ManyToOne(inversedBy: 'mails')]
@@ -26,7 +26,7 @@ class Mail
     private ?Company $company = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['contact:edit', 'contact:list', 'deal:info' , 'deal:edit' , 'contact:info', 'company:info' , 'company:list'])]
+    #[Groups(['contact:edit', 'contact:list', 'deal:info' , 'deal:edit' , 'contact:info', 'company:info' , 'company:list', 'deal:info'])]
     private ?string $type = null;
 
     public function getId(): ?int

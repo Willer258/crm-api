@@ -26,11 +26,16 @@ final class ActivityController extends AbstractController
         return new JsonResponse($json, 200, [], true);
     }
 
-    #[Route('/calendar', name: 'activity_calendar', methods: ['GET'], options: ['description' => 'Liste les activités entre deux dates, groupées par date d\'exécution'])]
+    #[Route('/calendar', name: 'activity_calendar', methods: ['POST'], options: ['description' => 'Liste les activités entre deux dates, groupées par date d\'exécution'])]
     public function calendar(Request $request, ActivityRepository $activityRepository, SerializerInterface $serializer): JsonResponse
     {
         $startDate = $request->query->get('startDate');
         $endDate = $request->query->get('endDate');
+
+        $data = json_decode($request->getContent(), true);
+
+        $data['managers'][] = $this->getUser()->getUserIdentifier();
+       
         // Valeurs par défaut : mois courant
         if (!$startDate || !$endDate) {
             $now = new \DateTimeImmutable();
@@ -42,7 +47,7 @@ final class ActivityController extends AbstractController
             }
         }
         $dealId = $request->query->get('deal');
-        $results = $activityRepository->findByDateRangeGrouped($startDate, $endDate, $dealId);
+        $results = $activityRepository->findByDateRangeGrouped($startDate, $endDate, $dealId , $data);
         // Sérialiser chaque groupe de date
         $calendar = [];
         foreach ($results as $date => $activities) {

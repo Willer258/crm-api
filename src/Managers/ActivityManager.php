@@ -49,6 +49,9 @@ class ActivityManager
         if (isset($data['description'])) $activity->setDescription($data['description']);
         if (isset($data['manager'])) $activity->setManager($data['manager']);
 
+        if(!$activity->getDeal() && !$activity->getContact() && !$activity->getCompany()){
+         
+       
         if (isset($data['deal']) || isset($data ['contact']) || isset($data ['company'])) {
             if (isset($data['deal'])){
                 $deal = $this->em->find(Deal::class, $data['deal']);
@@ -79,9 +82,14 @@ class ActivityManager
         else{
             throw new \Exception("Une activité doit etre liée à une affaire, un contact ou une entreprise");
         }
+    }
+
+
+
         if (isset($data['notes'])) {
+          
           foreach ($data['notes'] as $note) {
-            $note = $this->noteManager->createFromArray($note);
+            $note = $this->noteManager->edit($note);
             $activity->addNote($note);
           }
         }

@@ -24,7 +24,7 @@ class Company
      * @var Collection<int, Property>
      */
     #[ORM\OneToMany(targetEntity: Property::class, mappedBy: 'company', cascade: ['persist'])]
-    #[Groups(['company:edit', 'company:list' , 'company:info', 'contact:info' , 'contact:list'])]
+    #[Groups(['company:edit', 'company:list' , 'company:info', 'contact:info' , 'contact:list', 'pipeline:info' , 'deal:info'])]
     private Collection $properties;
 
     /**
@@ -41,21 +41,21 @@ class Company
      * @var Collection<int, PhoneNumber>
      */
     #[ORM\OneToMany(targetEntity: PhoneNumber::class, mappedBy: 'company', cascade: ['persist', 'remove'])]
-    #[Groups(['company:edit', 'company:list' , 'company:info', 'contact:info'])]
+    #[Groups(['company:edit', 'company:list' , 'company:info', 'contact:info' , 'deal:info'])]
     private Collection $phones;
 
     /**
      * @var Collection<int, Asset>
      */
     #[ORM\OneToMany(targetEntity: Asset::class, mappedBy: 'company')]
-    #[Groups(['company:edit','company:info'])]
+    #[Groups(['company:edit','company:info' , 'deal:info'])]
     private Collection $assets;
 
     /**
      * @var Collection<int, Mail>
      */
     #[ORM\OneToMany(targetEntity: Mail::class, mappedBy: 'company')]
-    #[Groups(['company:edit', 'company:list' , 'company:info', 'contact:info'])]
+    #[Groups(['company:edit', 'company:list' , 'company:info', 'contact:info' , 'deal:info'])]
     private Collection $mails;
 
     /**
@@ -80,7 +80,7 @@ class Company
     private Collection $activities;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['company:edit','company:info'])]
+    #[Groups(['company:edit','company:info' , 'pipeline:info' , 'deal:info'])]
     private ?string $photo = null;
 
     /**

@@ -20,14 +20,14 @@ class Contact
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['contact:edit', 'contact:list', 'contact:info', 'company:info'])]
+    #[Groups(['contact:edit', 'contact:list', 'contact:info', 'company:info', 'deal:info'])]
     private ?int $id = null;
 
     /**
      * @var Collection<int, Property>
      */
     #[ORM\OneToMany(targetEntity: Property::class, mappedBy: 'contact')]
-    #[Groups(['contact:edit' , 'contact:list','deal:info', 'contact:info', 'company:info'])]
+    #[Groups(['contact:edit' , 'contact:list','deal:info', 'contact:info', 'company:info' ,'pipeline:info'])]
     private Collection $properties;
 
     /**
@@ -46,7 +46,7 @@ class Contact
     private ?Company $company = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['contact:edit','contact:list', 'contact:info'])]
+    #[Groups(['contact:edit','contact:list', 'contact:info', 'deal:info'])]
     private ?string $manager = null;
 
     #[ORM\ManyToOne(inversedBy: 'contacts')]
@@ -65,7 +65,7 @@ class Contact
      * @var Collection<int, Asset>
      */
     #[ORM\OneToMany(targetEntity: Asset::class, mappedBy: 'contact')]
-    #[Groups(['contact:edit' , 'contact:list','contact:info'])]
+    #[Groups(['contact:edit' , 'contact:list','contact:info' , 'deal:info'])]
     #[MaxDepth(1)]
     private Collection $assets;
 
@@ -73,14 +73,14 @@ class Contact
      * @var Collection<int, PhoneNumber>
      */
     #[ORM\OneToMany(targetEntity: PhoneNumber::class, mappedBy: 'contact', cascade: ['persist', 'remove'])]
-    #[Groups(['contact:edit', 'contact:list', 'contact:info'])]
+    #[Groups(['contact:edit', 'contact:list', 'contact:info' , 'deal:info'])]
     private Collection $phones;
 
     /**
      * @var Collection<int, Mail>
      */
     #[ORM\OneToMany(targetEntity: Mail::class, mappedBy: 'contact')]
-    #[Groups(['contact:edit' , 'contact:list','contact:info'])]
+    #[Groups(['contact:edit' , 'contact:list','contact:info' , 'deal:info'])]
     private Collection $mails;
 
     /**
@@ -99,7 +99,7 @@ class Contact
     private Collection $tags;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['contact:edit' , 'contact:list','contact:info'])]
+    #[Groups(['contact:edit' , 'contact:list','contact:info' , 'pipeline:info'])]
     private ?string $photo = null;
 
     /**
