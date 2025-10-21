@@ -15,12 +15,12 @@ class Note
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['note:edit', 'note:list' , 'contact:info', 'company:info' , 'activity:read'])]
+    #[Groups(['note:edit', 'note:list' , 'contact:info', 'company:info' , 'activity:read' , 'deal:info'])]
     private ?int $id = null;
 
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['note:edit', 'note:list' , 'contact:info', 'company:info' , 'activity:read'])]
+    #[Groups(['note:edit', 'note:list' , 'contact:info', 'company:info' , 'activity:read' , 'deal:info'])]
     private ?string $content = null;
 
     #[ORM\ManyToOne(inversedBy: 'notes')]

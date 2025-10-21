@@ -14,15 +14,15 @@ class Tag
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['tag:list', 'tag:edit' , 'contact:list' , 'contact:edit' , 'contact:info' , 'company:list' , 'company:edit' , 'company:info' , 'pipeline:info'])]
+    #[Groups(['tag:list', 'tag:edit' , 'contact:list' , 'contact:edit' , 'contact:info' , 'company:list' , 'company:edit' , 'company:info' , 'pipeline:info', 'deal:info'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['tag:list', 'tag:edit' , 'contact:list' , 'contact:edit' , 'contact:info' , 'company:list' , 'company:edit' , 'company:info' , 'pipeline:info'])]
+    #[Groups(['tag:list', 'tag:edit' , 'contact:list' , 'contact:edit' , 'contact:info' , 'company:list' , 'company:edit' , 'company:info' , 'pipeline:info', 'deal:info'])]
     private ?string $label = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['tag:list', 'tag:edit' , 'contact:list' , 'contact:edit' , 'contact:info' , 'company:list' , 'company:edit' , 'company:info' , 'pipeline:info'])]
+    #[Groups(['tag:list', 'tag:edit' , 'contact:list' , 'contact:edit' , 'contact:info' , 'company:list' , 'company:edit' , 'company:info' , 'pipeline:info', 'deal:info'])]
     private ?string $code = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -37,8 +37,8 @@ class Tag
     private Collection $deals;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['tag:list', 'tag:edit' , 'contact:list' , 'contact:edit' , 'contact:info' , 'company:list' , 'company:edit' , 'company:info', 'pipeline:info' ])]
-    private ?string $color = null;
+    #[Groups(['tag:list', 'tag:edit' , 'contact:list' , 'contact:edit' , 'contact:info' , 'company:list' , 'company:edit' , 'company:info', 'pipeline:info' , 'deal:info'])]
+    private ?string $color = null;  
 
     /**
      * @var Collection<int, Contact>

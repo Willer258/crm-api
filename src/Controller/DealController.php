@@ -67,12 +67,12 @@ final class DealController extends AbstractController
             return $this->json([
                 'status' => 'success',
                 'deal' => $deal
-            ], 200, [], ['groups' => 'deal:info']);
+            ], 200, [], ['groups' => ['deal:info' , 'userManagement', 'infos']]);
         }
         return $this->json([
             'status' => 'error',
             'message' => 'Impossible de recuperer une affaire'
-        ], 500, [], ['groups' => 'deal:info']);
+        ], 500, [], ['groups' => ['deal:info' , 'userManagement', 'infos']]);
     }
 
 

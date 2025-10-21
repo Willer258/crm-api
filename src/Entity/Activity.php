@@ -18,39 +18,39 @@ class Activity
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["activity:read", "company:info", "contact:info", "pipeline:info"])]
+    #[Groups(["activity:read", "company:info", "contact:info", "pipeline:info" , "deal:info"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["activity:read", "company:info", "contact:info","pipeline:info"])]
+    #[Groups(["activity:read", "company:info", "contact:info","pipeline:info" , "deal:info"])]
     private ?string $type = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(["activity:read", "company:info", "contact:info" , "pipeline:info"])]
+    #[Groups(["activity:read", "company:info", "contact:info" , "pipeline:info" , "deal:info"])]
     private ?\DateTimeInterface $startDate = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(["activity:read", "company:info", "contact:info" , "pipeline:info"])]
+    #[Groups(["activity:read", "company:info", "contact:info" , "pipeline:info" , "deal:info"])]
     private ?\DateTimeInterface $endDate = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["activity:read", "company:info", "contact:info"])]
+    #[Groups(["activity:read", "company:info", "contact:info" , "deal:info"])]
     private ?string $location = null;
 
     #[ORM\Column]
-    #[Groups(["activity:read", "company:info", "contact:info"])]
+    #[Groups(["activity:read", "company:info", "contact:info" , "deal:info"])]
     private ?bool $performed = null;
 
     #[ORM\Column]
-    #[Groups(["activity:read", "company:info", "contact:info"])]
+    #[Groups(["activity:read", "company:info", "contact:info" , "deal:info"])]
     private ?bool $notify = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    #[Groups(["activity:read", "company:info", "contact:info"])]
+    #[Groups(["activity:read", "company:info", "contact:info" , "deal:info"])]
     private ?\DateTimeInterface $notifyDate = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["activity:read", "company:info", "contact:info"])]
+    #[Groups(["activity:read", "company:info", "contact:info" , "deal:info"])]
     private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'activities')]
@@ -60,11 +60,11 @@ class Activity
      * @var Collection<int, Note>
      */
     #[ORM\OneToMany(targetEntity: Note::class, mappedBy: 'activity')]
-    #[Groups(["activity:read", "company:info", "contact:info"])]
+    #[Groups(["activity:read", "company:info", "contact:info" , "deal:info"])]
     private Collection $notes;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["activity:read", "company:info", "contact:info"])]
+    #[Groups(["activity:read", "company:info", "contact:info" , "deal:info"])]
     private ?string $manager = null;
 
     #[ORM\ManyToOne(inversedBy: 'activities')]
@@ -74,7 +74,7 @@ class Activity
     private ?Company $company = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["activity:read", "company:info", "contact:info", "pipeline:info"])]
+    #[Groups(["activity:read", "company:info", "contact:info", "pipeline:info", "deal:info"])]
     private ?string $name = null;
 
     public function __construct()

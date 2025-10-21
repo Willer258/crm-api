@@ -19,11 +19,11 @@ class PipelineStep
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['pipelineStep:list', 'pipelineStep:edit','pipeline:list','pipeline:info','deal:edit' , 'contact:info' , 'company:info' ])]
+    #[Groups(['pipelineStep:list', 'pipelineStep:edit','pipeline:list','pipeline:info','deal:edit' , 'contact:info' , 'company:info' , 'deal:info'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['pipelineStep:list', 'pipelineStep:edit','pipeline:list','pipeline:info','deal:edit' , 'contact:info', 'company:info'])]
+    #[Groups(['pipelineStep:list', 'pipelineStep:edit','pipeline:list','pipeline:info','deal:edit' , 'contact:info', 'company:info', 'deal:info'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -35,6 +35,7 @@ class PipelineStep
     private ?float $successProbability = null;
 
     #[ORM\ManyToOne(inversedBy: 'pipelineSteps')]
+    #[Groups(['deal:info'])]
         private ?Pipeline $pipeline = null;
 
     /**
