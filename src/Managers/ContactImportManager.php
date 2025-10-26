@@ -3,6 +3,8 @@
 namespace App\Managers;
 
 use App\Entity\Contact;
+use App\Entity\Mail;
+use App\Entity\PhoneNumber;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use App\Entity\PropertyModel;
@@ -16,6 +18,37 @@ class ContactImportManager
     public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
+    }
+
+    /**
+     * Détecte si une valeur est un email
+     */
+    private function isEmail(string $value): bool
+    {
+        return filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
+    }
+
+    /**
+     * Détecte si une valeur est un numéro de téléphone
+     * Format acceptés: +33123456789, 0123456789, 01 23 45 67 89, +33 1 23 45 67 89, etc.
+     */
+    private function isPhoneNumber(string $value): bool
+    {
+        // Nettoie la valeur pour ne garder que les chiffres et le +
+        $cleaned = preg_replace('/[^0-9+]/', '', $value);
+
+        // Vérifie que la valeur contient au moins 8 chiffres (minimum pour un numéro valide)
+        // et commence par + ou 0
+        return strlen($cleaned) >= 8 && preg_match('/^[+0]/', $cleaned);
+    }
+
+    /**
+     * Normalise un numéro de téléphone pour le stockage
+     */
+    private function normalizePhoneNumber(string $value): string
+    {
+        // Garde les chiffres et le + initial
+        return preg_replace('/[^0-9+]/', '', $value);
     }
 
     /**
@@ -96,13 +129,59 @@ class ContactImportManager
             $contact = new Contact();
             $contact->setSource('import');
             $this->em->persist($contact);
+
             foreach ($data as $col => $value) {
                 $propertyModel = $propertyModels[$col] ?? null;
                 if ($propertyModel && $value !== null && $value !== '') {
+                    $trimmedValue = trim($value);
+
+                    // Détection automatique des emails
+                    if ($this->isEmail($trimmedValue)) {
+                        $mail = new Mail();
+                        $mail->setEmail($trimmedValue);
+                        $mail->setContact($contact);
+
+                        // Détermine le type selon le nom de la colonne
+                        $lowerCol = strtolower($col);
+                        if (strpos($lowerCol, 'professionnel') !== false || strpos($lowerCol, 'work') !== false) {
+                            $mail->setType('professionnel');
+                        } elseif (strpos($lowerCol, 'personnel') !== false || strpos($lowerCol, 'personal') !== false) {
+                            $mail->setType('personnel');
+                        } else {
+                            $mail->setType('autre');
+                        }
+
+                        $this->em->persist($mail);
+                        continue; // On ne crée pas de Property pour les emails
+                    }
+
+                    // Détection automatique des numéros de téléphone
+                    if ($this->isPhoneNumber($trimmedValue)) {
+                        $phoneNumber = new PhoneNumber();
+                        $phoneNumber->setNumber($this->normalizePhoneNumber($trimmedValue));
+                        $phoneNumber->setContact($contact);
+
+                        // Détermine le type selon le nom de la colonne
+                        $lowerCol = strtolower($col);
+                        if (strpos($lowerCol, 'mobile') !== false || strpos($lowerCol, 'portable') !== false) {
+                            $phoneNumber->setType('mobile');
+                        } elseif (strpos($lowerCol, 'fixe') !== false || strpos($lowerCol, 'bureau') !== false || strpos($lowerCol, 'office') !== false) {
+                            $phoneNumber->setType('fixe');
+                        } elseif (strpos($lowerCol, 'fax') !== false) {
+                            $phoneNumber->setType('fax');
+                        } else {
+                            $phoneNumber->setType('autre');
+                        }
+
+                        $this->em->persist($phoneNumber);
+                        continue; // On ne crée pas de Property pour les téléphones
+                    }
+
+                    // Pour les autres valeurs, on crée une Property normale
                     $property = new Property();
                     $property->setContact($contact);
                     $property->setPropertyModel($propertyModel);
-                    $property->setValue($value);
+                    $property->setValue($trimmedValue);
                     $this->em->persist($property);
                 }
             }

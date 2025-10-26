@@ -47,7 +47,9 @@ class ActivityManager
         (isset($data['notify'])) ? $activity->setNotify($data['notify']) : $activity->setNotify(false);
         if (isset($data['notifyDate'])) $activity->setNotifyDate(new \DateTime($data['notifyDate']));
         if (isset($data['description'])) $activity->setDescription($data['description']);
-        if (isset($data['manager'])) $activity->setManager($data['manager']);
+        if (isset($data['managers'])) {
+            $activity->setManagers(is_array($data['managers']) ? $data['managers'] : [$data['managers']]);
+        }
 
         if(!$activity->getDeal() && !$activity->getContact() && !$activity->getCompany()){
          
@@ -79,9 +81,9 @@ class ActivityManager
                 }
             }
         }
-        else{
-            throw new \Exception("Une activité doit etre liée à une affaire, un contact ou une entreprise");
-        }
+        // else{
+        //     throw new \Exception("Une activité doit etre liée à une affaire, un contact ou une entreprise");
+        // }
     }
 
 

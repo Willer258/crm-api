@@ -25,7 +25,8 @@ class ContactRepository extends ServiceEntityRepository
 
         
 
-        $qb->leftJoin('c.properties', 'p')
+        $qb->select('DISTINCT c')
+            ->leftJoin('c.properties', 'p')
             ->leftJoin('p.propertyModel', 'm')
             ->leftJoin('c.company', 'co')
             ->leftJoin('c.tags', 't')
@@ -92,13 +93,15 @@ class ContactRepository extends ServiceEntityRepository
         }
 
         // 📄 Pagination
-        $page = max((int)($data['pagination']['page'] ?? 1), 1);
-        $limit = min((int)($data['pagination']['limit'] ?? 25), 100);
+        $page =$data['pagination']['page'];
+        $limit =$data['pagination']['limit'];
         $offset = ($page - 1) * $limit;
+
 
         $qb->setFirstResult($offset)->setMaxResults($limit);
 
         $contacts = $qb->getQuery()->getResult();
+
 
         return $contacts;   
 

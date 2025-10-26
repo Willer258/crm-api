@@ -23,7 +23,8 @@ class CompanyRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('c');
 
-        $qb->leftJoin('c.properties', 'p')
+        $qb->select('DISTINCT c')
+            ->leftJoin('c.properties', 'p')
             ->leftJoin('p.propertyModel', 'm')
             ->where('c.removeAt IS NULL');
 
@@ -105,7 +106,8 @@ class CompanyRepository extends ServiceEntityRepository
     public function searchCompanies($data)
     {
         $qb = $this->createQueryBuilder('c');
-        $qb->leftJoin('c.properties', 'p')
+        $qb->select('DISTINCT c')
+            ->leftJoin('c.properties', 'p')
             ->leftJoin('p.propertyModel', 'm')
             ->where('c.removeAt IS NULL');
 
@@ -114,6 +116,9 @@ class CompanyRepository extends ServiceEntityRepository
             $qb->andWhere('p.value LIKE :q')
                 ->setParameter('q', '%' . $data . '%');
         }
+
+        // Limite à 50 résultats pour les recherches
+        $qb->setMaxResults(50);
 
         return $qb->getQuery()->getResult();
     }

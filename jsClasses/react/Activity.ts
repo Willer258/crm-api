@@ -21,7 +21,7 @@ public notifyDate?: Date;
 public description? = '';
 public dealId = '';
 public notesIds: string[] = [];
-public manager = '';
+public managers= [];
 public contactId = '';
 public companyId = '';
 public name = '';
@@ -93,7 +93,7 @@ public updatedFromIp? = '';
        }
            });
        }
-       this.manager= object.manager;
+       this.managers= object.managers;
    if(object.contactId){
        this.contactId = object.contactId
    }

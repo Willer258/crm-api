@@ -18,7 +18,7 @@ public notifyDate?: Date;
 public description? = '';
 public deal!: Deal;
 public notes: Array<Note> = [];
-public manager = '';
+public managers= [];
 public contact!: Contact;
 public company!: Company;
 public name = '';
@@ -57,7 +57,7 @@ this.deal = (object.deal instanceof Deal) ? object.deal : object.deal ? new Deal
                this.notes.push(note);
            });
        }
-       this.manager= object.manager;
+       this.managers= object.managers;
 this.contact = (object.contact instanceof Contact) ? object.contact : object.contact ? new Contact(object.contact) : object.contact;
 this.company = (object.company instanceof Company) ? object.company : object.company ? new Company(object.company) : object.company;
        this.name= object.name;

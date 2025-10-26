@@ -63,9 +63,9 @@ class Activity
     #[Groups(["activity:read", "company:info", "contact:info" , "deal:info"])]
     private Collection $notes;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: Types::JSON)]
     #[Groups(["activity:read", "company:info", "contact:info" , "deal:info"])]
-    private ?string $manager = null;
+    private array $managers = [];
 
     #[ORM\ManyToOne(inversedBy: 'activities')]
     private ?Contact $contact = null;
@@ -225,14 +225,34 @@ class Activity
         return $this;
     }
 
-    public function getManager(): ?string
+    public function getManagers(): array
     {
-        return $this->manager;
+        return $this->managers;
     }
 
-    public function setManager(string $manager): static
+    public function setManagers(array $managers): static
     {
-        $this->manager = $manager;
+        $this->managers = $managers;
+
+        return $this;
+    }
+
+    public function addManager(string $manager): static
+    {
+        if (!in_array($manager, $this->managers, true)) {
+            $this->managers[] = $manager;
+        }
+
+        return $this;
+    }
+
+    public function removeManager(string $manager): static
+    {
+        $key = array_search($manager, $this->managers, true);
+        if ($key !== false) {
+            unset($this->managers[$key]);
+            $this->managers = array_values($this->managers); // Réindexer le tableau
+        }
 
         return $this;
     }
