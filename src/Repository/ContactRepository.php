@@ -115,6 +115,26 @@ class ContactRepository extends ServiceEntityRepository
             ->getQuery()->getSingleScalarResult();
     }
 
+    public function searchContacts($data)
+    {
+        $qb = $this->createQueryBuilder('c');
+        $qb->select('DISTINCT c')
+            ->leftJoin('c.properties', 'p')
+            ->leftJoin('p.propertyModel', 'm')
+            ->where('c.removeAt IS NULL');
+
+        // 🔍 Recherche globale
+        if (!empty($data)) {
+            $qb->andWhere('p.value LIKE :q')
+                ->setParameter('q', '%' . $data . '%');
+        }
+
+        // Limite à 50 résultats pour les recherches
+        $qb->setMaxResults(50);
+
+        return $qb->getQuery()->getResult();
+    }
+
     //    public function findOneBySomeField($value): ?Contact
     //    {
     //        return $this->createQueryBuilder('c')

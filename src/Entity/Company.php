@@ -120,19 +120,18 @@ class Company
     {
         if (!$this->phones->contains($phone)) {
             $this->phones->add($phone);
-            // Pour la relation inverse :
-            // $phone->setCompany($this);
+            $phone->setCompany($this);
         }
         return $this;
     }
 
     public function removePhone(PhoneNumber $phone): static
     {
-        $this->phones->removeElement($phone);
-        // Pour la relation inverse :
-        // if ($phone->getCompany() === $this) {
-        //     $phone->setCompany(null);
-        // }
+        if ($this->phones->removeElement($phone)) {
+            if ($phone->getCompany() === $this) {
+                $phone->setCompany(null);
+            }
+        }
         return $this;
     }
 

@@ -26,7 +26,7 @@ class Contact
     /**
      * @var Collection<int, Property>
      */
-    #[ORM\OneToMany(targetEntity: Property::class, mappedBy: 'contact')]
+    #[ORM\OneToMany(targetEntity: Property::class, mappedBy: 'contact', cascade: ['persist'])]
     #[Groups(['contact:edit' , 'contact:list','deal:info', 'contact:info', 'company:info' ,'pipeline:info'])]
     private Collection $properties;
 
@@ -306,19 +306,18 @@ class Contact
     {
         if (!$this->phones->contains($phone)) {
             $this->phones->add($phone);
-            // Si tu veux gérer la relation inverse, décommente la ligne suivante :
-            // $phone->setContact($this);
+            $phone->setContact($this);
         }
         return $this;
     }
 
     public function removePhone(PhoneNumber $phone): static
     {
-        $this->phones->removeElement($phone);
-        // Si tu veux gérer la relation inverse, décommente la ligne suivante :
-        // if ($phone->getContact() === $this) {
-        //     $phone->setContact(null);
-        // }
+        if ($this->phones->removeElement($phone)) {
+            if ($phone->getContact() === $this) {
+                $phone->setContact(null);
+            }
+        }
         return $this;
     }
 

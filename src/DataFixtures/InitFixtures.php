@@ -26,7 +26,7 @@ class InitFixtures extends Fixture
         // 2. PropertyModels pour chaque ItemType
         // Pour entreprise
         $companyName = new PropertyModel();
-        $companyName->setLabel("Nom de l'entreprise")->setType('text')->setIdentifier(true)->setItemType($companyType);
+        $companyName->setLabel("Nom de l'entreprise")->setType('text')->setIdentifier(true)->setItemType($companyType)->setClass('companyName');
         $manager->persist($companyName);
 
         $companySize = new PropertyModel();
@@ -38,16 +38,16 @@ class InitFixtures extends Fixture
         $manager->persist($companySector);
 
         $siret = new PropertyModel();
-        $siret->setLabel('SIRET')->setType('text')->setIdentifier(false)->setItemType($companyType);
+        $siret->setLabel('SIRET')->setType('text')->setIdentifier(false)->setItemType($companyType)->setClass('siret');
         $manager->persist($siret);
 
         // Pour contact
         $lastName = new PropertyModel();
-        $lastName->setLabel('Nom')->setType('text')->setIdentifier(true)->setItemType($contactType);
+        $lastName->setLabel('Nom')->setType('text')->setIdentifier(true)->setItemType($contactType)->setClass('lastName');
         $manager->persist($lastName);
 
         $firstName = new PropertyModel();
-        $firstName->setLabel('Prénoms')->setType('text')->setIdentifier(false)->setItemType($contactType);
+        $firstName->setLabel('Prénoms')->setType('text')->setIdentifier(false)->setItemType($contactType)->setClass('firstName');
         $manager->persist($firstName);
 
         // 3. Tags avec couleurs spécifiques (statuts)

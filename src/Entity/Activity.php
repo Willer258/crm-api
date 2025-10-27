@@ -54,6 +54,7 @@ class Activity
     private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'activities')]
+    #[Groups(["activity:read"])]
     private ?Deal $deal = null;
 
     /**
@@ -67,9 +68,12 @@ class Activity
     #[Groups(["activity:read", "company:info", "contact:info" , "deal:info"])]
     private array $managers = [];
 
+
+    #[Groups(["activity:read"])]
     #[ORM\ManyToOne(inversedBy: 'activities')]
     private ?Contact $contact = null;
 
+    #[Groups(["activity:read"])]
     #[ORM\ManyToOne(inversedBy: 'activities')]
     private ?Company $company = null;
 

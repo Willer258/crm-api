@@ -36,7 +36,12 @@ class ActivityRepository extends ServiceEntityRepository
         }
 
         if (!empty($data['managers'])) {
-            $qb->andWhere('a.manager IN (:managers)')->setParameter('managers', $data['managers']);
+            $orX = $qb->expr()->orX();
+            foreach ($data['managers'] as $index => $manager) {
+                $orX->add($qb->expr()->like('a.managers', ':manager_' . $index));
+                $qb->setParameter('manager_' . $index, '%"' . $manager . '"%');
+            }
+            $qb->andWhere($orX);
         }
         $qb->orderBy('a.startDate', 'ASC');
         $results = $qb->getQuery()->getResult();

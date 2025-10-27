@@ -20,6 +20,13 @@ final class ContactController extends AbstractController
 
 
 
+    #[Route('/search/{contains}', name: 'search', methods: ['GET'])]
+    public function searchContacts($contains, ContactRepository $contactRepository): Response
+    {
+        $contacts = $contactRepository->searchContacts($contains);
+        return $this->json(['status' => 'success', 'contacts' => $contacts], 200, [], ['groups' => 'contact:list']);
+    }
+
     #[Route('/list', name: 'list', options: ['description' => 'Liste tous les contacts'])]
     public function getContacts(ContactRepository $contactRepository, Request $request): Response
     {
