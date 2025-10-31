@@ -130,6 +130,7 @@ class CompanyImportManager
             if (method_exists($company, 'setSource')) {
                 $company->setSource('import');
             }
+            $company->setItemType($itemTypeCompany); // Définit l'ItemType
             $this->em->persist($company);
 
             foreach ($data as $col => $value) {

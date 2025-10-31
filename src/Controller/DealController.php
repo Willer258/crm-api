@@ -159,34 +159,101 @@ final class DealController extends AbstractController
            'message' => 'Impossible de recuperer une affaire'
        ], 500, [], ['groups' => 'deal:edit']);
     }
-    
+
+
+    #[Route('/dissociate/contact/{id}', name: 'deal_dissociate_contact', methods: ['GET'], options: ['description' => 'Dissocie le contact principal d\'une opportunité'])]
+    public function dissociateContact(int $id): JsonResponse
+    {
+        $deal = $this->managerRegistry->getManager()->getRepository(Deal::class)->find($id);
+
+        if (!$deal instanceof Deal) {
+            return $this->json([
+                'status' => 'error',
+                'message' => 'Opportunité introuvable'
+            ], 404);
+        }
+
+        $deal->setContact(null);
+        $this->managerRegistry->getManager()->flush();
+
+        return $this->json([
+            'status' => 'success',
+            'message' => 'Contact dissocié de l\'opportunité',
+            'deal' => $deal
+        ], 200, [], ['groups' => 'deal:info']);
+    }
+
+
+    #[Route('/dissociate/company/{id}', name: 'deal_dissociate_company', methods: ['GET'], options: ['description' => 'Dissocie l\'entreprise d\'une opportunité'])]
+    public function dissociateCompany(int $id): JsonResponse
+    {
+        $deal = $this->managerRegistry->getManager()->getRepository(Deal::class)->find($id);
+
+        if (!$deal instanceof Deal) {
+            return $this->json([
+                'status' => 'error',
+                'message' => 'Opportunité introuvable'
+            ], 404);
+        }
+
+        $deal->setCompany(null);
+        $this->managerRegistry->getManager()->flush();
+
+        return $this->json([
+            'status' => 'success',
+            'message' => 'Entreprise dissociée de l\'opportunité',
+            'deal' => $deal
+        ], 200, [], ['groups' => 'deal:info']);
+    }
+
+
+    #[Route('/remove/participant/{dealId}/{contactId}', name: 'deal_remove_participant', methods: ['GET'], options: ['description' => 'Retire un participant d\'une opportunité'])]
+    public function removeParticipant(int $dealId, int $contactId): JsonResponse
+    {
+        $deal = $this->managerRegistry->getManager()->getRepository(Deal::class)->find($dealId);
+
+        if (!$deal instanceof Deal) {
+            return $this->json([
+                'status' => 'error',
+                'message' => 'Opportunité introuvable'
+            ], 404);
+        }
+
+        $contact = $this->managerRegistry->getManager()->getRepository(\App\Entity\Contact::class)->find($contactId);
+
+        if (!$contact instanceof \App\Entity\Contact) {
+            return $this->json([
+                'status' => 'error',
+                'message' => 'Contact introuvable'
+            ], 404);
+        }
+
+        $deal->removeParticipant($contact);
+        $this->managerRegistry->getManager()->flush();
+
+        return $this->json([
+            'status' => 'success',
+            'message' => 'Participant retiré de l\'opportunité',
+            'deal' => $deal
+        ], 200, [], ['groups' => 'deal:info']);
+    }
+
 
     #[Route('/delete/{id}', name: 'deal_delete', methods: ['DELETE'], options: ['description' => 'Supprime une opportunité'])]
     public function delete(int $id): JsonResponse
     {
-       $deal = $this->managerRegistry->getManager()->getRepository(Deal::class)->find($id);
-       if ($deal instanceof Deal) {
-
-        if ($deal->getRemoveAt() instanceof \DateTime) {
+        try {
+            $this->dealManager->delete($id);
+            return $this->json([
+                'status' => 'success',
+                'message' => 'Opportunité supprimée'
+            ]);
+        } catch (\Exception $e) {
             return $this->json([
                 'status' => 'error',
-                'message' => 'Affaire deja supprimé'
-            ], 500, [], ['groups' => 'deal:edit']);
+                'message' => $e->getMessage()
+            ], 400);
         }
-           
-        $deal->setRemoveAt(new \DateTime());
-        $this->managerRegistry->getManager()->persist($deal);
-        $this->managerRegistry->getManager()->flush();
-
-           return $this->json([
-               'status' => 'success',
-                'message' => 'Affaire supprimé'
-           ], 200, [], ['groups' => 'deal:edit']);
-       }
-       return $this->json([
-           'status' => 'error',
-           'message' => 'Impossible de supprimer une affaire'
-       ], 500, [], ['groups' => 'deal:edit']);
     }    
 }
 

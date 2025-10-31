@@ -51,13 +51,39 @@ class NoteManager
         return $note;
     }
 
-    public function delete(Note $note): void
+    public function delete(int $id, bool $cascade = true): void
     {
-        if ($note instanceof Note) {
-            $note->setRemoveAt(new \DateTime());
-            $this->em->persist($note);
-            $this->em->flush();
+        $note = $this->em->getRepository(Note::class)->find($id);
+
+        if (!$note instanceof Note) {
+            throw new \Exception('Note introuvable');
         }
+
+        if ($note->getRemoveAt() instanceof \DateTime) {
+            throw new \Exception('Note déjà supprimée');
+        }
+
+        $note->setRemoveAt(new \DateTime());
+        $this->em->persist($note);
+        $this->em->flush();
+    }
+
+    public function restore(int $id, bool $cascade = true): void
+    {
+        $note = $this->em->getRepository(Note::class)->find($id);
+
+        if (!$note instanceof Note) {
+            throw new \Exception('Note introuvable');
+        }
+
+        if (!$note->getRemoveAt() instanceof \DateTime) {
+            throw new \Exception('Note non supprimée');
+        }
+
+        $note->setRemoveAt(null);
+        $note->setRestoredAt(new \DateTime());
+        $this->em->persist($note);
+        $this->em->flush();
     }
 
     private function hydrate(Note $note, array $data, bool $create = false): void

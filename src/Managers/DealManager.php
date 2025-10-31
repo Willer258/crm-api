@@ -92,5 +92,75 @@ class DealManager
         return $deal;
     }
 
+    public function delete(int $id, bool $cascade = true): void
+    {
+        $em = $this->registry->getManager();
+        $deal = $em->getRepository(Deal::class)->find($id);
+
+        if (!$deal instanceof Deal) {
+            throw new Exception('Opportunité introuvable');
+        }
+
+        if ($deal->getRemoveAt() instanceof \DateTime) {
+            throw new Exception('Opportunité déjà supprimée');
+        }
+
+        $deal->setRemoveAt(new \DateTime());
+        $em->persist($deal);
+
+        if ($cascade) {
+            $this->cascadeDelete($deal);
+        }
+
+        $em->flush();
+    }
+
+    private function cascadeDelete(Deal $deal): void
+    {
+        // Supprimer toutes les Activities du Deal
+        foreach ($deal->getActivities() as $activity) {
+            if (!$activity->getRemoveAt()) {
+                $activity->setRemoveAt($deal->getRemoveAt());
+                $this->registry->getManager()->persist($activity);
+            }
+        }
+    }
+
+    public function restore(int $id, bool $cascade = true): void
+    {
+        $em = $this->registry->getManager();
+        $deal = $em->getRepository(Deal::class)->find($id);
+
+        if (!$deal instanceof Deal) {
+            throw new Exception('Opportunité introuvable');
+        }
+
+        if (!$deal->getRemoveAt() instanceof \DateTime) {
+            throw new Exception('Opportunité non supprimée');
+        }
+
+        $dealRemoveAt = $deal->getRemoveAt();
+        $deal->setRemoveAt(null);
+        $deal->setRestoredAt(new \DateTime());
+        $em->persist($deal);
+
+        if ($cascade) {
+            $this->cascadeRestore($deal, $dealRemoveAt);
+        }
+
+        $em->flush();
+    }
+
+    private function cascadeRestore(Deal $deal, \DateTime $dealRemoveAt): void
+    {
+        // Restaurer toutes les Activities du Deal supprimées en même temps ou après
+        foreach ($deal->getActivities() as $activity) {
+            if ($activity->getRemoveAt() && $activity->getRemoveAt() >= $dealRemoveAt) {
+                $activity->setRemoveAt(null);
+                $activity->setRestoredAt(new \DateTime());
+                $this->registry->getManager()->persist($activity);
+            }
+        }
+    }
 
 }

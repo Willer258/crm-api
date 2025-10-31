@@ -128,6 +128,7 @@ class ContactImportManager
             }
             $contact = new Contact();
             $contact->setSource('import');
+            $contact->setItemType($itemTypeContact); // Définit l'ItemType
             $this->em->persist($contact);
 
             foreach ($data as $col => $value) {

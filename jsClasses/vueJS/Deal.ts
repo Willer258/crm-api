@@ -31,6 +31,8 @@ public removeAt?: Date;
 public removeBy? = '';
 public createdFromIp? = '';
 public updatedFromIp? = '';
+public restoredAt?: Date;
+public restoredBy? = '';
 
   constructor (object?: any) {
       super(object)
@@ -87,6 +89,10 @@ this.company = (object.company instanceof Company) ? object.company : object.com
        this.removeBy= object.removeBy;
        this.createdFromIp= object.createdFromIp;
        this.updatedFromIp= object.updatedFromIp;
+       if(object.restoredAt){
+           this.restoredAt= new Date(object.restoredAt);
+       }
+       this.restoredBy= object.restoredBy;
       }
       this.postConstruct()
   }

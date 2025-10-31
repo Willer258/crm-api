@@ -97,6 +97,8 @@ class ContactRepository extends ServiceEntityRepository
         $limit =$data['pagination']['limit'];
         $offset = ($page - 1) * $limit;
 
+        // 📋 Tri par date de création (du plus récent au plus ancien)
+        $qb->orderBy('c.createdAt', 'DESC');
 
         $qb->setFirstResult($offset)->setMaxResults($limit);
 
@@ -115,6 +117,74 @@ class ContactRepository extends ServiceEntityRepository
             ->getQuery()->getSingleScalarResult();
     }
 
+    public function getDeletedCount(): int
+    {
+        $qb = $this->createQueryBuilder('c');
+        return $qb->select($qb->expr()->countDistinct('c.id'))
+            ->andWhere('c.removeAt IS NOT NULL')
+            ->getQuery()->getSingleScalarResult();
+    }
+
+    public function getAllCount(): int
+    {
+        $qb = $this->createQueryBuilder('c');
+        return $qb->select($qb->expr()->countDistinct('c.id'))
+            ->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * @return Contact[] Returns an array of deleted Contact objects
+     */
+    public function listDeletedContacts($data)
+    {
+        $qb = $this->createQueryBuilder('c');
+
+        $qb->select('DISTINCT c')
+            ->leftJoin('c.properties', 'p')
+            ->leftJoin('p.propertyModel', 'm')
+            ->leftJoin('c.company', 'co')
+            ->leftJoin('c.tags', 't')
+            ->where('c.removeAt IS NOT NULL');
+
+        // 📄 Pagination
+        $page = $data['pagination']['page'];
+        $limit = $data['pagination']['limit'];
+        $offset = ($page - 1) * $limit;
+
+        // 📋 Tri par date de suppression (du plus récent au plus ancien)
+        $qb->orderBy('c.removeAt', 'DESC');
+
+        $qb->setFirstResult($offset)->setMaxResults($limit);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @return Contact[] Returns an array of all Contact objects (active + deleted)
+     */
+    public function listAllContacts($data)
+    {
+        $qb = $this->createQueryBuilder('c');
+
+        $qb->select('DISTINCT c')
+            ->leftJoin('c.properties', 'p')
+            ->leftJoin('p.propertyModel', 'm')
+            ->leftJoin('c.company', 'co')
+            ->leftJoin('c.tags', 't');
+
+        // 📄 Pagination
+        $page = $data['pagination']['page'];
+        $limit = $data['pagination']['limit'];
+        $offset = ($page - 1) * $limit;
+
+        // 📋 Tri par date de création (du plus récent au plus ancien)
+        $qb->orderBy('c.createdAt', 'DESC');
+
+        $qb->setFirstResult($offset)->setMaxResults($limit);
+
+        return $qb->getQuery()->getResult();
+    }
+
     public function searchContacts($data)
     {
         $qb = $this->createQueryBuilder('c');
@@ -128,6 +198,9 @@ class ContactRepository extends ServiceEntityRepository
             $qb->andWhere('p.value LIKE :q')
                 ->setParameter('q', '%' . $data . '%');
         }
+
+        // 📋 Tri par date de création (du plus récent au plus ancien)
+        $qb->orderBy('c.createdAt', 'DESC');
 
         // Limite à 50 résultats pour les recherches
         $qb->setMaxResults(50);

@@ -17,6 +17,139 @@ class ActivityRepository extends ServiceEntityRepository
     }
 
     /**
+     * Retourne toutes les activités avec filtres optionnels
+     * @param array $filters
+     * @return Activity[]
+     */
+    public function findByFilters(array $filters = []): array
+    {
+        $qb = $this->createQueryBuilder('a');
+
+        // Par défaut, exclure les activités supprimées
+        $qb->andWhere('a.removeAt IS NULL');
+
+        // Filtre par manager
+        if (!empty($filters['manager'])) {
+            $qb->andWhere('a.managers LIKE :manager')
+               ->setParameter('manager', '%"' . $filters['manager'] . '"%');
+        }
+
+        // Filtre par deal
+        if (!empty($filters['deal'])) {
+            $qb->andWhere('a.deal = :deal')
+               ->setParameter('deal', $filters['deal']);
+        }
+
+        // Filtre par contact
+        if (!empty($filters['contact'])) {
+            $qb->andWhere('a.contact = :contact')
+               ->setParameter('contact', $filters['contact']);
+        }
+
+        // Filtre par company
+        if (!empty($filters['company'])) {
+            $qb->andWhere('a.company = :company')
+               ->setParameter('company', $filters['company']);
+        }
+
+        // Filtre par statut (performed)
+        if (isset($filters['performed'])) {
+            $qb->andWhere('a.performed = :performed')
+               ->setParameter('performed', (bool)$filters['performed']);
+        }
+
+        // Tri par date de création (du plus récent au plus ancien)
+        $qb->orderBy('a.createdAt', 'DESC');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @return Activity[] Returns an array of active Activity objects
+     */
+    public function listActivities($data): array
+    {
+        $qb = $this->createQueryBuilder('a');
+        $qb->where('a.removeAt IS NULL');
+
+        // 📄 Pagination
+        $page = max((int)($data['pagination']['page'] ?? 1), 1);
+        $limit = min((int)($data['pagination']['limit'] ?? 25), 100);
+        $offset = ($page - 1) * $limit;
+
+        // 📋 Tri par date de création (du plus récent au plus ancien)
+        $qb->orderBy('a.createdAt', 'DESC');
+
+        $qb->setFirstResult($offset)->setMaxResults($limit);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @return Activity[] Returns an array of deleted Activity objects
+     */
+    public function listDeletedActivities($data): array
+    {
+        $qb = $this->createQueryBuilder('a');
+        $qb->where('a.removeAt IS NOT NULL');
+
+        // 📄 Pagination
+        $page = max((int)($data['pagination']['page'] ?? 1), 1);
+        $limit = min((int)($data['pagination']['limit'] ?? 25), 100);
+        $offset = ($page - 1) * $limit;
+
+        // 📋 Tri par date de suppression (du plus récent au plus ancien)
+        $qb->orderBy('a.removeAt', 'DESC');
+
+        $qb->setFirstResult($offset)->setMaxResults($limit);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @return Activity[] Returns an array of all Activity objects (active + deleted)
+     */
+    public function listAllActivities($data): array
+    {
+        $qb = $this->createQueryBuilder('a');
+
+        // 📄 Pagination
+        $page = max((int)($data['pagination']['page'] ?? 1), 1);
+        $limit = min((int)($data['pagination']['limit'] ?? 25), 100);
+        $offset = ($page - 1) * $limit;
+
+        // 📋 Tri par date de création (du plus récent au plus ancien)
+        $qb->orderBy('a.createdAt', 'DESC');
+
+        $qb->setFirstResult($offset)->setMaxResults($limit);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function getCount(): int
+    {
+        $qb = $this->createQueryBuilder('a');
+        return $qb->select($qb->expr()->countDistinct('a.id'))
+            ->andWhere('a.removeAt IS NULL')
+            ->getQuery()->getSingleScalarResult();
+    }
+
+    public function getDeletedCount(): int
+    {
+        $qb = $this->createQueryBuilder('a');
+        return $qb->select($qb->expr()->countDistinct('a.id'))
+            ->andWhere('a.removeAt IS NOT NULL')
+            ->getQuery()->getSingleScalarResult();
+    }
+
+    public function getAllCount(): int
+    {
+        $qb = $this->createQueryBuilder('a');
+        return $qb->select($qb->expr()->countDistinct('a.id'))
+            ->getQuery()->getSingleScalarResult();
+    }
+
+    /**
      * Retourne toutes les activités entre deux dates, groupées par date d'exécution (startDate)
      * @param string|null $startDate
      * @param string|null $endDate

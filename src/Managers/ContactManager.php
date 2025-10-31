@@ -148,23 +148,115 @@ class ContactManager extends Manager
         return true;
     }
 
-    public function delete($idProperty)
+    public function delete(int $id, bool $cascade = true): void
     {
-        $contact = null;
+        $contact = $this->registry->getManager()->getRepository(Contact::class)->find($id);
 
-        $contact = $this->registry->getManager()->getRepository(Contact::class)->findOneBy(['id' => $idProperty]);
-
-
-
-        if ($contact instanceof Contact) {
-
-            $contact->setRemoveAt(new \DateTime());
-            $this->registry->getManager()->persist($contact);
-            $this->registry->getManager()->flush();
-
-            return true;
-        } else {
+        if (!$contact instanceof Contact) {
             throw new Exception('Contact introuvable');
+        }
+
+        if ($contact->getRemoveAt() instanceof \DateTime) {
+            throw new Exception('Contact déjà supprimé');
+        }
+
+        $contact->setRemoveAt(new \DateTime());
+        $this->registry->getManager()->persist($contact);
+
+        if ($cascade) {
+            $this->cascadeDelete($contact);
+        }
+
+        $this->registry->getManager()->flush();
+    }
+
+    private function cascadeDelete(Contact $contact): void
+    {
+        // Supprimer tous les Deals du Contact
+        foreach ($contact->getDeals() as $deal) {
+            if (!$deal->getRemoveAt()) {
+                $deal->setRemoveAt($contact->getRemoveAt());
+                $this->registry->getManager()->persist($deal);
+
+                // Cascade vers Activities du Deal
+                foreach ($deal->getActivities() as $activity) {
+                    if (!$activity->getRemoveAt()) {
+                        $activity->setRemoveAt($deal->getRemoveAt());
+                        $this->registry->getManager()->persist($activity);
+                    }
+                }
+            }
+        }
+
+        // Supprimer Activities liées directement au Contact (sans Deal)
+        $activities = $this->registry->getManager()->getRepository(\App\Entity\Activity::class)
+            ->findBy(['contact' => $contact, 'deal' => null]);
+
+        foreach ($activities as $activity) {
+            if (!$activity->getRemoveAt()) {
+                $activity->setRemoveAt($contact->getRemoveAt());
+                $this->registry->getManager()->persist($activity);
+            }
+        }
+
+        // Mail et PhoneNumber : PAS DE SUPPRESSION (restent orphelins)
+    }
+
+    public function restore(int $id, bool $cascade = true): void
+    {
+        $contact = $this->registry->getManager()->getRepository(Contact::class)->find($id);
+
+        if (!$contact instanceof Contact) {
+            throw new Exception('Contact introuvable');
+        }
+
+        if (!$contact->getRemoveAt() instanceof \DateTime) {
+            throw new Exception('Contact non supprimé');
+        }
+
+        $contactRemoveAt = $contact->getRemoveAt();
+        $contact->setRemoveAt(null);
+        $contact->setRestoredAt(new \DateTime());
+        $this->registry->getManager()->persist($contact);
+
+        if ($cascade) {
+            $this->cascadeRestore($contact, $contactRemoveAt);
+        }
+
+        $this->registry->getManager()->flush();
+    }
+
+    private function cascadeRestore(Contact $contact, \DateTime $contactRemoveAt): void
+    {
+        // Restaurer tous les Deals du Contact supprimés en même temps ou après
+        foreach ($contact->getDeals() as $deal) {
+            if ($deal->getRemoveAt() && $deal->getRemoveAt() >= $contactRemoveAt) {
+                $dealRemoveAt = $deal->getRemoveAt();
+                $deal->setRemoveAt(null);
+                $deal->setRestoredAt(new \DateTime());
+                $this->registry->getManager()->persist($deal);
+
+                // Cascade vers Activities du Deal
+                foreach ($deal->getActivities() as $activity) {
+                    if ($activity->getRemoveAt() && $activity->getRemoveAt() >= $dealRemoveAt) {
+                        $activity->setRemoveAt(null);
+                        $activity->setRestoredAt(new \DateTime());
+                        $this->registry->getManager()->persist($activity);
+                    }
+                }
+            }
+        }
+
+        // Restaurer Activities liées directement au Contact (sans Deal)
+        $activities = $this->registry->getManager()->getRepository(\App\Entity\Activity::class)
+            ->findBy(['contact' => $contact, 'deal' => null]);
+
+        foreach ($activities as $activity) {
+            if ($activity->getRemoveAt() && $activity->getRemoveAt() >= $contactRemoveAt) {
+                $activity->setRemoveAt(null);
+                $activity->setRestoredAt(new \DateTime());
+                $this->registry->getManager()->persist($activity);
+            }
         }
     }
 

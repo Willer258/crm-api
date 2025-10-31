@@ -20,14 +20,14 @@ class Contact
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['contact:edit', 'contact:list', 'contact:info', 'company:info', 'deal:info'])]
+    #[Groups(['contact:edit', 'contact:list', 'contact:info', 'company:info', 'deal:info' , 'activity:read'])]
     private ?int $id = null;
 
     /**
      * @var Collection<int, Property>
      */
     #[ORM\OneToMany(targetEntity: Property::class, mappedBy: 'contact', cascade: ['persist'])]
-    #[Groups(['contact:edit' , 'contact:list','deal:info', 'contact:info', 'company:info' ,'pipeline:info'])]
+    #[Groups(['contact:edit' , 'contact:list','deal:info', 'contact:info', 'company:info' ,'pipeline:info', 'activity:read'])]
     private Collection $properties;
 
     /**

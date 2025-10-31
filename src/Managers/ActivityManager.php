@@ -97,14 +97,37 @@ class ActivityManager
         }
     }
 
-    public function delete(int $id): void
+    public function delete(int $id, bool $cascade = true): void
     {
-        $activity = $this->em->getRepository(Activity::class)->findOneBy(['id' => $id]);
+        $activity = $this->em->getRepository(Activity::class)->find($id);
+
         if (!$activity instanceof Activity) {
-            throw new \Exception("L'activité n'existe pas");
+            throw new \Exception('Activité introuvable');
+        }
+
+        if ($activity->getRemoveAt() instanceof \DateTime) {
+            throw new \Exception('Activité déjà supprimée');
         }
 
         $activity->setRemoveAt(new \DateTime());
+        $this->em->persist($activity);
+        $this->em->flush();
+    }
+
+    public function restore(int $id, bool $cascade = true): void
+    {
+        $activity = $this->em->getRepository(Activity::class)->find($id);
+
+        if (!$activity instanceof Activity) {
+            throw new \Exception('Activité introuvable');
+        }
+
+        if (!$activity->getRemoveAt() instanceof \DateTime) {
+            throw new \Exception('Activité non supprimée');
+        }
+
+        $activity->setRemoveAt(null);
+        $activity->setRestoredAt(new \DateTime());
         $this->em->persist($activity);
         $this->em->flush();
     }

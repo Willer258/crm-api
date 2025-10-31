@@ -1,8 +1,6 @@
 /* eslint-disabled */
 import Deal from "./Deal";
 import Note from "./Note";
-import Contact from "./Contact";
-import Company from "./Company";
 import ActivityExtend from "./extends/ActivityExtend";
 
 export default class Activity extends ActivityExtend {
@@ -19,8 +17,6 @@ public description? = '';
 public deal!: Deal;
 public notes: Array<Note> = [];
 public managers= [];
-public contact!: Contact;
-public company!: Company;
 public name = '';
 public uuid? = '';
 public createdAt?: Date;
@@ -31,6 +27,8 @@ public removeAt?: Date;
 public removeBy? = '';
 public createdFromIp? = '';
 public updatedFromIp? = '';
+public restoredAt?: Date;
+public restoredBy? = '';
 
   constructor (object?: any) {
       super(object)
@@ -58,8 +56,6 @@ this.deal = (object.deal instanceof Deal) ? object.deal : object.deal ? new Deal
            });
        }
        this.managers= object.managers;
-this.contact = (object.contact instanceof Contact) ? object.contact : object.contact ? new Contact(object.contact) : object.contact;
-this.company = (object.company instanceof Company) ? object.company : object.company ? new Company(object.company) : object.company;
        this.name= object.name;
        this.uuid= object.uuid;
        if(object.createdAt){
@@ -76,6 +72,10 @@ this.company = (object.company instanceof Company) ? object.company : object.com
        this.removeBy= object.removeBy;
        this.createdFromIp= object.createdFromIp;
        this.updatedFromIp= object.updatedFromIp;
+       if(object.restoredAt){
+           this.restoredAt= new Date(object.restoredAt);
+       }
+       this.restoredBy= object.restoredBy;
       }
       this.postConstruct()
   }

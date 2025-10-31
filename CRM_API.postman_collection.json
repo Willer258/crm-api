@@ -1,0 +1,2051 @@
+{
+	"info": {
+		"_postman_id": "crm-api-collection-2025",
+		"name": "CRM API - Complete Collection",
+		"description": "Collection complète pour l'API CRM Symfony 7.2 avec multi-tenancy.\n\n## Variables d'environnement recommandées:\n- `baseUrl`: URL de base de l'API (ex: http://localhost:8000)\n- `token`: Token JWT pour l'authentification\n- `apiKey`: Clé API pour les services\n- `tenant`: Nom du tenant actif\n\n## Authentification:\n- JWT: Header `Authorization: Bearer {{token}}`\n- API Key: Header `X-API-KEY: {{apiKey}}`\n- Tenant: Header `X-Tenant: {{tenant}}`",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "apiKey",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "tenant",
+			"value": "default",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Contacts",
+			"item": [
+				{
+					"name": "Search Contacts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/contact/search/:contains",
+							"host": ["{{baseUrl}}"],
+							"path": ["contact", "search", ":contains"],
+							"variable": [
+								{
+									"key": "contains",
+									"value": "john",
+									"description": "Search term"
+								}
+							]
+						},
+						"description": "Recherche des contacts par nom, email ou autres propriétés"
+					},
+					"response": []
+				},
+				{
+					"name": "List Contacts",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pagination\": {\n        \"page\": 1,\n        \"limit\": 25\n    },\n    \"filters\": {\n        \"search\": \"\",\n        \"tags\": [],\n        \"company\": null\n    },\n    \"sort\": {\n        \"field\": \"createdAt\",\n        \"direction\": \"desc\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/contact/list",
+							"host": ["{{baseUrl}}"],
+							"path": ["contact", "list"]
+						},
+						"description": "Liste paginée des contacts avec filtres et tri"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Contact Info",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/contact/info/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["contact", "info", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Contact ID"
+								}
+							]
+						},
+						"description": "Récupère les informations détaillées d'un contact avec toutes ses relations"
+					},
+					"response": []
+				},
+				{
+					"name": "Create/Update Contact",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": null,\n    \"source\": \"website\",\n    \"manager\": \"commercial@example.com\",\n    \"company\": {\"id\": 1},\n    \"properties\": [\n        {\n            \"propertyModel\": {\"id\": 1},\n            \"value\": \"John Doe\"\n        },\n        {\n            \"propertyModel\": {\"id\": 2},\n            \"value\": \"john.doe@example.com\"\n        }\n    ],\n    \"tags\": [{\"id\": 1}]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/contact/edit",
+							"host": ["{{baseUrl}}"],
+							"path": ["contact", "edit"]
+						},
+						"description": "Crée un nouveau contact (id=null) ou met à jour un contact existant"
+					},
+					"response": []
+				},
+				{
+					"name": "Import Contacts",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": [],
+									"description": "Fichier CSV ou Excel"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/contact/import",
+							"host": ["{{baseUrl}}"],
+							"path": ["contact", "import"]
+						},
+						"description": "Importe des contacts depuis un fichier CSV ou Excel"
+					},
+					"response": []
+				},
+				{
+					"name": "Associate Contact to Company",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/contact/associate/:id/:idCompany",
+							"host": ["{{baseUrl}}"],
+							"path": ["contact", "associate", ":id", ":idCompany"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Contact ID"
+								},
+								{
+									"key": "idCompany",
+									"value": "1",
+									"description": "Company ID"
+								}
+							]
+						},
+						"description": "Associe un contact à une entreprise"
+					},
+					"response": []
+				},
+				{
+					"name": "Unassociate Contact from Company",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/contact/unassociate/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["contact", "unassociate", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Contact ID"
+								}
+							]
+						},
+						"description": "Dissocie un contact de son entreprise"
+					},
+					"response": []
+				},
+				{
+					"name": "Merge Contacts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/contact/merge/:sourceId/:targetId",
+							"host": ["{{baseUrl}}"],
+							"path": ["contact", "merge", ":sourceId", ":targetId"],
+							"variable": [
+								{
+									"key": "sourceId",
+									"value": "2",
+									"description": "Contact source (sera fusionné)"
+								},
+								{
+									"key": "targetId",
+									"value": "1",
+									"description": "Contact cible (conservé)"
+								}
+							]
+						},
+						"description": "Fusionne deux contacts (le source sera fusionné dans le target)"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Photo to Contact",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"contactId\": 1,\n    \"photo\": \"base64_encoded_image_data\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/contact/addPhoto",
+							"host": ["{{baseUrl}}"],
+							"path": ["contact", "addPhoto"]
+						},
+						"description": "Ajoute ou met à jour la photo d'un contact"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Contact",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/contact/delete/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["contact", "delete", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Contact ID"
+								}
+							]
+						},
+						"description": "Supprime un contact (suppression logique)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints pour la gestion des contacts"
+		},
+		{
+			"name": "Companies",
+			"item": [
+				{
+					"name": "List Companies",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pagination\": {\n        \"page\": 1,\n        \"limit\": 25\n    },\n    \"filters\": {\n        \"search\": \"\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/company/list",
+							"host": ["{{baseUrl}}"],
+							"path": ["company", "list"]
+						},
+						"description": "Liste paginée des entreprises"
+					},
+					"response": []
+				},
+				{
+					"name": "Search Companies",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/company/search/:contains",
+							"host": ["{{baseUrl}}"],
+							"path": ["company", "search", ":contains"],
+							"variable": [
+								{
+									"key": "contains",
+									"value": "ACME",
+									"description": "Search term"
+								}
+							]
+						},
+						"description": "Recherche d'entreprises par nom"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Company Info",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/company/info/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["company", "info", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Company ID"
+								}
+							]
+						},
+						"description": "Récupère les informations détaillées d'une entreprise"
+					},
+					"response": []
+				},
+				{
+					"name": "Create/Update Company",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": null,\n    \"properties\": [\n        {\n            \"propertyModel\": {\"id\": 1},\n            \"value\": \"ACME Corporation\"\n        },\n        {\n            \"propertyModel\": {\"id\": 2},\n            \"value\": \"Technologie\"\n        }\n    ],\n    \"tags\": [{\"id\": 1}]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/company/edit",
+							"host": ["{{baseUrl}}"],
+							"path": ["company", "edit"]
+						},
+						"description": "Crée une nouvelle entreprise ou met à jour une existante"
+					},
+					"response": []
+				},
+				{
+					"name": "Import Companies",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": [],
+									"description": "Fichier CSV ou Excel"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/company/import",
+							"host": ["{{baseUrl}}"],
+							"path": ["company", "import"]
+						},
+						"description": "Importe des entreprises depuis un fichier"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Logo to Company",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"companyId\": 1,\n    \"photo\": \"base64_encoded_image_data\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/company/addPhoto",
+							"host": ["{{baseUrl}}"],
+							"path": ["company", "addPhoto"]
+						},
+						"description": "Ajoute ou met à jour le logo d'une entreprise"
+					},
+					"response": []
+				},
+				{
+					"name": "Merge Companies",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/company/merge/:sourceId/:targetId",
+							"host": ["{{baseUrl}}"],
+							"path": ["company", "merge", ":sourceId", ":targetId"],
+							"variable": [
+								{
+									"key": "sourceId",
+									"value": "2",
+									"description": "Company source"
+								},
+								{
+									"key": "targetId",
+									"value": "1",
+									"description": "Company cible"
+								}
+							]
+						},
+						"description": "Fusionne deux entreprises"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Company",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/company/delete/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["company", "delete", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Company ID"
+								}
+							]
+						},
+						"description": "Supprime une entreprise"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints pour la gestion des entreprises"
+		},
+		{
+			"name": "Deals (Opportunities)",
+			"item": [
+				{
+					"name": "Create/Update Deal",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": null,\n    \"object\": \"Vente CRM Enterprise\",\n    \"manager\": \"commercial@example.com\",\n    \"contact\": {\"id\": 1},\n    \"company\": {\"id\": 1},\n    \"step\": {\"id\": 1},\n    \"products\": [\"CRM_ENTERPRISE\", \"SUPPORT_PREMIUM\"],\n    \"participants\": [{\"id\": 2}, {\"id\": 3}],\n    \"tags\": [{\"id\": 1}]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/deal/edit",
+							"host": ["{{baseUrl}}"],
+							"path": ["deal", "edit"]
+						},
+						"description": "Crée une nouvelle opportunité ou met à jour une existante"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Deal Info",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/deal/info/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["deal", "info", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Deal ID"
+								}
+							]
+						},
+						"description": "Récupère les informations détaillées d'une opportunité"
+					},
+					"response": []
+				},
+				{
+					"name": "Change Deal Pipeline Step",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"step_id\": 2\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/deal/change/step/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["deal", "change", "step", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Deal ID"
+								}
+							]
+						},
+						"description": "Change l'étape du pipeline d'une opportunité"
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Deal as Won",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/deal/win/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["deal", "win", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Deal ID"
+								}
+							]
+						},
+						"description": "Marque une opportunité comme gagnée"
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Deal as Lost",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/deal/lose/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["deal", "lose", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Deal ID"
+								}
+							]
+						},
+						"description": "Marque une opportunité comme perdue"
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Deal Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/deal/unlose/unwin/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["deal", "unlose", "unwin", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Deal ID"
+								}
+							]
+						},
+						"description": "Annule le statut gagné/perdu d'une opportunité"
+					},
+					"response": []
+				},
+				{
+					"name": "Dissociate Contact from Deal",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/deal/dissociate/contact/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["deal", "dissociate", "contact", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Deal ID"
+								}
+							]
+						},
+						"description": "Dissocie le contact principal d'une opportunité"
+					},
+					"response": []
+				},
+				{
+					"name": "Dissociate Company from Deal",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/deal/dissociate/company/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["deal", "dissociate", "company", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Deal ID"
+								}
+							]
+						},
+						"description": "Dissocie l'entreprise d'une opportunité"
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Participant from Deal",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/deal/remove/participant/:dealId/:contactId",
+							"host": ["{{baseUrl}}"],
+							"path": ["deal", "remove", "participant", ":dealId", ":contactId"],
+							"variable": [
+								{
+									"key": "dealId",
+									"value": "1",
+									"description": "Deal ID"
+								},
+								{
+									"key": "contactId",
+									"value": "2",
+									"description": "Contact ID to remove as participant"
+								}
+							]
+						},
+						"description": "Retire un participant d'une opportunité"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Deal",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/deal/delete/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["deal", "delete", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Deal ID"
+								}
+							]
+						},
+						"description": "Supprime une opportunité (suppression logique)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints pour la gestion des opportunités de vente"
+		},
+		{
+			"name": "Activities",
+			"item": [
+				{
+					"name": "List Activities",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/activity/list",
+							"host": ["{{baseUrl}}"],
+							"path": ["activity", "list"]
+						},
+						"description": "Liste toutes les activités avec possibilité de filtres"
+					},
+					"response": []
+				},
+				{
+					"name": "Calendar View",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"managers\": [\"user@example.com\"]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/activity/calendar?startDate=2024-01-01&endDate=2024-01-31&deal=1",
+							"host": ["{{baseUrl}}"],
+							"path": ["activity", "calendar"],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2024-01-01",
+									"description": "Date de début (YYYY-MM-DD)"
+								},
+								{
+									"key": "endDate",
+									"value": "2024-01-31",
+									"description": "Date de fin (YYYY-MM-DD)"
+								},
+								{
+									"key": "deal",
+									"value": "1",
+									"description": "ID de l'opportunité (optionnel)",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Vue calendrier des activités groupées par date"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Activity Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/activity/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["activity", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Activity ID"
+								}
+							]
+						},
+						"description": "Récupère les détails d'une activité"
+					},
+					"response": []
+				},
+				{
+					"name": "Create/Update Activity",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": null,\n    \"name\": \"Appel commercial\",\n    \"type\": \"call\",\n    \"startDate\": \"2024-01-15T14:00:00Z\",\n    \"endDate\": \"2024-01-15T14:30:00Z\",\n    \"location\": \"Bureau\",\n    \"performed\": false,\n    \"notify\": true,\n    \"notifyDate\": \"2024-01-15T13:45:00Z\",\n    \"description\": \"Appel de suivi pour présentation\",\n    \"deal\": {\"id\": 1},\n    \"contact\": {\"id\": 1},\n    \"company\": {\"id\": 1}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/activity/edit",
+							"host": ["{{baseUrl}}"],
+							"path": ["activity", "edit"]
+						},
+						"description": "Crée une nouvelle activité ou met à jour une existante"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Activity",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/activity/delete/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["activity", "delete", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Activity ID"
+								}
+							]
+						},
+						"description": "Supprime une activité"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints pour la gestion des activités (appels, meetings, emails)"
+		},
+		{
+			"name": "Pipelines",
+			"item": [
+				{
+					"name": "List Pipelines",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/pipeline/list",
+							"host": ["{{baseUrl}}"],
+							"path": ["pipeline", "list"]
+						},
+						"description": "Liste tous les pipelines"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Pipeline Info",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/pipeline/info/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["pipeline", "info", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Pipeline ID"
+								}
+							]
+						},
+						"description": "Récupère un pipeline avec toutes ses étapes"
+					},
+					"response": []
+				},
+				{
+					"name": "Create/Update Pipeline",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": null,\n    \"name\": \"Ventes B2B\",\n    \"description\": \"Pipeline pour les ventes B2B\",\n    \"roles\": [\"ROLE_COMMERCIAL\", \"ROLE_MANAGER\"]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/pipeline/edit",
+							"host": ["{{baseUrl}}"],
+							"path": ["pipeline", "edit"]
+						},
+						"description": "Crée un nouveau pipeline ou met à jour un existant"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Pipeline",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/pipeline/delete/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["pipeline", "delete", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Pipeline ID"
+								}
+							]
+						},
+						"description": "Supprime un pipeline"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints pour la gestion des pipelines de vente"
+		},
+		{
+			"name": "Pipeline Steps",
+			"item": [
+				{
+					"name": "List All Pipeline Steps",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/pipeline/step/list",
+							"host": ["{{baseUrl}}"],
+							"path": ["pipeline", "step", "list"]
+						},
+						"description": "Liste toutes les étapes de tous les pipelines"
+					},
+					"response": []
+				},
+				{
+					"name": "List Steps by Pipeline",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/pipeline/step/list/:pipelineId",
+							"host": ["{{baseUrl}}"],
+							"path": ["pipeline", "step", "list", ":pipelineId"],
+							"variable": [
+								{
+									"key": "pipelineId",
+									"value": "1",
+									"description": "Pipeline ID"
+								}
+							]
+						},
+						"description": "Liste les étapes d'un pipeline spécifique"
+					},
+					"response": []
+				},
+				{
+					"name": "Create/Update Pipeline Step",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": null,\n    \"name\": \"Qualification\",\n    \"description\": \"Qualification du prospect\",\n    \"successProbability\": 25.0,\n    \"color\": \"#007bff\",\n    \"ranking\": \"1\",\n    \"pipeline\": {\"id\": 1}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/pipeline/step/edit",
+							"host": ["{{baseUrl}}"],
+							"path": ["pipeline", "step", "edit"]
+						},
+						"description": "Crée une nouvelle étape ou met à jour une existante"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Pipeline Step",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/pipeline/step/delete/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["pipeline", "step", "delete", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Step ID"
+								}
+							]
+						},
+						"description": "Supprime une étape de pipeline"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints pour la gestion des étapes de pipeline"
+		},
+		{
+			"name": "Tags",
+			"item": [
+				{
+					"name": "List Tags",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tag/list",
+							"host": ["{{baseUrl}}"],
+							"path": ["tag", "list"]
+						},
+						"description": "Liste tous les tags"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Tag",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"label\": \"Client VIP\",\n    \"code\": \"vip\",\n    \"description\": \"Client à forte valeur\",\n    \"color\": \"#ffc107\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tag/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["tag", "create"]
+						},
+						"description": "Crée un nouveau tag"
+					},
+					"response": []
+				},
+				{
+					"name": "Assign Tag to Entity",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tagId\": 1,\n    \"entityType\": \"contact\",\n    \"entityId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tag/assign",
+							"host": ["{{baseUrl}}"],
+							"path": ["tag", "assign"]
+						},
+						"description": "Assigne un tag à une entité (contact, company, deal)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints pour la gestion des tags"
+		},
+		{
+			"name": "Notes",
+			"item": [
+				{
+					"name": "Create/Update Note",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": null,\n    \"content\": \"Note importante concernant le client\",\n    \"deal\": {\"id\": 1},\n    \"contact\": {\"id\": 1},\n    \"company\": {\"id\": 1},\n    \"activity\": {\"id\": 1}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/note/edit",
+							"host": ["{{baseUrl}}"],
+							"path": ["note", "edit"]
+						},
+						"description": "Crée une nouvelle note ou met à jour une existante"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Note",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/note/delete/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["note", "delete", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Note ID"
+								}
+							]
+						},
+						"description": "Supprime une note"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints pour la gestion des notes"
+		},
+		{
+			"name": "Emails",
+			"item": [
+				{
+					"name": "List Emails",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/mail/",
+							"host": ["{{baseUrl}}"],
+							"path": ["mail", ""]
+						},
+						"description": "Liste toutes les adresses email"
+					},
+					"response": []
+				},
+				{
+					"name": "Create/Update Email",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": null,\n    \"email\": \"contact@example.com\",\n    \"type\": \"professionnel\",\n    \"contact\": {\"id\": 1},\n    \"company\": {\"id\": 1}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/mail/edit",
+							"host": ["{{baseUrl}}"],
+							"path": ["mail", "edit"]
+						},
+						"description": "Crée une nouvelle adresse email ou met à jour une existante"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Email",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/mail/delete/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["mail", "delete", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Email ID"
+								}
+							]
+						},
+						"description": "Supprime une adresse email"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints pour la gestion des adresses email"
+		},
+		{
+			"name": "Phone Numbers",
+			"item": [
+				{
+					"name": "List Phone Numbers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/phone/number/",
+							"host": ["{{baseUrl}}"],
+							"path": ["phone", "number", ""]
+						},
+						"description": "Liste tous les numéros de téléphone"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Phone Number",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/phone/number/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["phone", "number", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Phone Number ID"
+								}
+							]
+						},
+						"description": "Récupère un numéro de téléphone spécifique"
+					},
+					"response": []
+				},
+				{
+					"name": "Create/Update Phone Number",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": null,\n    \"number\": \"+33 6 12 34 56 78\",\n    \"type\": \"mobile\",\n    \"contact\": {\"id\": 1},\n    \"company\": {\"id\": 1}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/phone/number/edit",
+							"host": ["{{baseUrl}}"],
+							"path": ["phone", "number", "edit"]
+						},
+						"description": "Crée un nouveau numéro ou met à jour un existant"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Phone Number",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/phone/number/delete/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["phone", "number", "delete", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Phone Number ID"
+								}
+							]
+						},
+						"description": "Supprime un numéro de téléphone"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints pour la gestion des numéros de téléphone"
+		},
+		{
+			"name": "Properties",
+			"item": [
+				{
+					"name": "List Properties",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/property/list",
+							"host": ["{{baseUrl}}"],
+							"path": ["property", "list"]
+						},
+						"description": "Liste toutes les propriétés"
+					},
+					"response": []
+				},
+				{
+					"name": "Create/Update Property",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": null,\n    \"propertyModel\": {\"id\": 1},\n    \"value\": \"Valeur de la propriété\",\n    \"contact\": {\"id\": 1}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/property/edit",
+							"host": ["{{baseUrl}}"],
+							"path": ["property", "edit"]
+						},
+						"description": "Crée une nouvelle propriété ou met à jour une existante"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Property",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/property/delete/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["property", "delete", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Property ID"
+								}
+							]
+						},
+						"description": "Supprime une propriété"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints pour la gestion des propriétés (valeurs)"
+		},
+		{
+			"name": "Property Models",
+			"item": [
+				{
+					"name": "List Property Models",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/property/model/list",
+							"host": ["{{baseUrl}}"],
+							"path": ["property", "model", "list"]
+						},
+						"description": "Liste tous les modèles de propriétés"
+					},
+					"response": []
+				},
+				{
+					"name": "Create/Update Property Model",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": null,\n    \"label\": \"Prénom\",\n    \"identifier\": true,\n    \"type\": \"text\",\n    \"class\": \"form-control\",\n    \"itemType\": {\"id\": 1}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/property/model/edit",
+							"host": ["{{baseUrl}}"],
+							"path": ["property", "model", "edit"]
+						},
+						"description": "Crée un nouveau modèle de propriété ou met à jour un existant. Types disponibles: text, number, datetime, site, localisation"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Property Model",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/property/model/delete/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["property", "model", "delete", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Property Model ID"
+								}
+							]
+						},
+						"description": "Supprime un modèle de propriété (si non utilisé)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints pour la gestion des modèles de propriétés (définitions de champs)"
+		},
+		{
+			"name": "Item Types",
+			"item": [
+				{
+					"name": "List Item Types",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/item/type/list",
+							"host": ["{{baseUrl}}"],
+							"path": ["item", "type", "list"]
+						},
+						"description": "Liste tous les types d'éléments"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Item Type by Code",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/item/type/:code",
+							"host": ["{{baseUrl}}"],
+							"path": ["item", "type", ":code"],
+							"variable": [
+								{
+									"key": "code",
+									"value": "contact",
+									"description": "Item Type code (contact, company, etc.)"
+								}
+							]
+						},
+						"description": "Récupère un type d'élément par son code"
+					},
+					"response": []
+				},
+				{
+					"name": "Create/Update Item Type",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": null,\n    \"label\": \"Contact\",\n    \"code\": \"contact\",\n    \"description\": \"Type pour les contacts clients\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/item/type/edit",
+							"host": ["{{baseUrl}}"],
+							"path": ["item", "type", "edit"]
+						},
+						"description": "Crée un nouveau type d'élément ou met à jour un existant"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Item Type",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/item/type/delete/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["item", "type", "delete", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Item Type ID"
+								}
+							]
+						},
+						"description": "Supprime un type d'élément"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints pour la gestion des types d'éléments"
+		},
+		{
+			"name": "Files",
+			"item": [
+				{
+					"name": "List Files",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/file/list",
+							"host": ["{{baseUrl}}"],
+							"path": ["file", "list"]
+						},
+						"description": "Liste tous les fichiers/assets"
+					},
+					"response": []
+				},
+				{
+					"name": "Create/Update File",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": null,\n    \"name\": \"Contrat signé.pdf\",\n    \"description\": \"Contrat client signé\",\n    \"contact\": {\"id\": 1},\n    \"company\": {\"id\": 1},\n    \"deal\": {\"id\": 1}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/file/edit",
+							"host": ["{{baseUrl}}"],
+							"path": ["file", "edit"]
+						},
+						"description": "Crée ou met à jour les métadonnées d'un fichier"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete File",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/file/delete/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["file", "delete", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "File ID"
+								}
+							]
+						},
+						"description": "Supprime un fichier"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints pour la gestion des fichiers et documents"
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Get All Routes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin/get/routes",
+							"host": ["{{baseUrl}}"],
+							"path": ["admin", "get", "routes"]
+						},
+						"description": "Récupère la liste complète des endpoints avec leurs permissions"
+					},
+					"response": []
+				},
+				{
+					"name": "Save Route Requirements",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"app_contact_list\",\n    \"path\": \"/contact/list\",\n    \"roles\": [\"ROLE_USER\", \"ROLE_COMMERCIAL\"],\n    \"options\": {\n        \"description\": \"Liste tous les contacts\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/save/route/requirements",
+							"host": ["{{baseUrl}}"],
+							"path": ["admin", "save", "route", "requirements"]
+						},
+						"description": "Enregistre les droits nécessaires pour accéder à une route"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints d'administration"
+		},
+		{
+			"name": "Export",
+			"item": [
+				{
+					"name": "Export Full CRM Data",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant",
+								"value": "{{tenant}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/export-full",
+							"host": ["{{baseUrl}}"],
+							"path": ["export-full"]
+						},
+						"description": "Exporte toutes les données CRM au format ZIP contenant des fichiers CSV (contacts et entreprises)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints d'export de données"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Tests automatiques pour toutes les requêtes",
+					"pm.test(\"Status code is successful\", function () {",
+					"    pm.response.to.be.success;",
+					"});",
+					"",
+					"pm.test(\"Response has status field\", function () {",
+					"    var jsonData = pm.response.json();",
+					"    pm.expect(jsonData).to.have.property('status');",
+					"});",
+					"",
+					"pm.test(\"Response time is acceptable\", function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+					"});"
+				]
+			}
+		}
+	]
+}

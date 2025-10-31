@@ -17,7 +17,7 @@ final class PipelineController extends AbstractController
     #[Route('/list', name: 'list', options: ['description' => 'Liste tous les pipelines'])]
     public function list(PipelineRepository $pipelineRepository): Response
     {
-        $pipelines = $pipelineRepository->findAll();
+        $pipelines = $pipelineRepository->findAllOrdered();
         return $this->json(['status' => 'success', 'pipelines' => $pipelines], 200, [], ['groups' => 'pipeline:list']);
     }
 

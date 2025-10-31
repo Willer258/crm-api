@@ -38,7 +38,7 @@ class Activity
     private ?string $location = null;
 
     #[ORM\Column]
-    #[Groups(["activity:read", "company:info", "contact:info" , "deal:info"])]
+    #[Groups(["activity:read", "company:info", "contact:info" , "deal:info" , "pipeline:info"])]
     private ?bool $performed = null;
 
     #[ORM\Column]

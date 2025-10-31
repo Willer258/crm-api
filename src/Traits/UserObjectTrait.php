@@ -36,11 +36,11 @@ trait  UserObjectTrait
 
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    #[Groups(['userManagement', 'infos'])]
+    #[Groups(['userManagement', 'infos', 'with_deleted_info'])]
     private $removeAt;
 
     #[ORM\Column(type: 'string', nullable: true)]
-    #[Groups(['userManagement'])]
+    #[Groups(['userManagement', 'with_deleted_info'])]
     private $removeBy;
 
     #[ORM\Column(type: 'string', length: 45, nullable: true)]
@@ -48,6 +48,14 @@ trait  UserObjectTrait
 
     #[ORM\Column(type: 'string', length: 45, nullable: true)]
     private $updatedFromIp;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[Groups(['userManagement', 'infos', 'with_deleted_info'])]
+    private $restoredAt;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    #[Groups(['userManagement', 'with_deleted_info'])]
+    private $restoredBy;
 
 
     public function setUuid($uuid): self
@@ -170,5 +178,33 @@ trait  UserObjectTrait
     public function setUpdatedFromIp(string $updatedFromIp): void
     {
         $this->updatedFromIp = $updatedFromIp;
+    }
+
+    public function getRestoredAt(): ?\DateTimeInterface
+    {
+        return $this->restoredAt;
+    }
+
+    public function setRestoredAt(?\DateTimeInterface $restoredAt): self
+    {
+        $this->restoredAt = $restoredAt;
+        return $this;
+    }
+
+    public function getRestoredBy(): ?string
+    {
+        return $this->restoredBy;
+    }
+
+    public function setRestoredBy(?string $restoredBy): self
+    {
+        $this->restoredBy = $restoredBy;
+        return $this;
+    }
+
+    #[Groups(['contact:list', 'contact:info', 'company:list', 'company:info', 'deal:list', 'deal:info', 'activity:read', 'pipeline:list', 'with_deleted_info'])]
+    public function isDeleted(): bool
+    {
+        return $this->removeAt instanceof \DateTimeInterface;
     }
 }

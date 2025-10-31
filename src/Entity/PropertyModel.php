@@ -14,15 +14,15 @@ class PropertyModel
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['property_model:list', 'property_model:edit' , 'contact:edit', 'contact:list' , 'company:edit' , 'company:list' ,'deal:info' , 'deal:edit' , 'itemType:show' , 'contact:info', 'company:info'])]
+    #[Groups(['property_model:list', 'property_model:edit' , 'contact:edit', 'contact:list' , 'company:edit' , 'company:list' ,'deal:info' , 'deal:edit' , 'itemType:show' , 'contact:info', 'company:info' , 'activity:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['property_model:list', 'property_model:edit' , 'contact:edit' ,  'contact:list' , 'company:edit' , 'company:list' ,'deal:info' , 'deal:edit' , 'itemType:show' , 'contact:info', 'company:info'])]
+    #[Groups(['property_model:list', 'property_model:edit' , 'contact:edit' ,  'contact:list' , 'company:edit' , 'company:list' ,'deal:info' , 'deal:edit' , 'itemType:show' , 'contact:info', 'company:info' , 'activity:read'])]
     private ?string $label = null;
 
     #[ORM\Column]
-    #[Groups(['property_model:list',' property_model:edit', 'itemType:show' , 'contact:info', 'company:info'])]
+    #[Groups(['property_model:list',' property_model:edit', 'itemType:show' , 'contact:info', 'company:info' , 'activity:read'])]
     private ?bool $identifier = null;
 
     
@@ -34,7 +34,7 @@ class PropertyModel
     public const TYPE_LOCALISATION = 'localisation';
 
     #[ORM\Column(length: 255)]
-    #[Groups(['property_model:list', 'property_model:edit' , 'deal:info' , 'deal:edit' , 'itemType:show' , 'contact:info', 'company:info'])]
+    #[Groups(['property_model:list', 'property_model:edit' , 'deal:info' , 'deal:edit' , 'itemType:show' , 'contact:info', 'company:info' , 'activity:read'])]
     private ?string $type = null;
 
 
@@ -49,7 +49,7 @@ class PropertyModel
     private ?ItemType $itemType = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['property_model:list', 'property_model:edit', 'itemType:show' , 'contact:info', 'company:info' , 'company:list' , 'contact:list' , 'pipeline:info' , 'deal:info'])]
+    #[Groups(['property_model:list', 'property_model:edit', 'itemType:show' , 'contact:info', 'company:info' , 'company:list' , 'contact:list' , 'pipeline:info' , 'deal:info' , 'activity:read'])]
     private ?string $class = null;
 
     public function __construct()

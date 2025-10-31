@@ -87,6 +87,9 @@ class CompanyRepository extends ServiceEntityRepository
         $limit = min((int)($data['pagination']['limit'] ?? 25), 100);
         $offset = ($page - 1) * $limit;
 
+        // 📋 Tri par date de création (du plus récent au plus ancien)
+        $qb->orderBy('c.createdAt', 'DESC');
+
         $qb->setFirstResult($offset)->setMaxResults($limit);
 
         return $qb->getQuery()->getResult();
@@ -102,6 +105,69 @@ class CompanyRepository extends ServiceEntityRepository
             ->getQuery()->getSingleScalarResult();
     }
 
+    public function getDeletedCount(): int
+    {
+        $qb = $this->createQueryBuilder('c');
+        return $qb->select($qb->expr()->countDistinct('c.id'))
+            ->andWhere('c.removeAt IS NOT NULL')
+            ->getQuery()->getSingleScalarResult();
+    }
+
+    public function getAllCount(): int
+    {
+        $qb = $this->createQueryBuilder('c');
+        return $qb->select($qb->expr()->countDistinct('c.id'))
+            ->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * @return Company[] Returns an array of deleted Company objects
+     */
+    public function listDeletedCompany($data)
+    {
+        $qb = $this->createQueryBuilder('c');
+
+        $qb->select('DISTINCT c')
+            ->leftJoin('c.properties', 'p')
+            ->leftJoin('p.propertyModel', 'm')
+            ->where('c.removeAt IS NOT NULL');
+
+        // 📄 Pagination
+        $page = max((int)($data['pagination']['page'] ?? 1), 1);
+        $limit = min((int)($data['pagination']['limit'] ?? 25), 100);
+        $offset = ($page - 1) * $limit;
+
+        // 📋 Tri par date de suppression (du plus récent au plus ancien)
+        $qb->orderBy('c.removeAt', 'DESC');
+
+        $qb->setFirstResult($offset)->setMaxResults($limit);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @return Company[] Returns an array of all Company objects (active + deleted)
+     */
+    public function listAllCompany($data)
+    {
+        $qb = $this->createQueryBuilder('c');
+
+        $qb->select('DISTINCT c')
+            ->leftJoin('c.properties', 'p')
+            ->leftJoin('p.propertyModel', 'm');
+
+        // 📄 Pagination
+        $page = max((int)($data['pagination']['page'] ?? 1), 1);
+        $limit = min((int)($data['pagination']['limit'] ?? 25), 100);
+        $offset = ($page - 1) * $limit;
+
+        // 📋 Tri par date de création (du plus récent au plus ancien)
+        $qb->orderBy('c.createdAt', 'DESC');
+
+        $qb->setFirstResult($offset)->setMaxResults($limit);
+
+        return $qb->getQuery()->getResult();
+    }
 
     public function searchCompanies($data)
     {
@@ -116,6 +182,9 @@ class CompanyRepository extends ServiceEntityRepository
             $qb->andWhere('p.value LIKE :q')
                 ->setParameter('q', '%' . $data . '%');
         }
+
+        // 📋 Tri par date de création (du plus récent au plus ancien)
+        $qb->orderBy('c.createdAt', 'DESC');
 
         // Limite à 50 résultats pour les recherches
         $qb->setMaxResults(50);

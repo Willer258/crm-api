@@ -47,21 +47,39 @@ class PipelineManager extends Manager
 
 
 
-    public function delete($id)
+    public function delete(int $id, bool $cascade = true): void
     {
-        $pipeline = $this->registry->getManager()->getRepository(Pipeline::class)->findOneBy(['id' => $id]);
-        if ($pipeline instanceof Pipeline) {
-            if ($pipeline->getPipelineSteps()->count() > 0) {
-                $pipeline->setRemoveAt(new \DateTime());
-                $this->registry->getManager()->persist($pipeline);
-            } else {
-                $this->registry->getManager()->remove($pipeline);
-            }
-            $this->registry->getManager()->flush();
-            return true;
-        } else {
+        $pipeline = $this->registry->getManager()->getRepository(Pipeline::class)->find($id);
+
+        if (!$pipeline instanceof Pipeline) {
             throw new Exception('Pipeline introuvable');
         }
+
+        if ($pipeline->getRemoveAt() instanceof \DateTime) {
+            throw new Exception('Pipeline déjà supprimé');
+        }
+
+        $pipeline->setRemoveAt(new \DateTime());
+        $this->registry->getManager()->persist($pipeline);
+        $this->registry->getManager()->flush();
+    }
+
+    public function restore(int $id, bool $cascade = true): void
+    {
+        $pipeline = $this->registry->getManager()->getRepository(Pipeline::class)->find($id);
+
+        if (!$pipeline instanceof Pipeline) {
+            throw new Exception('Pipeline introuvable');
+        }
+
+        if (!$pipeline->getRemoveAt() instanceof \DateTime) {
+            throw new Exception('Pipeline non supprimé');
+        }
+
+        $pipeline->setRemoveAt(null);
+        $pipeline->setRestoredAt(new \DateTime());
+        $this->registry->getManager()->persist($pipeline);
+        $this->registry->getManager()->flush();
     }
 
     public function getGroups(): array

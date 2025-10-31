@@ -26,7 +26,7 @@ class Deal
     private ?Contact $contact = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['contact:info', 'company:info', 'deal:info' , 'pipeline:info'])]
+    #[Groups(['contact:info', 'company:info', 'deal:info' , 'pipeline:info', 'activity:read'])]
 
     private ?string $object = null;
 

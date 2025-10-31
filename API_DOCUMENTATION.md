@@ -227,6 +227,52 @@ Marque une affaire comme perdue.
 ### GET /deal/unlose/unwin/{id}
 Annule le statut gagné/perdu d'une affaire.
 
+### GET /deal/dissociate/contact/{id}
+Dissocie le contact principal d'une opportunité.
+
+**Paramètres**:
+- `id` (int): ID de l'opportunité
+
+**Réponse**:
+```json
+{
+    "status": "success",
+    "message": "Contact dissocié de l'opportunité",
+    "deal": {...}
+}
+```
+
+### GET /deal/dissociate/company/{id}
+Dissocie l'entreprise d'une opportunité.
+
+**Paramètres**:
+- `id` (int): ID de l'opportunité
+
+**Réponse**:
+```json
+{
+    "status": "success",
+    "message": "Entreprise dissociée de l'opportunité",
+    "deal": {...}
+}
+```
+
+### GET /deal/remove/participant/{dealId}/{contactId}
+Retire un participant d'une opportunité.
+
+**Paramètres**:
+- `dealId` (int): ID de l'opportunité
+- `contactId` (int): ID du contact participant à retirer
+
+**Réponse**:
+```json
+{
+    "status": "success",
+    "message": "Participant retiré de l'opportunité",
+    "deal": {...}
+}
+```
+
 ### DELETE /deal/delete/{id}
 Supprime une affaire (suppression logique).
 
