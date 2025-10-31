@@ -18,7 +18,7 @@ final class PipelineController extends AbstractController
     public function list(PipelineRepository $pipelineRepository): Response
     {
         $pipelines = $pipelineRepository->findAllOrdered();
-        return $this->json(['status' => 'success', 'pipelines' => $pipelines], 200, [], ['groups' => 'pipeline:list']);
+        return $this->json(['status' => 'success', 'pipelines' => $pipelines], 200, [], ['groups' => 'pipeline:list' ]);
     }
 
 
@@ -44,7 +44,7 @@ final class PipelineController extends AbstractController
     public function info(PipelineRepository $pipelineRepository, int $id): Response
     {
         $pipeline = $pipelineRepository->findOneBy(['id' => $id]);
-        return $this->json(['status' => 'success', 'pipeline' => $pipeline], 200, [], ['groups' => 'pipeline:info']);
+        return $this->json(['status' => 'success', 'pipeline' => $pipeline], 200, [], ['groups' => ['pipeline:info', 'userManagement']]);
     }
     
 
