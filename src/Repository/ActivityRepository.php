@@ -167,6 +167,8 @@ class ActivityRepository extends ServiceEntityRepository
         if (isset($dealId)) {
             $qb->andWhere('a.deal = :dealId')->setParameter('dealId', $dealId);
         }
+        
+        $qb->andWhere('a.removeAt IS NULL');
 
         if (!empty($data['managers'])) {
             $orX = $qb->expr()->orX();
