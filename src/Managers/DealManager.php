@@ -43,11 +43,21 @@ class DealManager
         if (isset($data['object'])) {
             $deal->setObject($data['object']);
         }
+
+
+        
         if (isset($data['manager'])) {
             $deal->setManager($data['manager']);
-        }else{
+        } elseif (!isset($data['id'])) {
+            // Seulement définir 'unknown' lors de la création (pas de mise à jour)
             $deal->setManager('unknown');
         }
+
+
+
+
+
+
         if (isset($data['contact']) && !empty($data['contact']) ) {
             $contact = $em->getRepository(Contact::class)->find($data['contact']);
             if ($contact instanceof Contact) {

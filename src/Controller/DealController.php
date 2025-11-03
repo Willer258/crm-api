@@ -36,7 +36,8 @@ final class DealController extends AbstractController
             throw new Exception('Invalid data');
         }
 
-        if (!isset($data['manager'])) {
+        // Seulement définir le manager par défaut si non fourni ET c'est une création
+        if ((!isset($data['manager']) || $data['manager'] === '') && !isset($data['id'])) {
             if ($this->getUser()) {
                 $data['manager'] = $this->getUser()->getUserIdentifier();
             } else {
