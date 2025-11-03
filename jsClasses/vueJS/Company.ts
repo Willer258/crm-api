@@ -25,6 +25,7 @@ public tags: Array<Tag> = [];
 public activities: Array<Activity> = [];
 public photo? = '';
 public deals: Array<Deal> = [];
+public manager? = '';
 public uuid? = '';
 public createdAt?: Date;
 public updatedAt?: Date;
@@ -97,6 +98,7 @@ this.itemType = (object.itemType instanceof ItemType) ? object.itemType : object
                this.deals.push(deal);
            });
        }
+       this.manager= object.manager;
        this.uuid= object.uuid;
        if(object.createdAt){
            this.createdAt= new Date(object.createdAt);

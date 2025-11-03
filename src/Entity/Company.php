@@ -90,6 +90,10 @@ class Company
     #[Groups(['company:edit', 'company:list' , 'company:info', 'contact:info' , 'contact:list'])]
     private Collection $deals;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['company:edit','company:list', 'company:info', 'contact:info', 'deal:info'])]
+    private ?string $manager = null;
+
     public function __construct()
     {
         $this->properties = new ArrayCollection();
@@ -392,6 +396,18 @@ class Company
                 $deal->setCompany(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getManager(): ?string
+    {
+        return $this->manager;
+    }
+
+    public function setManager(?string $manager): static
+    {
+        $this->manager = $manager;
 
         return $this;
     }

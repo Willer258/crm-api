@@ -70,6 +70,11 @@ class ContactManager extends Manager
             }
         }
 
+        // Le manager peut être défini manuellement ou sera auto-rempli par UserEvent si absent
+        if (isset($data['manager'])) {
+            $contact->setManager($data['manager']);
+        }
+
         if (!empty($data['phones'])) {
             foreach ($data['phones'] as $p) {
                 $phone = $this->phoneManager->edit($p);

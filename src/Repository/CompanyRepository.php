@@ -26,6 +26,7 @@ class CompanyRepository extends ServiceEntityRepository
         $qb->select('DISTINCT c')
             ->leftJoin('c.properties', 'p')
             ->leftJoin('p.propertyModel', 'm')
+            ->leftJoin('c.tags', 't')
             ->where('c.removeAt IS NULL');
 
 
@@ -38,9 +39,14 @@ class CompanyRepository extends ServiceEntityRepository
         }
 
         // 👨‍💼 Manager
-        if (!empty($data['manager'])) {
-            $qb->andWhere('u.id = :manager')
-                ->setParameter('manager', $data['manager']);
+        if (!empty($data['managers'])) {
+            if (is_array($data['managers'])) {
+                $qb->andWhere('c.manager IN (:managers)')
+                    ->setParameter('managers', $data['managers']);
+            } else {
+                $qb->andWhere('c.manager = :manager')
+                    ->setParameter('manager', $data['managers']);
+            }
         }
 
         // 📅 Dates
@@ -52,6 +58,17 @@ class CompanyRepository extends ServiceEntityRepository
         if (!empty($data['end_date'])) {
             $qb->andWhere('c.createdAt <= :end')
                 ->setParameter('end', new \DateTime($data['end_date'] . ' 23:59:59'));
+        }
+
+
+        if (!empty($data['tags'])) {
+            if (is_array($data['tags'])) {
+                $qb->andWhere('t.id IN (:tags)')
+                    ->setParameter('tags', $data['tags']);
+            } else {
+                $qb->andWhere('t.id = :tag')
+                    ->setParameter('tag', $data['tags']);
+            }
         }
 
         // 🔍 Filtres dynamiques
@@ -93,8 +110,6 @@ class CompanyRepository extends ServiceEntityRepository
         $qb->setFirstResult($offset)->setMaxResults($limit);
 
         return $qb->getQuery()->getResult();
-
-       
     }
 
     public function getCount()

@@ -47,10 +47,26 @@ class ContactRepository extends ServiceEntityRepository
                 ->setParameter('company', $data['company']);
         }
 
-        // 👨‍💼 Manager
-        if (!empty($data['manager'])) {
-            $qb->andWhere('u.id = :manager')
-                ->setParameter('manager', $data['manager']);
+        // 👨‍💼 Managers
+        if (!empty($data['managers'])) {
+            if (is_array($data['managers'])) {
+                $qb->andWhere('c.manager IN (:managers)')
+                    ->setParameter('managers', $data['managers']);
+            } else {
+                $qb->andWhere('c.manager = :manager')
+                    ->setParameter('manager', $data['managers']);
+            }
+        }
+
+        // 🏷️ Tags
+        if (!empty($data['tags'])) {
+            if (is_array($data['tags'])) {
+                $qb->andWhere('t.id IN (:tags)')
+                    ->setParameter('tags', $data['tags']);
+            } else {
+                $qb->andWhere('t.id = :tag')
+                    ->setParameter('tag', $data['tags']);
+            }
         }
 
         // 📅 Dates

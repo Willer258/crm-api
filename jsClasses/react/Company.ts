@@ -28,6 +28,7 @@ public tagsIds: string[] = [];
 public activitiesIds: string[] = [];
 public photo? = '';
 public dealsIds: string[] = [];
+public manager? = '';
 public uuid? = '';
 public createdAt?: Date;
 public updatedAt?: Date;
@@ -261,6 +262,7 @@ public restoredBy? = '';
        }
            });
        }
+       this.manager= object.manager;
        this.uuid= object.uuid;
        if(object.createdAt){
            this.createdAt= new Date(object.createdAt);
