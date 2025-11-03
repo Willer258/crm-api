@@ -51,8 +51,9 @@ final class ActivityController extends AbstractController
         // Sérialiser chaque groupe de date
         $calendar = [];
         foreach ($results as $date => $activities) {
-            $calendar[$date] = json_decode($serializer->serialize($activities, 'json', ['groups' => ['activity:read']]));
+            $calendar[$date] = json_decode($serializer->serialize($activities, 'json', ['groups' => ['activity:read' , 'userManagement']]));
         }
+
         return $this->json($calendar);
     }
 

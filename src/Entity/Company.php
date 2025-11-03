@@ -17,14 +17,14 @@ class Company
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['company:edit', 'company:list' , 'contact:info', 'company:info'])]
+    #[Groups(['company:edit', 'company:list' , 'contact:info', 'company:info', 'activity:read'])]
     private ?int $id = null;
 
     /**
      * @var Collection<int, Property>
      */
     #[ORM\OneToMany(targetEntity: Property::class, mappedBy: 'company', cascade: ['persist'])]
-    #[Groups(['company:edit', 'company:list' , 'company:info', 'contact:info' , 'contact:list', 'pipeline:info' , 'deal:info'])]
+    #[Groups(['company:edit', 'company:list' , 'company:info', 'contact:info' , 'contact:list', 'pipeline:info' , 'deal:info' , 'activity:read'])]
     private Collection $properties;
 
     /**
