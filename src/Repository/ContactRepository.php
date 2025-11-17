@@ -224,6 +224,48 @@ class ContactRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    /**
+     * Recherche un contact par email ou téléphone
+     * Utilisé pour la synchronisation depuis Form
+     */
+    public function findByEmailOrPhone(?string $email, ?string $phone): ?Contact
+    {
+        if (empty($email) && empty($phone)) {
+            return null;
+        }
+
+        $qb = $this->createQueryBuilder('c')
+            ->leftJoin('c.mails', 'm')
+            ->leftJoin('c.phones', 'p')
+            ->where('c.removeAt IS NULL');
+
+        $conditions = [];
+        $parameters = [];
+
+        if (!empty($email)) {
+            $conditions[] = 'm.address = :email';
+            $parameters['email'] = $email;
+        }
+
+        if (!empty($phone)) {
+            // Nettoyer le téléphone pour la comparaison (enlever espaces, tirets, etc.)
+            $cleanPhone = preg_replace('/[^0-9+]/', '', $phone);
+            $conditions[] = 'REPLACE(REPLACE(REPLACE(p.number, \' \', \'\'), \'-\', \'\'), \'.\', \'\') = :phone';
+            $parameters['phone'] = $cleanPhone;
+        }
+
+        if (!empty($conditions)) {
+            $qb->andWhere(implode(' OR ', $conditions));
+            foreach ($parameters as $key => $value) {
+                $qb->setParameter($key, $value);
+            }
+        }
+
+        return $qb->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     //    public function findOneBySomeField($value): ?Contact
     //    {
     //        return $this->createQueryBuilder('c')

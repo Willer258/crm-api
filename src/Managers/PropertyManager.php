@@ -26,17 +26,38 @@ class PropertyManager extends Manager
         if (!($property instanceof Property)) {
             $property = new Property();
         }
+        // Accepter soit modelId (ID) soit propertyModel (class ou label)
+        $propertyModel = null;
+
         if (isset($data['modelId'])) {
             $propertyModel = $this->registry->getManager()->getRepository(PropertyModel::class)->findOneBy(['id' => $data['modelId']]);
-            if ($propertyModel instanceof PropertyModel) {
-              if ( $itemType instanceof ItemType && $itemType->getCode() !== $propertyModel->getItemType()->getCode()) {
-                throw new \Exception('Le type de propriété ne correspond pas au type d\'item');
-              }
-                $property->setPropertyModel($propertyModel);
+        } elseif (isset($data['propertyModel'])) {
+            // Chercher d'abord par class (firstName, lastName, etc.)
+            if ($itemType instanceof ItemType) {
+                $propertyModel = $this->registry->getManager()->getRepository(PropertyModel::class)->findOneBy([
+                    'class' => $data['propertyModel'],
+                    'itemType' => $itemType
+                ]);
+
+                // Si pas trouvé par class, chercher par label
+                if (!($propertyModel instanceof PropertyModel)) {
+                    $propertyModel = $this->registry->getManager()->getRepository(PropertyModel::class)->findOneBy([
+                        'label' => $data['propertyModel'],
+                        'itemType' => $itemType
+                    ]);
+                }
             }
-        }else{
-            throw new \Exception('Le model de propriété n\'est pas defini');
         }
+
+        if (!($propertyModel instanceof PropertyModel)) {
+            throw new \Exception('Le model de propriété n\'est pas defini (modelId, propertyModel class ou label requis)');
+        }
+
+        if ($itemType instanceof ItemType && $itemType->getCode() !== $propertyModel->getItemType()->getCode()) {
+            throw new \Exception('Le type de propriété ne correspond pas au type d\'item');
+        }
+
+        $property->setPropertyModel($propertyModel);
         
 
         $value = $data['value'] ?? null;

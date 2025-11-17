@@ -21,8 +21,14 @@ class MailManager
         if (!($mail instanceof Mail)) {
             $mail = new Mail();
         }
-        if (isset($data['email'])) {
-            $mail->setEmail($data['email']);
+        // Accepter soit 'email' soit 'address' (format du Form)
+        $emailValue = $data['email'] ?? $data['address'] ?? null;
+        if ($emailValue) {
+            $mail->setEmail($emailValue);
+        }
+        // Gérer le type si fourni
+        if (isset($data['type'])) {
+            $mail->setType($data['type']);
         }
         $this->em->persist($mail);
         return $mail;

@@ -68,14 +68,15 @@ class InitFixtures extends Fixture
         $manager->persist($pipeline);
 
         $steps = [
-            ['name' => 'Prospection', 'description' => 'Premier contact', 'color' => '#0074D9'],
-            ['name' => 'Qualification', 'description' => 'Vérification des besoins', 'color' => '#FF851B'],
-            ['name' => 'Proposition', 'description' => 'Envoi d\'une offre', 'color' => '#2ECC40'],
-            ['name' => 'Négociation', 'description' => 'Discussion des modalités', 'color' => '#B10DC9'],
+            ['name' => 'Prospection', 'code' => 'prospection', 'description' => 'Premier contact', 'color' => '#0074D9'],
+            ['name' => 'Qualification', 'code' => 'qualification', 'description' => 'Vérification des besoins', 'color' => '#FF851B'],
+            ['name' => 'Proposition', 'code' => 'proposition', 'description' => 'Envoi d\'une offre', 'color' => '#2ECC40'],
+            ['name' => 'Négociation', 'code' => 'negociation', 'description' => 'Discussion des modalités', 'color' => '#B10DC9'],
         ];
         foreach ($steps as $i => $s) {
             $step = new PipelineStep();
             $step->setName($s['name'])
+                 ->setCode($s['code'])
                  ->setDescription($s['description'])
                  ->setPipeline($pipeline)
                  ->setRanking($i+1)

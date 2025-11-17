@@ -53,6 +53,10 @@ class PipelineStep
     #[Groups(['pipelineStep:list', 'pipelineStep:edit','pipeline:info'])]
     private ?string $ranking = null;
 
+    #[ORM\Column(length: 255, unique: true, nullable: true)]
+    #[Groups(['pipelineStep:list', 'pipelineStep:edit','pipeline:info'])]
+    private ?string $code = null;
+
     public function __construct()
     {
         $this->deals = new ArrayCollection();
@@ -161,6 +165,18 @@ class PipelineStep
     public function setRanking(?string $ranking): static
     {
         $this->ranking = $ranking;
+
+        return $this;
+    }
+
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
+
+    public function setCode(?string $code): static
+    {
+        $this->code = $code;
 
         return $this;
     }
