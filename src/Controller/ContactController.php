@@ -54,7 +54,12 @@ final class ContactController extends AbstractController
         if (!$file) {
             return $this->json(['status' => 'error', 'message' => 'Aucun fichier envoyé'], 400);
         }
-        $result = $this->contactImportManager->importFromFile($file);
+
+        // Options de validation
+        $skipDuplicates = filter_var($request->request->get('skip_duplicates', false), FILTER_VALIDATE_BOOLEAN);
+        $autoMerge = filter_var($request->request->get('auto_merge', false), FILTER_VALIDATE_BOOLEAN);
+
+        $result = $this->contactImportManager->importFromFile($file, $skipDuplicates, $autoMerge);
         return $this->json($result);
     }
 

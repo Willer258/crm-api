@@ -458,7 +458,15 @@ final class SyncController extends AbstractController
                 }
             }
 
-            // 4. Changer l'étape du pipeline
+            // 4. Définir le statut officiel du deal basé sur le ResponseGroup status
+            if (!empty($responseGroupData['status'])) {
+                $dealStatus = $this->mapStatusToDealStatus($responseGroupData['status']);
+                if ($dealStatus !== null) {
+                    $deal->setStatus($dealStatus);
+                }
+            }
+
+            // 5. Changer l'étape du pipeline
             if (!empty($responseGroupData['status'])) {
                 $stepCode = $this->mapStatusToStepCode($responseGroupData['status']);
                 if ($stepCode) {
@@ -499,6 +507,18 @@ final class SyncController extends AbstractController
             'ABORTED' => ['perdu', 'abandonne'],
             'EXPIRED' => ['perdu', 'expire'],
             default => []
+        };
+    }
+
+    /**
+     * Mapper le status ResponseGroup vers le statut officiel du Deal
+     */
+    private function mapStatusToDealStatus(string $status): ?string
+    {
+        return match($status) {
+            'VALIDATED' => Deal::STATUS_WIN,
+            'ABORTED', 'EXPIRED' => Deal::STATUS_LOST,
+            default => null
         };
     }
 

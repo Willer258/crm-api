@@ -243,19 +243,28 @@ class ContactRepository extends ServiceEntityRepository
         $parameters = [];
 
         if (!empty($email)) {
-            $conditions[] = 'm.address = :email';
-            $parameters['email'] = $email;
+            $conditions[] = 'm.email = :email';
+            $parameters['email'] = strtolower(trim($email));
         }
 
         if (!empty($phone)) {
             // Nettoyer le téléphone pour la comparaison (enlever espaces, tirets, etc.)
             $cleanPhone = preg_replace('/[^0-9+]/', '', $phone);
-            $conditions[] = 'REPLACE(REPLACE(REPLACE(p.number, \' \', \'\'), \'-\', \'\'), \'.\', \'\') = :phone';
-            $parameters['phone'] = $cleanPhone;
+
+            // Comparer les 8 derniers chiffres comme le fait le CRM
+            if (strlen($cleanPhone) >= 8) {
+                $last8 = substr($cleanPhone, -8);
+                $conditions[] = 'p.number LIKE :phone';
+                $parameters['phone'] = '%' . $last8;
+            } else {
+                // Si moins de 8 chiffres, comparaison exacte
+                $conditions[] = 'p.number = :phone';
+                $parameters['phone'] = $cleanPhone;
+            }
         }
 
         if (!empty($conditions)) {
-            $qb->andWhere(implode(' OR ', $conditions));
+            $qb->andWhere('(' . implode(' OR ', $conditions) . ')');
             foreach ($parameters as $key => $value) {
                 $qb->setParameter($key, $value);
             }

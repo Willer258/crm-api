@@ -76,16 +76,11 @@ class Deal
     #[Groups(['deal:info'])]
     private Collection $notes;
 
-    
-
-    
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['contact:info', 'company:info' , 'pipeline:info'])]
     public const STATUS_WIN = 'win';
     public const STATUS_LOST = 'lost';
 
-
-    #[Groups(['contact:info', 'company:info', 'pipeline:info'])]
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['contact:info', 'company:info', 'pipeline:info', 'deal:info'])]
     private ?string $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'deals')]

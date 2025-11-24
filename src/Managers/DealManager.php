@@ -54,6 +54,9 @@ class DealManager
         }
 
 
+        if(isset($data['status'])){
+            $deal->setStatus($data['status']);
+        }
 
 
 

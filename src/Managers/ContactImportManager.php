@@ -5,6 +5,7 @@ namespace App\Managers;
 use App\Entity\Contact;
 use App\Entity\Mail;
 use App\Entity\PhoneNumber;
+use App\Service\ImportValidator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use App\Entity\PropertyModel;
@@ -14,10 +15,12 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 class ContactImportManager
 {
     private EntityManagerInterface $em;
+    private ?ImportValidator $importValidator;
 
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(EntityManagerInterface $em, ?ImportValidator $importValidator = null)
     {
         $this->em = $em;
+        $this->importValidator = $importValidator;
     }
 
     /**
@@ -54,12 +57,18 @@ class ContactImportManager
     /**
      * Importe des contacts à partir d'un fichier CSV (UTF-8, séparateur virgule) ou Excel (.xlsx)
      * Retourne un tableau avec le nombre de succès et d'erreurs
+     *
+     * @param UploadedFile $file Le fichier à importer
+     * @param bool $skipDuplicates Si true, ignore les doublons détectés
+     * @param bool $autoMerge Si true, fusionne automatiquement les doublons exacts
      */
-    public function importFromFile(UploadedFile $file): array
+    public function importFromFile(UploadedFile $file, bool $skipDuplicates = false, bool $autoMerge = false): array
     {
         $extension = strtolower($file->getClientOriginalExtension());
         $success = 0;
         $errors = 0;
+        $skipped = 0;
+        $merged = 0;
         $propertyModels = [];
         $propertyModelRepo = $this->em->getRepository(PropertyModel::class);
         $itemTypeRepo = $this->em->getRepository(\App\Entity\ItemType::class);
@@ -69,6 +78,7 @@ class ContactImportManager
         }
         $rows = [];
         $headers = [];
+        $validationWarnings = [];
         if ($extension === 'xlsx') {
             try {
                 $spreadsheet = IOFactory::load($file->getPathname());
@@ -120,15 +130,65 @@ class ContactImportManager
             $propertyModels[$label] = $propertyModel;
         }
         // Import des données
-        foreach ($rows as $row) {
+        foreach ($rows as $rowIndex => $row) {
             $data = array_combine($headers, $row);
             if (!$data) {
                 $errors++;
                 continue;
             }
+
+            // Validation avec détection de doublons si le validateur est disponible
+            if ($this->importValidator) {
+                $validation = $this->importValidator->validateContactImport($data);
+
+                // Si la donnée est invalide, on la skip
+                if (!$validation['valid']) {
+                    $errors++;
+                    $validationWarnings[] = [
+                        'row' => $rowIndex + 2, // +2 car ligne 1 = headers, index commence à 0
+                        'errors' => $validation['errors']
+                    ];
+                    continue;
+                }
+
+                // Si c'est un doublon exact
+                if ($validation['action'] === 'merge') {
+                    if ($skipDuplicates) {
+                        $skipped++;
+                        $validationWarnings[] = [
+                            'row' => $rowIndex + 2,
+                            'message' => 'Doublon ignoré',
+                            'duplicates' => count($validation['duplicates'])
+                        ];
+                        continue;
+                    } elseif ($autoMerge && !empty($validation['duplicates'])) {
+                        // Auto-merge avec le premier doublon trouvé
+                        $existingContact = $validation['duplicates'][0];
+                        $this->updateContactFromImport($existingContact, $data, $propertyModels);
+                        $merged++;
+                        $validationWarnings[] = [
+                            'row' => $rowIndex + 2,
+                            'message' => 'Fusionné avec contact #' . $existingContact->getId()
+                        ];
+                        continue;
+                    }
+                }
+
+                // Si révision requise mais on continue l'import quand même
+                if ($validation['action'] === 'review' && !empty($validation['similar'])) {
+                    $validationWarnings[] = [
+                        'row' => $rowIndex + 2,
+                        'message' => 'Contact similaire détecté',
+                        'similar_count' => count($validation['similar']),
+                        'confidence' => $validation['similar'][0]['score'] ?? 0
+                    ];
+                }
+            }
+
+            // Création du nouveau contact
             $contact = new Contact();
             $contact->setSource('import');
-            $contact->setItemType($itemTypeContact); // Définit l'ItemType
+            $contact->setItemType($itemTypeContact);
             $this->em->persist($contact);
 
             foreach ($data as $col => $value) {
@@ -189,6 +249,104 @@ class ContactImportManager
             $success++;
         }
         $this->em->flush();
-        return ['status' => 'success', 'imported' => $success, 'errors' => $errors];
+
+        return [
+            'status' => 'success',
+            'imported' => $success,
+            'errors' => $errors,
+            'skipped' => $skipped,
+            'merged' => $merged,
+            'warnings' => $validationWarnings
+        ];
+    }
+
+    /**
+     * Met à jour un contact existant avec des données d'import
+     */
+    private function updateContactFromImport(Contact $contact, array $data, array $propertyModels): void
+    {
+        foreach ($data as $col => $value) {
+            $propertyModel = $propertyModels[$col] ?? null;
+            if ($propertyModel && $value !== null && $value !== '') {
+                $trimmedValue = trim($value);
+
+                // Gestion des emails
+                if ($this->isEmail($trimmedValue)) {
+                    // Vérifie si l'email existe déjà
+                    $emailExists = false;
+                    foreach ($contact->getMails() as $existingMail) {
+                        if (strtolower($existingMail->getEmail()) === strtolower($trimmedValue)) {
+                            $emailExists = true;
+                            break;
+                        }
+                    }
+
+                    if (!$emailExists) {
+                        $mail = new Mail();
+                        $mail->setEmail($trimmedValue);
+                        $mail->setContact($contact);
+                        $lowerCol = strtolower($col);
+                        if (strpos($lowerCol, 'professionnel') !== false || strpos($lowerCol, 'work') !== false) {
+                            $mail->setType('professionnel');
+                        } elseif (strpos($lowerCol, 'personnel') !== false || strpos($lowerCol, 'personal') !== false) {
+                            $mail->setType('personnel');
+                        } else {
+                            $mail->setType('autre');
+                        }
+                        $this->em->persist($mail);
+                    }
+                    continue;
+                }
+
+                // Gestion des téléphones
+                if ($this->isPhoneNumber($trimmedValue)) {
+                    $normalizedPhone = $this->normalizePhoneNumber($trimmedValue);
+                    $phoneExists = false;
+                    foreach ($contact->getPhones() as $existingPhone) {
+                        if ($this->normalizePhoneNumber($existingPhone->getNumber()) === $normalizedPhone) {
+                            $phoneExists = true;
+                            break;
+                        }
+                    }
+
+                    if (!$phoneExists) {
+                        $phoneNumber = new PhoneNumber();
+                        $phoneNumber->setNumber($normalizedPhone);
+                        $phoneNumber->setContact($contact);
+                        $lowerCol = strtolower($col);
+                        if (strpos($lowerCol, 'mobile') !== false || strpos($lowerCol, 'portable') !== false) {
+                            $phoneNumber->setType('mobile');
+                        } elseif (strpos($lowerCol, 'fixe') !== false || strpos($lowerCol, 'bureau') !== false || strpos($lowerCol, 'office') !== false) {
+                            $phoneNumber->setType('fixe');
+                        } elseif (strpos($lowerCol, 'fax') !== false) {
+                            $phoneNumber->setType('fax');
+                        } else {
+                            $phoneNumber->setType('autre');
+                        }
+                        $this->em->persist($phoneNumber);
+                    }
+                    continue;
+                }
+
+                // Mise à jour ou création de propriétés
+                $propertyExists = false;
+                foreach ($contact->getProperties() as $existingProperty) {
+                    if ($existingProperty->getPropertyModel() === $propertyModel) {
+                        // Mise à jour de la valeur existante
+                        $existingProperty->setValue($trimmedValue);
+                        $propertyExists = true;
+                        break;
+                    }
+                }
+
+                if (!$propertyExists) {
+                    $property = new Property();
+                    $property->setContact($contact);
+                    $property->setPropertyModel($propertyModel);
+                    $property->setValue($trimmedValue);
+                    $this->em->persist($property);
+                }
+            }
+        }
     }
 }

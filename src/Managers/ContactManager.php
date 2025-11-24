@@ -37,9 +37,13 @@ class ContactManager extends Manager
     public function edit($data): ?Contact
     {
         $contact = null;
+        $isExistingContact = false;
 
         if (isset($data['id'])) {
             $contact = $this->registry->getManager()->getRepository(Contact::class)->findOneBy(['id' => $data['id']]);
+            if ($contact instanceof Contact) {
+                $isExistingContact = true;
+            }
         }
 
         if (!($contact instanceof Contact)) {
@@ -62,10 +66,47 @@ class ContactManager extends Manager
         $this->registry->getManager()->persist($contact);
 
         if (!empty($data['properties'])) {
-            foreach ($data['properties'] as $p) {
-                $property = $this->propertyManager->edit($p , $itemType);
-                if (isset($property)) {
-                    $contact->addProperty($property);
+            // Si c'est une mise à jour (contact existait déjà en base), utiliser addPropertiesIfNotExists
+            // pour ne pas écraser les propriétés existantes
+            if ($isExistingContact) {
+                $this->addPropertiesIfNotExists($contact, $data['properties']);
+            } else {
+                // Si c'est une création (nouveau contact), utiliser la méthode classique
+                // Mais d'abord, s'assurer que tous les PropertyModels existent
+                foreach ($data['properties'] as $p) {
+                    if (isset($p['propertyModel'])) {
+                        // Chercher le PropertyModel
+                        $propertyModel = $this->registry->getManager()->getRepository(\App\Entity\PropertyModel::class)->findOneBy([
+                            'class' => $p['propertyModel'],
+                            'itemType' => $itemType
+                        ]);
+
+                        // Si pas trouvé par class, chercher par label
+                        if (!($propertyModel instanceof \App\Entity\PropertyModel)) {
+                            $propertyModel = $this->registry->getManager()->getRepository(\App\Entity\PropertyModel::class)->findOneBy([
+                                'label' => $p['propertyModel'],
+                                'itemType' => $itemType
+                            ]);
+                        }
+
+                        // Si toujours pas trouvé, créer le PropertyModel
+                        if (!($propertyModel instanceof \App\Entity\PropertyModel)) {
+                            $propertyModel = new \App\Entity\PropertyModel();
+                            $propertyModel->setLabel($p['propertyModel']);
+                            $propertyModel->setClass($p['propertyModel']);
+                            $propertyModel->setType('text'); // Type par défaut
+                            $propertyModel->setItemType($itemType);
+                            $propertyModel->setIdentifier(false);
+                            $this->registry->getManager()->persist($propertyModel);
+                            $this->registry->getManager()->flush(); // Flush immédiatement pour avoir l'ID
+                        }
+                    }
+
+                    // Maintenant créer la Property avec PropertyManager
+                    $property = $this->propertyManager->edit($p , $itemType);
+                    if (isset($property)) {
+                        $contact->addProperty($property);
+                    }
                 }
             }
         }
@@ -138,6 +179,82 @@ class ContactManager extends Manager
             $this->em->rollback();
             throw $e;
         }
+    }
+
+    /**
+     * Ajoute des PropertyModel à un Contact sans écraser les existantes
+     * Si une PropertyModel existe déjà, elle n'est PAS mise à jour
+     * Seules les nouvelles PropertyModel sont ajoutées
+     */
+    public function addPropertiesIfNotExists(Contact $contact, array $properties): void
+    {
+        if (empty($properties)) {
+            return;
+        }
+
+        $itemType = $contact->getItemType();
+
+        if (!($itemType instanceof ItemType)) {
+            throw new Exception('ItemType du contact non défini');
+        }
+
+        foreach ($properties as $propData) {
+            // Chercher le PropertyModel
+            $propertyModel = null;
+
+            if (isset($propData['propertyModel'])) {
+                // Chercher par class d'abord
+                $propertyModel = $this->registry->getManager()->getRepository(\App\Entity\PropertyModel::class)->findOneBy([
+                    'class' => $propData['propertyModel'],
+                    'itemType' => $itemType
+                ]);
+
+                // Si pas trouvé par class, chercher par label
+                if (!($propertyModel instanceof \App\Entity\PropertyModel)) {
+                    $propertyModel = $this->registry->getManager()->getRepository(\App\Entity\PropertyModel::class)->findOneBy([
+                        'label' => $propData['propertyModel'],
+                        'itemType' => $itemType
+                    ]);
+                }
+
+                // Si toujours pas trouvé, créer le PropertyModel
+                if (!($propertyModel instanceof \App\Entity\PropertyModel)) {
+                    $propertyModel = new \App\Entity\PropertyModel();
+                    $propertyModel->setLabel($propData['propertyModel']);
+                    $propertyModel->setClass($propData['propertyModel']);
+                    $propertyModel->setType('text'); // Type par défaut
+                    $propertyModel->setItemType($itemType);
+                    $propertyModel->setIdentifier(false);
+                    $this->registry->getManager()->persist($propertyModel);
+                }
+            }
+
+            if (!($propertyModel instanceof \App\Entity\PropertyModel)) {
+                continue; // Skip si PropertyModel introuvable
+            }
+
+            // Vérifier si la Property existe déjà pour ce Contact et ce PropertyModel
+            $existingProperty = null;
+            foreach ($contact->getProperties() as $prop) {
+                if ($prop->getPropertyModel()?->getId() === $propertyModel->getId()) {
+                    $existingProperty = $prop;
+                    break;
+                }
+            }
+
+            // Si la Property n'existe pas, la créer
+            if (!$existingProperty) {
+                $property = new \App\Entity\Property();
+                $property->setContact($contact);
+                $property->setPropertyModel($propertyModel);
+                $property->setValue($propData['value'] ?? '');
+                $this->registry->getManager()->persist($property);
+                $contact->addProperty($property);
+            }
+            // Si elle existe, on ne fait RIEN (pas d'écrasement)
+        }
+
+        $this->registry->getManager()->flush();
     }
 
     public function addPhoto($data)
