@@ -11,11 +11,11 @@ use Ramsey\Uuid\Uuid;
 class UserManager extends Manager
 {
     public function __construct(
-        private EntityManagerInterface $em,
+        EntityManagerInterface $em,
         private UserRepository $userRepository,
         private UserPasswordHasherInterface $passwordHasher
     ) {
-        $this->em = $em;
+        parent::__construct($em, new \App\Utils\Sanitizer(), new \Symfony\Component\Serializer\Serializer([]));
     }
 
     /**

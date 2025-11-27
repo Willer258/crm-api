@@ -26,7 +26,7 @@ class AuthManager extends Manager
     private const MIN_PASSWORD_LENGTH = 8;
 
     public function __construct(
-        private EntityManagerInterface $em,
+        EntityManagerInterface $em,
         private UserRepository $userRepository,
         private RefreshTokenRepository $refreshTokenRepository,
         private EmailVerificationTokenRepository $emailVerificationTokenRepository,
@@ -34,7 +34,7 @@ class AuthManager extends Manager
         private LoginHistoryRepository $loginHistoryRepository,
         private UserPasswordHasherInterface $passwordHasher
     ) {
-        $this->em = $em;
+        parent::__construct($em, new \App\Utils\Sanitizer(), new \Symfony\Component\Serializer\Serializer([]));
     }
 
     /**
