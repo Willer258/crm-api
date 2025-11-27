@@ -84,7 +84,7 @@ final class ContactController extends AbstractController
     }
 
 
-    #[Route('/associate/{id}/{idCompany}', name: 'associate_to_company',  methods: ['GET'], options: ['description' => 'Associe un contact à une entreprise'])]
+    #[Route('/associate/{id}/{idCompany}', name: 'associate_to_company',  methods: ['PATCH'], options: ['description' => 'Associe un contact à une entreprise'])]
     public function associateCompany(
         int $id,
         int $idCompany,
@@ -106,7 +106,7 @@ final class ContactController extends AbstractController
     }
 
 
-    #[Route('/unassociate/{id}', name: 'unassociate_to_company',  methods: ['GET'], options: ['description' => 'Dissocie un contact d\'une entreprise'])]
+    #[Route('/unassociate/{id}', name: 'unassociate_to_company',  methods: ['DELETE'], options: ['description' => 'Dissocie un contact d\'une entreprise'])]
     public function unassociateCompany(
         int $id,
         ContactRepository $contacts,
@@ -125,7 +125,7 @@ final class ContactController extends AbstractController
     }
 
 
-    #[Route('/merge/{sourceId}/{targetId}', name: 'merge', methods: ['GET'], options: ['description' => 'Fusionne deux contacts'])]
+    #[Route('/merge/{sourceId}/{targetId}', name: 'merge', methods: ['POST'], options: ['description' => 'Fusionne deux contacts'])]
     public function mergeContacts(
         ContactRepository $contactRepository,
         $sourceId,

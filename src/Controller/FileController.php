@@ -22,14 +22,63 @@ final class FileController extends AbstractController
     }
 
 
-    #[Route('/list', name: 'list', methods: ['GET'])]
+    #[Route('/list', name: 'list', methods: ['GET'], options: ['description' => 'Liste tous les fichiers'])]
     public function listFiles(): JsonResponse
     {
         $files = $this->fileRepository->findAll();
         return $this->json($files, 200, [], ['groups' => 'file:list']);
     }
 
-    #[Route('/edit', name: 'edit', methods: ['POST'])]
+    #[Route('/upload', name: 'upload', methods: ['POST'], options: ['description' => 'Upload un fichier de manière sécurisée'])]
+    public function uploadFile(Request $request): JsonResponse
+    {
+        $uploadedFile = $request->files->get('file');
+
+        if (!$uploadedFile) {
+            return $this->json([
+                'status' => 'error',
+                'message' => 'Aucun fichier fourni'
+            ], 400);
+        }
+
+        try {
+            // Données additionnelles (contact, company, deal)
+            $data = [
+                'contact' => $request->request->get('contact'),
+                'company' => $request->request->get('company'),
+                'deal' => $request->request->get('deal'),
+            ];
+
+            $asset = $this->fileManager->uploadFile($uploadedFile, $data);
+
+            return $this->json([
+                'status' => 'success',
+                'message' => 'Fichier uploadé avec succès',
+                'file' => $asset
+            ], 201, [], ['groups' => 'file:edit']);
+
+        } catch (\RuntimeException $e) {
+            return $this->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    #[Route('/config', name: 'config', methods: ['GET'], options: ['description' => 'Récupère la configuration d\'upload'])]
+    public function getUploadConfig(): JsonResponse
+    {
+        return $this->json([
+            'status' => 'success',
+            'config' => [
+                'maxFileSize' => $this->fileManager->getMaxFileSize(),
+                'maxFileSizeMB' => round($this->fileManager->getMaxFileSize() / 1024 / 1024, 2),
+                'allowedMimeTypes' => $this->fileManager->getAllowedMimeTypes(),
+            ]
+        ]);
+    }
+
+    #[Route('/edit', name: 'edit', methods: ['POST'], options: ['description' => '⚠️ DEPRECATED: Utiliser /upload pour les nouveaux fichiers'])]
     public function editFile(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -43,6 +92,8 @@ final class FileController extends AbstractController
                 $file = $this->fileManager->updateFromArray($file, $data);
             }
         } else {
+            // ⚠️ Cette méthode n'est pas sécurisée pour les uploads
+            // Utiliser /upload à la place
             $file = $this->fileManager->createFromArray($data);
         }
 

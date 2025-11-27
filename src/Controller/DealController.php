@@ -103,7 +103,7 @@ final class DealController extends AbstractController
         ], 500, [], ['groups' => 'deal:edit']);
     }
 
-    #[Route('/win/{id}', name: 'deal_win', methods: ['GET'], options: ['description' => 'Marque une opportunité comme gagnée'])]
+    #[Route('/win/{id}', name: 'deal_win', methods: ['PATCH'], options: ['description' => 'Marque une opportunité comme gagnée'])]
     public function win(int $id): JsonResponse
     {
        $deal = $this->managerRegistry->getManager()->getRepository(Deal::class)->find($id);
@@ -122,7 +122,7 @@ final class DealController extends AbstractController
        ], 500, [], ['groups' => 'deal:edit']);
     }
 
-    #[Route('/lose/{id}', name: 'deal_lose', methods: ['GET'], options: ['description' => 'Marque une opportunité comme perdue'])]
+    #[Route('/lose/{id}', name: 'deal_lose', methods: ['PATCH'], options: ['description' => 'Marque une opportunité comme perdue'])]
     public function lose(int $id): JsonResponse
     {
        $deal = $this->managerRegistry->getManager()->getRepository(Deal::class)->find($id);
@@ -142,7 +142,7 @@ final class DealController extends AbstractController
     }
 
 
-    #[Route('/unlose/unwin/{id}', name: 'deal_unlose_unwin', methods: ['GET'], options: ['description' => 'Annule le statut gagné ou perdu d\'une opportunité'])]
+    #[Route('/unlose/unwin/{id}', name: 'deal_unlose_unwin', methods: ['PATCH'], options: ['description' => 'Annule le statut gagné ou perdu d\'une opportunité'])]
     public function unloseUnWin(int $id): JsonResponse
     {
        $deal = $this->managerRegistry->getManager()->getRepository(Deal::class)->find($id);
@@ -162,7 +162,7 @@ final class DealController extends AbstractController
     }
 
 
-    #[Route('/dissociate/contact/{id}', name: 'deal_dissociate_contact', methods: ['GET'], options: ['description' => 'Dissocie le contact principal d\'une opportunité'])]
+    #[Route('/dissociate/contact/{id}', name: 'deal_dissociate_contact', methods: ['DELETE'], options: ['description' => 'Dissocie le contact principal d\'une opportunité'])]
     public function dissociateContact(int $id): JsonResponse
     {
         $deal = $this->managerRegistry->getManager()->getRepository(Deal::class)->find($id);
@@ -185,7 +185,7 @@ final class DealController extends AbstractController
     }
 
 
-    #[Route('/dissociate/company/{id}', name: 'deal_dissociate_company', methods: ['GET'], options: ['description' => 'Dissocie l\'entreprise d\'une opportunité'])]
+    #[Route('/dissociate/company/{id}', name: 'deal_dissociate_company', methods: ['DELETE'], options: ['description' => 'Dissocie l\'entreprise d\'une opportunité'])]
     public function dissociateCompany(int $id): JsonResponse
     {
         $deal = $this->managerRegistry->getManager()->getRepository(Deal::class)->find($id);
@@ -208,7 +208,7 @@ final class DealController extends AbstractController
     }
 
 
-    #[Route('/remove/participant/{dealId}/{contactId}', name: 'deal_remove_participant', methods: ['GET'], options: ['description' => 'Retire un participant d\'une opportunité'])]
+    #[Route('/remove/participant/{dealId}/{contactId}', name: 'deal_remove_participant', methods: ['DELETE'], options: ['description' => 'Retire un participant d\'une opportunité'])]
     public function removeParticipant(int $dealId, int $contactId): JsonResponse
     {
         $deal = $this->managerRegistry->getManager()->getRepository(Deal::class)->find($dealId);

@@ -33,7 +33,12 @@ final class AccessDecisionManager implements AccessDecisionManagerInterface
 
     public function decide(TokenInterface $token, array $attributes, $object = null): bool
     {
+        // ⚠️ SECURITY WARNING: Authentication is currently DISABLED for development
+        // TODO: Remove this line and uncomment the code below to enable proper authentication
+        // TODO: Configure route permissions via /admin/save/route/requirements before activating
         return true;
+
+        // --- AUTHENTICATION CODE (Currently disabled) ---
 //        dump('attributes => ', $attributes);
 
         $admin = 'ROLE_ADMIN_' . strtoupper($this->zone->getCurrent());

@@ -36,6 +36,9 @@ class User  implements UserInterface, PasswordAuthenticatedUserInterface, JWTUse
     #[ORM\Column(type: 'json')]
     private $roles = [];
 
+    #[ORM\Column(type: 'string', length: 255)]
+    private string $password;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $godfather = null;
 
@@ -62,6 +65,8 @@ class User  implements UserInterface, PasswordAuthenticatedUserInterface, JWTUse
         if (isset($payload['code'])) {
             $this->code = $payload['code'];
         }
+        // Initialiser password avec une valeur par défaut vide pour les users JWT
+        $this->password = $payload['password'] ?? '';
     }
 
     public function getId(): ?int
