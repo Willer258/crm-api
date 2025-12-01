@@ -1,0 +1,1372 @@
+{
+    "info": {
+        "_postman_id": "crm-crm___core-20251201",
+        "name": "CRM API - CRM - Core",
+        "description": "CRM - Core endpoints\nGenerated: 2025-12-01 14:20:17",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Company",
+            "item": [
+                {
+                    "name": "GetCompanies",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/company/company",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "company",
+                                "2": "company"
+                            }
+                        },
+                        "description": "GET /company/company",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "SearchCompanies",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/company/search/:contains",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "company",
+                                "2": "search",
+                                "3": ":contains"
+                            },
+                            "variable": [
+                                {
+                                    "key": "contains",
+                                    "value": "{contains}",
+                                    "description": "Contains"
+                                }
+                            ]
+                        },
+                        "description": "GET /company/search/{contains}",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "InfoCompany",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/company/info/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "company",
+                                "2": "info",
+                                "3": ":id"
+                            },
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{id}",
+                                    "description": "Id"
+                                }
+                            ]
+                        },
+                        "description": "GET /company/info/{id}",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "ImportCompanies",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/company/import",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "company",
+                                "2": "import"
+                            }
+                        },
+                        "description": "POST /company/import",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"data\": \"example\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "EditCompany",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/company/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "company",
+                                "2": "edit"
+                            }
+                        },
+                        "description": "GET /company/edit",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "AddPhoto",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/company/addPhoto",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "company",
+                                "2": "addPhoto"
+                            }
+                        },
+                        "description": "Ajoute une photo a un contact",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"data\": \"example\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "MergeCompany",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/company/merge/:sourceId/:targetId",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "company",
+                                "2": "merge",
+                                "3": ":sourceId",
+                                "4": ":targetId"
+                            },
+                            "variable": [
+                                {
+                                    "key": "sourceId",
+                                    "value": "{sourceId}",
+                                    "description": "SourceId"
+                                },
+                                {
+                                    "key": "targetId",
+                                    "value": "{targetId}",
+                                    "description": "TargetId"
+                                }
+                            ]
+                        },
+                        "description": "Fusionne deux sociétés",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "DeleteCompany",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/company/delete/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "company",
+                                "2": "delete",
+                                "3": ":id"
+                            },
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{id}",
+                                    "description": "Id"
+                                }
+                            ]
+                        },
+                        "description": "Supprime une société",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Contact",
+            "item": [
+                {
+                    "name": "SearchContacts",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/contact/search/:contains",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "contact",
+                                "2": "search",
+                                "3": ":contains"
+                            },
+                            "variable": [
+                                {
+                                    "key": "contains",
+                                    "value": "{contains}",
+                                    "description": "Contains"
+                                }
+                            ]
+                        },
+                        "description": "GET /contact/search/{contains}",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GetContacts",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/contact/list",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "contact",
+                                "2": "list"
+                            }
+                        },
+                        "description": "Liste tous les contacts",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "InfoContact",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/contact/info/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "contact",
+                                "2": "info",
+                                "3": ":id"
+                            },
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{id}",
+                                    "description": "Id"
+                                }
+                            ]
+                        },
+                        "description": "Affiche les informations d\\",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "ImportContacts",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/contact/import",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "contact",
+                                "2": "import"
+                            }
+                        },
+                        "description": "Importe des contacts depuis un fichier",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"data\": \"example\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "EditContact",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/contact/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "contact",
+                                "2": "edit"
+                            }
+                        },
+                        "description": "Crée ou modifie un contact",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "AssociateCompany",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/contact/associate/:id/:idCompany",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "contact",
+                                "2": "associate",
+                                "3": ":id",
+                                "4": ":idCompany"
+                            },
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{id}",
+                                    "description": "Id"
+                                },
+                                {
+                                    "key": "idCompany",
+                                    "value": "{idCompany}",
+                                    "description": "IdCompany"
+                                }
+                            ]
+                        },
+                        "description": "Associe un contact à une entreprise",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"data\": \"example\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "UnassociateCompany",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/contact/unassociate/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "contact",
+                                "2": "unassociate",
+                                "3": ":id"
+                            },
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{id}",
+                                    "description": "Id"
+                                }
+                            ]
+                        },
+                        "description": "Dissocie un contact d\\",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "MergeContacts",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/contact/merge/:sourceId/:targetId",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "contact",
+                                "2": "merge",
+                                "3": ":sourceId",
+                                "4": ":targetId"
+                            },
+                            "variable": [
+                                {
+                                    "key": "sourceId",
+                                    "value": "{sourceId}",
+                                    "description": "SourceId"
+                                },
+                                {
+                                    "key": "targetId",
+                                    "value": "{targetId}",
+                                    "description": "TargetId"
+                                }
+                            ]
+                        },
+                        "description": "Fusionne deux contacts",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"data\": \"example\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "AddPhoto",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/contact/addPhoto",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "contact",
+                                "2": "addPhoto"
+                            }
+                        },
+                        "description": "Ajoute une photo a un contact",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"data\": \"example\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "DeleteContact",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/contact/delete/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "contact",
+                                "2": "delete",
+                                "3": ":id"
+                            },
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{id}",
+                                    "description": "Id"
+                                }
+                            ]
+                        },
+                        "description": "Supprime un contact",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Deal",
+            "item": [
+                {
+                    "name": "Edit",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/deal/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "deal",
+                                "2": "edit"
+                            }
+                        },
+                        "description": "Edite une opportunité",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"data\": \"example\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Info",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/deal/info/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "deal",
+                                "2": "info",
+                                "3": ":id"
+                            },
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{id}",
+                                    "description": "Id"
+                                }
+                            ]
+                        },
+                        "description": "Affiche les informations d\\",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "ChangePipelineStep",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/deal/change/step/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "deal",
+                                "2": "change",
+                                "3": "step",
+                                "4": ":id"
+                            },
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{id}",
+                                    "description": "Id"
+                                }
+                            ]
+                        },
+                        "description": "Change l\\",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"data\": \"example\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Win",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/deal/win/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "deal",
+                                "2": "win",
+                                "3": ":id"
+                            },
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{id}",
+                                    "description": "Id"
+                                }
+                            ]
+                        },
+                        "description": "Marque une opportunité comme gagnée",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"data\": \"example\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Lose",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/deal/lose/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "deal",
+                                "2": "lose",
+                                "3": ":id"
+                            },
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{id}",
+                                    "description": "Id"
+                                }
+                            ]
+                        },
+                        "description": "Marque une opportunité comme perdue",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"data\": \"example\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "UnloseUnWin",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/deal/unlose/unwin/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "deal",
+                                "2": "unlose",
+                                "3": "unwin",
+                                "4": ":id"
+                            },
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{id}",
+                                    "description": "Id"
+                                }
+                            ]
+                        },
+                        "description": "Annule le statut gagné ou perdu d\\",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"data\": \"example\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "DissociateContact",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/deal/dissociate/contact/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "deal",
+                                "2": "dissociate",
+                                "3": "contact",
+                                "4": ":id"
+                            },
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{id}",
+                                    "description": "Id"
+                                }
+                            ]
+                        },
+                        "description": "Dissocie le contact principal d\\",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "DissociateCompany",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/deal/dissociate/company/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "deal",
+                                "2": "dissociate",
+                                "3": "company",
+                                "4": ":id"
+                            },
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{id}",
+                                    "description": "Id"
+                                }
+                            ]
+                        },
+                        "description": "Dissocie l\\",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "RemoveParticipant",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/deal/remove/participant/:dealId/:contactId",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "deal",
+                                "2": "remove",
+                                "3": "participant",
+                                "4": ":dealId",
+                                "5": ":contactId"
+                            },
+                            "variable": [
+                                {
+                                    "key": "dealId",
+                                    "value": "{dealId}",
+                                    "description": "DealId"
+                                },
+                                {
+                                    "key": "contactId",
+                                    "value": "{contactId}",
+                                    "description": "ContactId"
+                                }
+                            ]
+                        },
+                        "description": "Retire un participant d\\",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/deal/delete/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "deal",
+                                "2": "delete",
+                                "3": ":id"
+                            },
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{id}",
+                                    "description": "Id"
+                                }
+                            ]
+                        },
+                        "description": "Supprime une opportunité",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8000",
+            "type": "string"
+        },
+        {
+            "key": "jwt_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "refresh_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "tenant_id",
+            "value": "tenant_123",
+            "type": "string"
+        },
+        {
+            "key": "user_id",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "id",
+            "value": "example_id",
+            "type": "string"
+        }
+    ]
+}

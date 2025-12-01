@@ -1,0 +1,401 @@
+{
+    "info": {
+        "_postman_id": "crm-configuration-20251201",
+        "name": "CRM API - Configuration",
+        "description": "Configuration endpoints\nGenerated: 2025-12-01 14:20:17",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "ItemType",
+            "item": [
+                {
+                    "name": "List",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/item/type/item/type",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "item",
+                                "2": "type",
+                                "3": "item",
+                                "4": "type"
+                            }
+                        },
+                        "description": "GET /item/type/item/type",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Show",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/item/type/:code",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "item",
+                                "2": "type",
+                                "3": ":code"
+                            },
+                            "variable": [
+                                {
+                                    "key": "code",
+                                    "value": "{code}",
+                                    "description": "Code"
+                                }
+                            ]
+                        },
+                        "description": "Affiche un type d\\",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Edit",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/item/type/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "item",
+                                "2": "type",
+                                "3": "edit"
+                            }
+                        },
+                        "description": "Créer ou modifier un type d\\",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/item/type/delete/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "item",
+                                "2": "type",
+                                "3": "delete",
+                                "4": ":id"
+                            },
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{id}",
+                                    "description": "Id"
+                                }
+                            ]
+                        },
+                        "description": "Supprime un type d\\",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Property",
+            "item": [
+                {
+                    "name": "ListProperties",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/property/list",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "property",
+                                "2": "list"
+                            }
+                        },
+                        "description": "Liste toutes les propriétés",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "EditProperty",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/property/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "property",
+                                "2": "edit"
+                            }
+                        },
+                        "description": "Edite une propriété",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"data\": \"example\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "DeleteProperty",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/property/delete/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "property",
+                                "2": "delete",
+                                "3": ":id"
+                            },
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{id}",
+                                    "description": "Id"
+                                }
+                            ]
+                        },
+                        "description": "Supprime une propriété",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "PropertyModel",
+            "item": [
+                {
+                    "name": "GetPropertiesModel",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/property/model/list",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "property",
+                                "2": "model",
+                                "3": "list"
+                            }
+                        },
+                        "description": "Liste des modeles de proprietes",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "EditModelProperty",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/property/model/edit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "property",
+                                "2": "model",
+                                "3": "edit"
+                            }
+                        },
+                        "description": "Modifier/Creer un modele de propriete",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "DeleteModelProperty",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/property/model/delete/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "property",
+                                "2": "model",
+                                "3": "delete",
+                                "4": ":id"
+                            },
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{id}",
+                                    "description": "Id"
+                                }
+                            ]
+                        },
+                        "description": "Supprimer un modele de propriete si il n\\",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8000",
+            "type": "string"
+        },
+        {
+            "key": "jwt_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "refresh_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "tenant_id",
+            "value": "tenant_123",
+            "type": "string"
+        },
+        {
+            "key": "user_id",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "id",
+            "value": "example_id",
+            "type": "string"
+        }
+    ]
+}

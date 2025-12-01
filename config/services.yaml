@@ -70,3 +70,15 @@ services:
     App\Security\Voter\UserVoter:
         public: false
         arguments: ['@security.role_hierarchy']
+
+    App\Command\GeneratePostmanCollectionCommand:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
+    App\Controller\StripeWebhookController:
+        arguments:
+            $stripeWebhookSecret: '%env(STRIPE_WEBHOOK_SECRET)%'
+
+    App\Service\StripeService:
+        arguments:
+            $stripeSecretKey: '%env(STRIPE_SECRET_KEY)%'

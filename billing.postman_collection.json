@@ -1,0 +1,607 @@
+{
+    "info": {
+        "_postman_id": "crm-billing-20251201",
+        "name": "CRM API - Billing",
+        "description": "Billing endpoints\nGenerated: 2025-12-01 14:20:17",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Plan",
+            "item": [
+                {
+                    "name": "List",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/plans/list",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "api",
+                                "2": "plans",
+                                "3": "list"
+                            }
+                        },
+                        "description": "Liste tous les plans disponibles"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Show",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/plans/:code",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "api",
+                                "2": "plans",
+                                "3": ":code"
+                            },
+                            "variable": [
+                                {
+                                    "key": "code",
+                                    "value": "{code}",
+                                    "description": "Code"
+                                }
+                            ]
+                        },
+                        "description": "Récupère les détails d\\",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Compare",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/plans/compare",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "api",
+                                "2": "plans",
+                                "3": "compare"
+                            }
+                        },
+                        "description": "Compare tous les plans disponibles"
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "StripeWebhook",
+            "item": [
+                {
+                    "name": "HandleWebhook",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/webhooks/stripe, name: ",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "webhooks",
+                                "2": "stripe, name: "
+                            }
+                        },
+                        "description": "POST /webhooks/stripe, name: ",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"data\": \"example\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Subscription",
+            "item": [
+                {
+                    "name": "Current",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/subscription/current",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "api",
+                                "2": "subscription",
+                                "3": "current"
+                            }
+                        },
+                        "description": "Récupère l\\",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Subscribe",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/subscription/subscribe",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "api",
+                                "2": "subscription",
+                                "3": "subscribe"
+                            }
+                        },
+                        "description": "Créer un nouvel abonnement",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"plan_code\": \"pro_monthly\",\n    \"email\": \"user@example.com\",\n    \"payment_method_id\": \"pm_card_visa\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "ChangePlan",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/subscription/change-plan",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "api",
+                                "2": "subscription",
+                                "3": "change-plan"
+                            }
+                        },
+                        "description": "Changer de plan d\\",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"data\": \"example\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Cancel",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/subscription/cancel",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "api",
+                                "2": "subscription",
+                                "3": "cancel"
+                            }
+                        },
+                        "description": "Annuler l\\",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"data\": \"example\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Reactivate",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/subscription/reactivate",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "api",
+                                "2": "subscription",
+                                "3": "reactivate"
+                            }
+                        },
+                        "description": "Réactiver un abonnement annulé",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"data\": \"example\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Usage",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/subscription/usage",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "api",
+                                "2": "subscription",
+                                "3": "usage"
+                            }
+                        },
+                        "description": "Récupère l\\",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "BillingHistory",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/subscription/billing-history",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "api",
+                                "2": "subscription",
+                                "3": "billing-history"
+                            }
+                        },
+                        "description": "Récupère l\\",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PaymentMethods",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/subscription/payment-methods",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "api",
+                                "2": "subscription",
+                                "3": "payment-methods"
+                            }
+                        },
+                        "description": "Liste les moyens de paiement",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "AddPaymentMethod",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/subscription/payment-methods/add",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "api",
+                                "2": "subscription",
+                                "3": "payment-methods",
+                                "4": "add"
+                            }
+                        },
+                        "description": "Ajouter un moyen de paiement",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"data\": \"example\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "RemovePaymentMethod",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "X-Tenant-ID",
+                                "value": "{{tenant_id}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/subscription/payment-methods/:paymentMethodId",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": {
+                                "1": "api",
+                                "2": "subscription",
+                                "3": "payment-methods",
+                                "4": ":paymentMethodId"
+                            },
+                            "variable": [
+                                {
+                                    "key": "paymentMethodId",
+                                    "value": "{paymentMethodId}",
+                                    "description": "PaymentMethodId"
+                                }
+                            ]
+                        },
+                        "description": "Supprimer un moyen de paiement",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwt_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8000",
+            "type": "string"
+        },
+        {
+            "key": "jwt_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "refresh_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "tenant_id",
+            "value": "tenant_123",
+            "type": "string"
+        },
+        {
+            "key": "user_id",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "id",
+            "value": "example_id",
+            "type": "string"
+        }
+    ]
+}
