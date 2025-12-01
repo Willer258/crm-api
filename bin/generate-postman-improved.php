@@ -1,8 +1,8 @@
 #!/usr/bin/env php
 <?php
 /**
- * IMPROVED Postman Collection Generator
- * Better regex parsing for all Route formats
+ * FIXED Postman Collection Generator
+ * Correction du bug [object Object] dans les URLs
  */
 
 $projectDir = dirname(__DIR__);
@@ -18,8 +18,8 @@ foreach ($argv as $arg) {
     if (strpos($arg, '--output=') === 0) $output = substr($arg, 9);
 }
 
-echo "🚀 Postman Collection Generator (Improved)\n";
-echo "============================================\n\n";
+echo "🚀 Postman Collection Generator (Fixed)\n";
+echo "=========================================\n\n";
 
 // Scan
 echo "📁 Scanning controllers...\n";
@@ -108,7 +108,7 @@ if ($split) {
     echo "  ✓ {$output} ({$totalRoutes} endpoints)\n";
 }
 
-echo "\n✅ Done!\n";
+echo "\n✅ Done! URLs are now correct.\n";
 
 // Functions
 function categorize($name) {
@@ -185,16 +185,13 @@ function makeRequest($route, $baseUrl) {
     $path = $route['path'];
     $postmanPath = preg_replace('/\{([^}]+)\}/', ':$1', $path);
     
+    // FIX: Utiliser url comme string au lieu d'objet pour éviter [object Object]
     $req = [
         'name' => ucfirst($route['name']),
         'request' => [
             'method' => $method,
             'header' => [],
-            'url' => [
-                'raw' => "{{base_url}}{$postmanPath}",
-                'host' => ['{{base_url}}'],
-                'path' => array_filter(explode('/', $postmanPath)),
-            ],
+            'url' => "{{base_url}}{$postmanPath}",  // ← FIX: String simple au lieu d'objet
             'description' => $route['description'] ?: "{$method} {$path}",
         ],
         'response' => [],
@@ -214,14 +211,6 @@ function makeRequest($route, $baseUrl) {
     if (in_array($method, ['POST', 'PUT', 'PATCH'])) {
         $req['request']['header'][] = ['key' => 'Content-Type', 'value' => 'application/json', 'type' => 'text'];
         $req['request']['body'] = ['mode' => 'raw', 'raw' => bodyExample($route), 'options' => ['raw' => ['language' => 'json']]];
-    }
-    
-    // Path vars
-    if (!empty($route['parameters'])) {
-        $req['request']['url']['variable'] = [];
-        foreach ($route['parameters'] as $param) {
-            $req['request']['url']['variable'][] = ['key' => $param, 'value' => "{{$param}}", 'description' => ucfirst($param)];
-        }
     }
     
     return $req;

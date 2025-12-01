@@ -2,7 +2,7 @@
     "info": {
         "_postman_id": "crm-billing-20251201",
         "name": "CRM API - Billing",
-        "description": "Billing endpoints\nGenerated: 2025-12-01 14:20:17",
+        "description": "Billing endpoints\nGenerated: 2025-12-01 19:47:48",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "item": [
@@ -14,17 +14,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/api/plans/list",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "api",
-                                "2": "plans",
-                                "3": "list"
-                            }
-                        },
+                        "url": "{{base_url}}/api/plans/list",
                         "description": "Liste tous les plans disponibles"
                     },
                     "response": []
@@ -34,24 +24,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/api/plans/:code",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "api",
-                                "2": "plans",
-                                "3": ":code"
-                            },
-                            "variable": [
-                                {
-                                    "key": "code",
-                                    "value": "{code}",
-                                    "description": "Code"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/api/plans/:code",
                         "description": "Récupère les détails d\\",
                         "auth": {
                             "type": "bearer",
@@ -71,17 +44,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/api/plans/compare",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "api",
-                                "2": "plans",
-                                "3": "compare"
-                            }
-                        },
+                        "url": "{{base_url}}/api/plans/compare",
                         "description": "Compare tous les plans disponibles"
                     },
                     "response": []
@@ -102,16 +65,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/webhooks/stripe, name: ",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "webhooks",
-                                "2": "stripe, name: "
-                            }
-                        },
+                        "url": "{{base_url}}/webhooks/stripe, name: ",
                         "description": "POST /webhooks/stripe, name: ",
                         "body": {
                             "mode": "raw",
@@ -141,17 +95,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/api/subscription/current",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "api",
-                                "2": "subscription",
-                                "3": "current"
-                            }
-                        },
+                        "url": "{{base_url}}/api/subscription/current",
                         "description": "Récupère l\\",
                         "auth": {
                             "type": "bearer",
@@ -182,17 +126,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/api/subscription/subscribe",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "api",
-                                "2": "subscription",
-                                "3": "subscribe"
-                            }
-                        },
+                        "url": "{{base_url}}/api/subscription/subscribe",
                         "description": "Créer un nouvel abonnement",
                         "auth": {
                             "type": "bearer",
@@ -232,17 +166,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/api/subscription/change-plan",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "api",
-                                "2": "subscription",
-                                "3": "change-plan"
-                            }
-                        },
+                        "url": "{{base_url}}/api/subscription/change-plan",
                         "description": "Changer de plan d\\",
                         "auth": {
                             "type": "bearer",
@@ -282,17 +206,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/api/subscription/cancel",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "api",
-                                "2": "subscription",
-                                "3": "cancel"
-                            }
-                        },
+                        "url": "{{base_url}}/api/subscription/cancel",
                         "description": "Annuler l\\",
                         "auth": {
                             "type": "bearer",
@@ -332,17 +246,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/api/subscription/reactivate",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "api",
-                                "2": "subscription",
-                                "3": "reactivate"
-                            }
-                        },
+                        "url": "{{base_url}}/api/subscription/reactivate",
                         "description": "Réactiver un abonnement annulé",
                         "auth": {
                             "type": "bearer",
@@ -377,17 +281,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/api/subscription/usage",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "api",
-                                "2": "subscription",
-                                "3": "usage"
-                            }
-                        },
+                        "url": "{{base_url}}/api/subscription/usage",
                         "description": "Récupère l\\",
                         "auth": {
                             "type": "bearer",
@@ -413,17 +307,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/api/subscription/billing-history",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "api",
-                                "2": "subscription",
-                                "3": "billing-history"
-                            }
-                        },
+                        "url": "{{base_url}}/api/subscription/billing-history",
                         "description": "Récupère l\\",
                         "auth": {
                             "type": "bearer",
@@ -449,17 +333,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/api/subscription/payment-methods",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "api",
-                                "2": "subscription",
-                                "3": "payment-methods"
-                            }
-                        },
+                        "url": "{{base_url}}/api/subscription/payment-methods",
                         "description": "Liste les moyens de paiement",
                         "auth": {
                             "type": "bearer",
@@ -490,18 +364,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/api/subscription/payment-methods/add",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "api",
-                                "2": "subscription",
-                                "3": "payment-methods",
-                                "4": "add"
-                            }
-                        },
+                        "url": "{{base_url}}/api/subscription/payment-methods/add",
                         "description": "Ajouter un moyen de paiement",
                         "auth": {
                             "type": "bearer",
@@ -536,25 +399,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/api/subscription/payment-methods/:paymentMethodId",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "api",
-                                "2": "subscription",
-                                "3": "payment-methods",
-                                "4": ":paymentMethodId"
-                            },
-                            "variable": [
-                                {
-                                    "key": "paymentMethodId",
-                                    "value": "{paymentMethodId}",
-                                    "description": "PaymentMethodId"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/api/subscription/payment-methods/:paymentMethodId",
                         "description": "Supprimer un moyen de paiement",
                         "auth": {
                             "type": "bearer",

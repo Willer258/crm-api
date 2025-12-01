@@ -2,7 +2,7 @@
     "info": {
         "_postman_id": "crm-configuration-20251201",
         "name": "CRM API - Configuration",
-        "description": "Configuration endpoints\nGenerated: 2025-12-01 14:20:17",
+        "description": "Configuration endpoints\nGenerated: 2025-12-01 19:47:48",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "item": [
@@ -14,18 +14,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/item/type/item/type",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "item",
-                                "2": "type",
-                                "3": "item",
-                                "4": "type"
-                            }
-                        },
+                        "url": "{{base_url}}/item/type/item/type",
                         "description": "GET /item/type/item/type",
                         "auth": {
                             "type": "bearer",
@@ -45,24 +34,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/item/type/:code",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "item",
-                                "2": "type",
-                                "3": ":code"
-                            },
-                            "variable": [
-                                {
-                                    "key": "code",
-                                    "value": "{code}",
-                                    "description": "Code"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/item/type/:code",
                         "description": "Affiche un type d\\",
                         "auth": {
                             "type": "bearer",
@@ -82,17 +54,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/item/type/edit",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "item",
-                                "2": "type",
-                                "3": "edit"
-                            }
-                        },
+                        "url": "{{base_url}}/item/type/edit",
                         "description": "Créer ou modifier un type d\\",
                         "auth": {
                             "type": "bearer",
@@ -112,25 +74,7 @@
                     "request": {
                         "method": "DELETE",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/item/type/delete/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "item",
-                                "2": "type",
-                                "3": "delete",
-                                "4": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/item/type/delete/:id",
                         "description": "Supprime un type d\\",
                         "auth": {
                             "type": "bearer",
@@ -155,16 +99,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/property/list",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "property",
-                                "2": "list"
-                            }
-                        },
+                        "url": "{{base_url}}/property/list",
                         "description": "Liste toutes les propriétés",
                         "auth": {
                             "type": "bearer",
@@ -190,16 +125,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/property/edit",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "property",
-                                "2": "edit"
-                            }
-                        },
+                        "url": "{{base_url}}/property/edit",
                         "description": "Edite une propriété",
                         "auth": {
                             "type": "bearer",
@@ -228,24 +154,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/property/delete/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "property",
-                                "2": "delete",
-                                "3": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/property/delete/:id",
                         "description": "Supprime une propriété",
                         "auth": {
                             "type": "bearer",
@@ -270,17 +179,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/property/model/list",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "property",
-                                "2": "model",
-                                "3": "list"
-                            }
-                        },
+                        "url": "{{base_url}}/property/model/list",
                         "description": "Liste des modeles de proprietes",
                         "auth": {
                             "type": "bearer",
@@ -300,17 +199,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/property/model/edit",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "property",
-                                "2": "model",
-                                "3": "edit"
-                            }
-                        },
+                        "url": "{{base_url}}/property/model/edit",
                         "description": "Modifier/Creer un modele de propriete",
                         "auth": {
                             "type": "bearer",
@@ -330,25 +219,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/property/model/delete/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "property",
-                                "2": "model",
-                                "3": "delete",
-                                "4": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/property/model/delete/:id",
                         "description": "Supprimer un modele de propriete si il n\\",
                         "auth": {
                             "type": "bearer",

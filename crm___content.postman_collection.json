@@ -2,7 +2,7 @@
     "info": {
         "_postman_id": "crm-crm___content-20251201",
         "name": "CRM API - CRM - Content",
-        "description": "CRM - Content endpoints\nGenerated: 2025-12-01 14:20:17",
+        "description": "CRM - Content endpoints\nGenerated: 2025-12-01 19:47:48",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "item": [
@@ -20,16 +20,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/note/edit",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "note",
-                                "2": "edit"
-                            }
-                        },
+                        "url": "{{base_url}}/note/edit",
                         "description": "POST /note/edit",
                         "auth": {
                             "type": "bearer",
@@ -58,24 +49,7 @@
                     "request": {
                         "method": "DELETE",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/note/delete/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "note",
-                                "2": "delete",
-                                "3": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/note/delete/:id",
                         "description": "DELETE /note/delete/{id}",
                         "auth": {
                             "type": "bearer",
@@ -100,16 +74,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/tag/list",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "tag",
-                                "2": "list"
-                            }
-                        },
+                        "url": "{{base_url}}/tag/list",
                         "description": "Liste tous les tags",
                         "auth": {
                             "type": "bearer",
@@ -135,16 +100,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/tag/create",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "tag",
-                                "2": "create"
-                            }
-                        },
+                        "url": "{{base_url}}/tag/create",
                         "description": "Crée un nouveau tag",
                         "auth": {
                             "type": "bearer",
@@ -179,16 +135,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/tag/assign",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "tag",
-                                "2": "assign"
-                            }
-                        },
+                        "url": "{{base_url}}/tag/assign",
                         "description": "Assigne un tag à une entité",
                         "auth": {
                             "type": "bearer",

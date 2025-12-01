@@ -2,7 +2,7 @@
     "info": {
         "_postman_id": "crm-crm___activities-20251201",
         "name": "CRM API - CRM - Activities",
-        "description": "CRM - Activities endpoints\nGenerated: 2025-12-01 14:20:17",
+        "description": "CRM - Activities endpoints\nGenerated: 2025-12-01 19:47:48",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "item": [
@@ -14,16 +14,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/activity/list",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "activity",
-                                "2": "list"
-                            }
-                        },
+                        "url": "{{base_url}}/activity/list",
                         "description": "Liste toutes les activités avec filtres",
                         "auth": {
                             "type": "bearer",
@@ -49,16 +40,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/activity/calendar",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "activity",
-                                "2": "calendar"
-                            }
-                        },
+                        "url": "{{base_url}}/activity/calendar",
                         "description": "Liste les activités entre deux dates, groupées par date d\\",
                         "auth": {
                             "type": "bearer",
@@ -87,23 +69,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/activity/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "activity",
-                                "2": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/activity/:id",
                         "description": "Affiche le détail d\\",
                         "auth": {
                             "type": "bearer",
@@ -129,16 +95,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/activity/edit",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "activity",
-                                "2": "edit"
-                            }
-                        },
+                        "url": "{{base_url}}/activity/edit",
                         "description": "Crée une nouvelle activité",
                         "auth": {
                             "type": "bearer",
@@ -167,24 +124,7 @@
                     "request": {
                         "method": "DELETE",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/activity/delete/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "activity",
-                                "2": "delete",
-                                "3": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/activity/delete/:id",
                         "description": "Supprime une activité",
                         "auth": {
                             "type": "bearer",
@@ -209,16 +149,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/pipeline/list",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "pipeline",
-                                "2": "list"
-                            }
-                        },
+                        "url": "{{base_url}}/pipeline/list",
                         "description": "Liste tous les pipelines",
                         "auth": {
                             "type": "bearer",
@@ -244,16 +175,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/pipeline/edit",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "pipeline",
-                                "2": "edit"
-                            }
-                        },
+                        "url": "{{base_url}}/pipeline/edit",
                         "description": "Créer ou modifier un pipeline",
                         "auth": {
                             "type": "bearer",
@@ -282,24 +204,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/pipeline/info/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "pipeline",
-                                "2": "info",
-                                "3": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/pipeline/info/:id",
                         "description": "Affiche les informations d\\",
                         "auth": {
                             "type": "bearer",
@@ -319,24 +224,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/pipeline/delete/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "pipeline",
-                                "2": "delete",
-                                "3": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/pipeline/delete/:id",
                         "description": "Supprime un pipeline",
                         "auth": {
                             "type": "bearer",
@@ -361,17 +249,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/pipeline/step/list",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "pipeline",
-                                "2": "step",
-                                "3": "list"
-                            }
-                        },
+                        "url": "{{base_url}}/pipeline/step/list",
                         "description": "Liste toutes les étapes de pipeline",
                         "auth": {
                             "type": "bearer",
@@ -391,25 +269,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/pipeline/step/list/:pipelineId",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "pipeline",
-                                "2": "step",
-                                "3": "list",
-                                "4": ":pipelineId"
-                            },
-                            "variable": [
-                                {
-                                    "key": "pipelineId",
-                                    "value": "{pipelineId}",
-                                    "description": "PipelineId"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/pipeline/step/list/:pipelineId",
                         "description": "Liste les étapes d\\",
                         "auth": {
                             "type": "bearer",
@@ -435,17 +295,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/pipeline/step/edit",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "pipeline",
-                                "2": "step",
-                                "3": "edit"
-                            }
-                        },
+                        "url": "{{base_url}}/pipeline/step/edit",
                         "description": "Créer ou modifier une étape de pipeline",
                         "auth": {
                             "type": "bearer",
@@ -474,25 +324,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/pipeline/step/delete/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "pipeline",
-                                "2": "step",
-                                "3": "delete",
-                                "4": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/pipeline/step/delete/:id",
                         "description": "Supprime une étape de pipeline",
                         "auth": {
                             "type": "bearer",

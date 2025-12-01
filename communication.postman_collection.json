@@ -2,7 +2,7 @@
     "info": {
         "_postman_id": "crm-communication-20251201",
         "name": "CRM API - Communication",
-        "description": "Communication endpoints\nGenerated: 2025-12-01 14:20:17",
+        "description": "Communication endpoints\nGenerated: 2025-12-01 19:47:48",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "item": [
@@ -14,15 +14,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/mail/",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "mail"
-                            }
-                        },
+                        "url": "{{base_url}}/mail/",
                         "description": "GET /mail/",
                         "auth": {
                             "type": "bearer",
@@ -48,16 +40,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/mail/edit",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "mail",
-                                "2": "edit"
-                            }
-                        },
+                        "url": "{{base_url}}/mail/edit",
                         "description": "POST /mail/edit",
                         "auth": {
                             "type": "bearer",
@@ -86,24 +69,7 @@
                     "request": {
                         "method": "DELETE",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/mail/delete/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "mail",
-                                "2": "delete",
-                                "3": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/mail/delete/:id",
                         "description": "DELETE /mail/delete/{id}",
                         "auth": {
                             "type": "bearer",
@@ -128,16 +94,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/phone/number/",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "phone",
-                                "2": "number"
-                            }
-                        },
+                        "url": "{{base_url}}/phone/number/",
                         "description": "GET /phone/number/",
                         "auth": {
                             "type": "bearer",
@@ -157,24 +114,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/phone/number/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "phone",
-                                "2": "number",
-                                "3": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/phone/number/:id",
                         "description": "GET /phone/number/{id}",
                         "auth": {
                             "type": "bearer",
@@ -200,17 +140,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/phone/number/edit",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "phone",
-                                "2": "number",
-                                "3": "edit"
-                            }
-                        },
+                        "url": "{{base_url}}/phone/number/edit",
                         "description": "POST /phone/number/edit",
                         "auth": {
                             "type": "bearer",
@@ -239,25 +169,7 @@
                     "request": {
                         "method": "DELETE",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/phone/number/delete/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "phone",
-                                "2": "number",
-                                "3": "delete",
-                                "4": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/phone/number/delete/:id",
                         "description": "DELETE /phone/number/delete/{id}",
                         "auth": {
                             "type": "bearer",

@@ -2,7 +2,7 @@
     "info": {
         "_postman_id": "crm-auth-20251201",
         "name": "CRM API - Auth",
-        "description": "Auth endpoints\nGenerated: 2025-12-01 14:20:17",
+        "description": "Auth endpoints\nGenerated: 2025-12-01 19:47:48",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "item": [
@@ -20,16 +20,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/auth/register",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "auth",
-                                "2": "register"
-                            }
-                        },
+                        "url": "{{base_url}}/auth/register",
                         "description": "Créer un nouveau compte utilisateur",
                         "body": {
                             "mode": "raw",
@@ -54,16 +45,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/auth/verify-email",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "auth",
-                                "2": "verify-email"
-                            }
-                        },
+                        "url": "{{base_url}}/auth/verify-email",
                         "description": "Vérifier l\\",
                         "body": {
                             "mode": "raw",
@@ -88,16 +70,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/auth/resend-verification",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "auth",
-                                "2": "resend-verification"
-                            }
-                        },
+                        "url": "{{base_url}}/auth/resend-verification",
                         "description": "Renvoyer l\\",
                         "auth": {
                             "type": "bearer",
@@ -132,16 +105,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/auth/login",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "auth",
-                                "2": "login"
-                            }
-                        },
+                        "url": "{{base_url}}/auth/login",
                         "description": "Connexion utilisateur",
                         "body": {
                             "mode": "raw",
@@ -166,16 +130,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/auth/refresh",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "auth",
-                                "2": "refresh"
-                            }
-                        },
+                        "url": "{{base_url}}/auth/refresh",
                         "description": "Renouveler le token JWT",
                         "auth": {
                             "type": "bearer",
@@ -210,16 +165,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/auth/logout",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "auth",
-                                "2": "logout"
-                            }
-                        },
+                        "url": "{{base_url}}/auth/logout",
                         "description": "Déconnexion utilisateur",
                         "auth": {
                             "type": "bearer",
@@ -254,16 +200,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/auth/forgot-password",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "auth",
-                                "2": "forgot-password"
-                            }
-                        },
+                        "url": "{{base_url}}/auth/forgot-password",
                         "description": "Demander une réinitialisation de mot de passe",
                         "body": {
                             "mode": "raw",
@@ -288,16 +225,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/auth/reset-password",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "auth",
-                                "2": "reset-password"
-                            }
-                        },
+                        "url": "{{base_url}}/auth/reset-password",
                         "description": "Réinitialiser le mot de passe",
                         "body": {
                             "mode": "raw",
@@ -316,16 +244,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/auth/me",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "auth",
-                                "2": "me"
-                            }
-                        },
+                        "url": "{{base_url}}/auth/me",
                         "description": "Obtenir les informations de l\\",
                         "auth": {
                             "type": "bearer",

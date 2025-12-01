@@ -2,7 +2,7 @@
     "info": {
         "_postman_id": "crm-files-20251201",
         "name": "CRM API - Files",
-        "description": "Files endpoints\nGenerated: 2025-12-01 14:20:17",
+        "description": "Files endpoints\nGenerated: 2025-12-01 19:47:48",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "item": [
@@ -14,15 +14,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/export-full",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "export-full"
-                            }
-                        },
+                        "url": "{{base_url}}/export-full",
                         "description": "GET /export-full",
                         "auth": {
                             "type": "bearer",
@@ -47,16 +39,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/file/list",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "file",
-                                "2": "list"
-                            }
-                        },
+                        "url": "{{base_url}}/file/list",
                         "description": "Liste tous les fichiers",
                         "auth": {
                             "type": "bearer",
@@ -82,16 +65,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/file/upload",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "file",
-                                "2": "upload"
-                            }
-                        },
+                        "url": "{{base_url}}/file/upload",
                         "description": "Upload un fichier de manière sécurisée",
                         "auth": {
                             "type": "bearer",
@@ -120,16 +94,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/file/config",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "file",
-                                "2": "config"
-                            }
-                        },
+                        "url": "{{base_url}}/file/config",
                         "description": "Récupère la configuration d\\",
                         "auth": {
                             "type": "bearer",
@@ -155,16 +120,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/file/edit",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "file",
-                                "2": "edit"
-                            }
-                        },
+                        "url": "{{base_url}}/file/edit",
                         "description": "⚠️ DEPRECATED: Utiliser /upload pour les nouveaux fichiers",
                         "auth": {
                             "type": "bearer",
@@ -193,24 +149,7 @@
                     "request": {
                         "method": "DELETE",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/file/delete/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "file",
-                                "2": "delete",
-                                "3": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/file/delete/:id",
                         "description": "DELETE /file/delete/{id}",
                         "auth": {
                             "type": "bearer",

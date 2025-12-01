@@ -2,7 +2,7 @@
     "info": {
         "_postman_id": "crm-administration-20251201",
         "name": "CRM API - Administration",
-        "description": "Administration endpoints\nGenerated: 2025-12-01 14:20:17",
+        "description": "Administration endpoints\nGenerated: 2025-12-01 19:47:48",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "item": [
@@ -14,17 +14,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/admin/get/routes",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "admin",
-                                "2": "get",
-                                "3": "routes"
-                            }
-                        },
+                        "url": "{{base_url}}/admin/get/routes",
                         "description": "Liste des endpoints",
                         "auth": {
                             "type": "bearer",
@@ -44,18 +34,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/admin/save/route/requirements",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "admin",
-                                "2": "save",
-                                "3": "route",
-                                "4": "requirements"
-                            }
-                        },
+                        "url": "{{base_url}}/admin/save/route/requirements",
                         "description": "Enregistre les droits nécessaires pour accéder à une route",
                         "auth": {
                             "type": "bearer",
@@ -91,18 +70,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/import/validation/contact/file",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "import",
-                                "2": "validation",
-                                "3": "contact",
-                                "4": "file"
-                            }
-                        },
+                        "url": "{{base_url}}/import/validation/contact/file",
                         "description": "Valide un fichier d\\",
                         "auth": {
                             "type": "bearer",
@@ -142,18 +110,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/import/validation/company/file",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "import",
-                                "2": "validation",
-                                "3": "company",
-                                "4": "file"
-                            }
-                        },
+                        "url": "{{base_url}}/import/validation/company/file",
                         "description": "Valide un fichier d\\",
                         "auth": {
                             "type": "bearer",
@@ -193,18 +150,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/import/validation/contact/row",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "import",
-                                "2": "validation",
-                                "3": "contact",
-                                "4": "row"
-                            }
-                        },
+                        "url": "{{base_url}}/import/validation/contact/row",
                         "description": "Valide les données d\\",
                         "auth": {
                             "type": "bearer",
@@ -244,18 +190,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/import/validation/company/row",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "import",
-                                "2": "validation",
-                                "3": "company",
-                                "4": "row"
-                            }
-                        },
+                        "url": "{{base_url}}/import/validation/company/row",
                         "description": "Valide les données d\\",
                         "auth": {
                             "type": "bearer",
@@ -295,18 +230,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/import/validation/contact/duplicates",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "import",
-                                "2": "validation",
-                                "3": "contact",
-                                "4": "duplicates"
-                            }
-                        },
+                        "url": "{{base_url}}/import/validation/contact/duplicates",
                         "description": "Recherche des doublons pour un contact",
                         "auth": {
                             "type": "bearer",
@@ -346,18 +270,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/import/validation/company/duplicates",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "import",
-                                "2": "validation",
-                                "3": "company",
-                                "4": "duplicates"
-                            }
-                        },
+                        "url": "{{base_url}}/import/validation/company/duplicates",
                         "description": "Recherche des doublons pour une entreprise",
                         "auth": {
                             "type": "bearer",
@@ -402,17 +315,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/sync/contact/search",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "sync",
-                                "2": "contact",
-                                "3": "search"
-                            }
-                        },
+                        "url": "{{base_url}}/sync/contact/search",
                         "description": "Recherche un contact par email ou téléphone",
                         "auth": {
                             "type": "bearer",
@@ -452,16 +355,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/sync/contact",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "sync",
-                                "2": "contact"
-                            }
-                        },
+                        "url": "{{base_url}}/sync/contact",
                         "description": "Crée ou met à jour un contact avec source obligatoire",
                         "auth": {
                             "type": "bearer",
@@ -501,16 +395,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/sync/deal",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "sync",
-                                "2": "deal"
-                            }
-                        },
+                        "url": "{{base_url}}/sync/deal",
                         "description": "Crée ou met à jour une affaire",
                         "auth": {
                             "type": "bearer",
@@ -550,25 +435,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/sync/deal/:id/tags",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "sync",
-                                "2": "deal",
-                                "3": ":id",
-                                "4": "tags"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/sync/deal/:id/tags",
                         "description": "Ajoute des tags à une affaire",
                         "auth": {
                             "type": "bearer",
@@ -608,25 +475,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/sync/deal/:id/step",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "sync",
-                                "2": "deal",
-                                "3": ":id",
-                                "4": "step"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/sync/deal/:id/step",
                         "description": "Change l\\",
                         "auth": {
                             "type": "bearer",
@@ -666,25 +515,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/sync/deal/:id/status",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "sync",
-                                "2": "deal",
-                                "3": ":id",
-                                "4": "status"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/sync/deal/:id/status",
                         "description": "Change le statut d\\",
                         "auth": {
                             "type": "bearer",
@@ -724,25 +555,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/sync/contact/:id/tags",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "sync",
-                                "2": "contact",
-                                "3": ":id",
-                                "4": "tags"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/sync/contact/:id/tags",
                         "description": "Ajoute des tags à un contact",
                         "auth": {
                             "type": "bearer",
@@ -777,16 +590,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/sync/fetch-from-form",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "sync",
-                                "2": "fetch-from-form"
-                            }
-                        },
+                        "url": "{{base_url}}/sync/fetch-from-form",
                         "description": "Reçoit les données de synchronisation depuis Form",
                         "auth": {
                             "type": "bearer",
@@ -826,16 +630,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/user/list",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "user",
-                                "2": "list"
-                            }
-                        },
+                        "url": "{{base_url}}/user/list",
                         "description": "Liste tous les utilisateurs",
                         "auth": {
                             "type": "bearer",
@@ -864,24 +659,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/user/info/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "user",
-                                "2": "info",
-                                "3": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/user/info/:id",
                         "description": "Affiche les informations d\\",
                         "auth": {
                             "type": "bearer",
@@ -907,16 +685,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/user/create",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "user",
-                                "2": "create"
-                            }
-                        },
+                        "url": "{{base_url}}/user/create",
                         "description": "Crée un nouvel utilisateur",
                         "auth": {
                             "type": "bearer",
@@ -951,24 +720,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/user/edit/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "user",
-                                "2": "edit",
-                                "3": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/user/edit/:id",
                         "description": "Modifie un utilisateur",
                         "auth": {
                             "type": "bearer",
@@ -1003,24 +755,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/user/change-password/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "user",
-                                "2": "change-password",
-                                "3": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/user/change-password/:id",
                         "description": "Change le mot de passe d\\",
                         "auth": {
                             "type": "bearer",
@@ -1049,24 +784,7 @@
                     "request": {
                         "method": "DELETE",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/user/delete/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "user",
-                                "2": "delete",
-                                "3": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/user/delete/:id",
                         "description": "Supprime un utilisateur",
                         "auth": {
                             "type": "bearer",
@@ -1086,16 +804,7 @@
                     "request": {
                         "method": "GET",
                         "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/user/profile",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "user",
-                                "2": "profile"
-                            }
-                        },
+                        "url": "{{base_url}}/user/profile",
                         "description": "Récupère le profil de l\\",
                         "auth": {
                             "type": "bearer",
@@ -1121,17 +830,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/user/profile/edit",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "user",
-                                "2": "profile",
-                                "3": "edit"
-                            }
-                        },
+                        "url": "{{base_url}}/user/profile/edit",
                         "description": "Modifie le profil de l\\",
                         "auth": {
                             "type": "bearer",

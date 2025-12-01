@@ -2,7 +2,7 @@
     "info": {
         "_postman_id": "crm-crm___core-20251201",
         "name": "CRM API - CRM - Core",
-        "description": "CRM - Core endpoints\nGenerated: 2025-12-01 14:20:17",
+        "description": "CRM - Core endpoints\nGenerated: 2025-12-01 19:47:48",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "item": [
@@ -20,16 +20,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/company/company",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "company",
-                                "2": "company"
-                            }
-                        },
+                        "url": "{{base_url}}/company/company",
                         "description": "GET /company/company",
                         "auth": {
                             "type": "bearer",
@@ -55,24 +46,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/company/search/:contains",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "company",
-                                "2": "search",
-                                "3": ":contains"
-                            },
-                            "variable": [
-                                {
-                                    "key": "contains",
-                                    "value": "{contains}",
-                                    "description": "Contains"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/company/search/:contains",
                         "description": "GET /company/search/{contains}",
                         "auth": {
                             "type": "bearer",
@@ -98,24 +72,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/company/info/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "company",
-                                "2": "info",
-                                "3": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/company/info/:id",
                         "description": "GET /company/info/{id}",
                         "auth": {
                             "type": "bearer",
@@ -146,16 +103,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/company/import",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "company",
-                                "2": "import"
-                            }
-                        },
+                        "url": "{{base_url}}/company/import",
                         "description": "POST /company/import",
                         "auth": {
                             "type": "bearer",
@@ -190,16 +138,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/company/edit",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "company",
-                                "2": "edit"
-                            }
-                        },
+                        "url": "{{base_url}}/company/edit",
                         "description": "GET /company/edit",
                         "auth": {
                             "type": "bearer",
@@ -230,16 +169,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/company/addPhoto",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "company",
-                                "2": "addPhoto"
-                            }
-                        },
+                        "url": "{{base_url}}/company/addPhoto",
                         "description": "Ajoute une photo a un contact",
                         "auth": {
                             "type": "bearer",
@@ -274,30 +204,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/company/merge/:sourceId/:targetId",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "company",
-                                "2": "merge",
-                                "3": ":sourceId",
-                                "4": ":targetId"
-                            },
-                            "variable": [
-                                {
-                                    "key": "sourceId",
-                                    "value": "{sourceId}",
-                                    "description": "SourceId"
-                                },
-                                {
-                                    "key": "targetId",
-                                    "value": "{targetId}",
-                                    "description": "TargetId"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/company/merge/:sourceId/:targetId",
                         "description": "Fusionne deux sociétés",
                         "auth": {
                             "type": "bearer",
@@ -323,24 +230,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/company/delete/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "company",
-                                "2": "delete",
-                                "3": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/company/delete/:id",
                         "description": "Supprime une société",
                         "auth": {
                             "type": "bearer",
@@ -371,24 +261,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/contact/search/:contains",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "contact",
-                                "2": "search",
-                                "3": ":contains"
-                            },
-                            "variable": [
-                                {
-                                    "key": "contains",
-                                    "value": "{contains}",
-                                    "description": "Contains"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/contact/search/:contains",
                         "description": "GET /contact/search/{contains}",
                         "auth": {
                             "type": "bearer",
@@ -414,16 +287,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/contact/list",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "contact",
-                                "2": "list"
-                            }
-                        },
+                        "url": "{{base_url}}/contact/list",
                         "description": "Liste tous les contacts",
                         "auth": {
                             "type": "bearer",
@@ -449,24 +313,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/contact/info/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "contact",
-                                "2": "info",
-                                "3": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/contact/info/:id",
                         "description": "Affiche les informations d\\",
                         "auth": {
                             "type": "bearer",
@@ -497,16 +344,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/contact/import",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "contact",
-                                "2": "import"
-                            }
-                        },
+                        "url": "{{base_url}}/contact/import",
                         "description": "Importe des contacts depuis un fichier",
                         "auth": {
                             "type": "bearer",
@@ -541,16 +379,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/contact/edit",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "contact",
-                                "2": "edit"
-                            }
-                        },
+                        "url": "{{base_url}}/contact/edit",
                         "description": "Crée ou modifie un contact",
                         "auth": {
                             "type": "bearer",
@@ -581,30 +410,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/contact/associate/:id/:idCompany",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "contact",
-                                "2": "associate",
-                                "3": ":id",
-                                "4": ":idCompany"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                },
-                                {
-                                    "key": "idCompany",
-                                    "value": "{idCompany}",
-                                    "description": "IdCompany"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/contact/associate/:id/:idCompany",
                         "description": "Associe un contact à une entreprise",
                         "auth": {
                             "type": "bearer",
@@ -639,24 +445,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/contact/unassociate/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "contact",
-                                "2": "unassociate",
-                                "3": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/contact/unassociate/:id",
                         "description": "Dissocie un contact d\\",
                         "auth": {
                             "type": "bearer",
@@ -687,30 +476,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/contact/merge/:sourceId/:targetId",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "contact",
-                                "2": "merge",
-                                "3": ":sourceId",
-                                "4": ":targetId"
-                            },
-                            "variable": [
-                                {
-                                    "key": "sourceId",
-                                    "value": "{sourceId}",
-                                    "description": "SourceId"
-                                },
-                                {
-                                    "key": "targetId",
-                                    "value": "{targetId}",
-                                    "description": "TargetId"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/contact/merge/:sourceId/:targetId",
                         "description": "Fusionne deux contacts",
                         "auth": {
                             "type": "bearer",
@@ -750,16 +516,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/contact/addPhoto",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "contact",
-                                "2": "addPhoto"
-                            }
-                        },
+                        "url": "{{base_url}}/contact/addPhoto",
                         "description": "Ajoute une photo a un contact",
                         "auth": {
                             "type": "bearer",
@@ -794,24 +551,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/contact/delete/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "contact",
-                                "2": "delete",
-                                "3": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/contact/delete/:id",
                         "description": "Supprime un contact",
                         "auth": {
                             "type": "bearer",
@@ -847,16 +587,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/deal/edit",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "deal",
-                                "2": "edit"
-                            }
-                        },
+                        "url": "{{base_url}}/deal/edit",
                         "description": "Edite une opportunité",
                         "auth": {
                             "type": "bearer",
@@ -891,24 +622,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/deal/info/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "deal",
-                                "2": "info",
-                                "3": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/deal/info/:id",
                         "description": "Affiche les informations d\\",
                         "auth": {
                             "type": "bearer",
@@ -939,25 +653,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/deal/change/step/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "deal",
-                                "2": "change",
-                                "3": "step",
-                                "4": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/deal/change/step/:id",
                         "description": "Change l\\",
                         "auth": {
                             "type": "bearer",
@@ -997,24 +693,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/deal/win/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "deal",
-                                "2": "win",
-                                "3": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/deal/win/:id",
                         "description": "Marque une opportunité comme gagnée",
                         "auth": {
                             "type": "bearer",
@@ -1054,24 +733,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/deal/lose/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "deal",
-                                "2": "lose",
-                                "3": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/deal/lose/:id",
                         "description": "Marque une opportunité comme perdue",
                         "auth": {
                             "type": "bearer",
@@ -1111,25 +773,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/deal/unlose/unwin/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "deal",
-                                "2": "unlose",
-                                "3": "unwin",
-                                "4": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/deal/unlose/unwin/:id",
                         "description": "Annule le statut gagné ou perdu d\\",
                         "auth": {
                             "type": "bearer",
@@ -1164,25 +808,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/deal/dissociate/contact/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "deal",
-                                "2": "dissociate",
-                                "3": "contact",
-                                "4": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/deal/dissociate/contact/:id",
                         "description": "Dissocie le contact principal d\\",
                         "auth": {
                             "type": "bearer",
@@ -1208,25 +834,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/deal/dissociate/company/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "deal",
-                                "2": "dissociate",
-                                "3": "company",
-                                "4": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/deal/dissociate/company/:id",
                         "description": "Dissocie l\\",
                         "auth": {
                             "type": "bearer",
@@ -1252,31 +860,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/deal/remove/participant/:dealId/:contactId",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "deal",
-                                "2": "remove",
-                                "3": "participant",
-                                "4": ":dealId",
-                                "5": ":contactId"
-                            },
-                            "variable": [
-                                {
-                                    "key": "dealId",
-                                    "value": "{dealId}",
-                                    "description": "DealId"
-                                },
-                                {
-                                    "key": "contactId",
-                                    "value": "{contactId}",
-                                    "description": "ContactId"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/deal/remove/participant/:dealId/:contactId",
                         "description": "Retire un participant d\\",
                         "auth": {
                             "type": "bearer",
@@ -1302,24 +886,7 @@
                                 "type": "text"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/deal/delete/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": {
-                                "1": "deal",
-                                "2": "delete",
-                                "3": ":id"
-                            },
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "{id}",
-                                    "description": "Id"
-                                }
-                            ]
-                        },
+                        "url": "{{base_url}}/deal/delete/:id",
                         "description": "Supprime une opportunité",
                         "auth": {
                             "type": "bearer",
