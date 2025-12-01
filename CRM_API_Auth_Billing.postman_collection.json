@@ -1,0 +1,1170 @@
+{
+	"info": {
+		"_postman_id": "crm-api-auth-billing-2025",
+		"name": "CRM API - Authentication & Billing (SaaS)",
+		"description": "Collection complète pour tester le système d'authentification JWT et le système de facturation SaaS avec Stripe.\n\n## Fonctionnalités:\n- 🔐 Authentification complète (register, login, verify, reset password)\n- 💳 Gestion des abonnements Stripe\n- 📊 Gestion des plans et quotas\n- 🔄 Webhooks Stripe\n\n## Variables d'environnement requises:\n- `base_url`: URL de l'API (ex: http://localhost:8000)\n- `jwt_token`: Token JWT (auto-rempli après login)\n- `refresh_token`: Refresh token (auto-rempli après login)\n- `tenant_id`: ID du tenant (ex: tenant_123)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "🔐 Authentication",
+			"description": "Endpoints d'authentification JWT avec vérification email, reset password, et refresh tokens",
+			"item": [
+				{
+					"name": "1. Register (Inscription)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.verificationToken) {",
+									"        pm.environment.set('verification_token', jsonData.data.verificationToken);",
+									"        console.log('Verification token saved:', jsonData.data.verificationToken);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"SecurePassword123!\",\n    \"firstname\": \"John\",\n    \"lastname\": \"Doe\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						},
+						"description": "Créer un nouveau compte utilisateur.\n\n**Validations:**\n- Email valide requis\n- Password minimum 8 caractères\n- Email unique (pas de doublon)\n\n**Comportement:**\n- Crée l'utilisateur avec `isActive=false`\n- Génère un token de vérification email\n- TODO: Envoie l'email de vérification\n\n**Réponse:**\n- 201: Utilisateur créé avec succès\n- 400: Validation échouée\n- 409: Email déjà utilisé"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"SecurePassword123!\",\n    \"firstname\": \"John\",\n    \"lastname\": \"Doe\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/auth/register",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"register"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"message\": \"User registered successfully. Please check your email to verify your account.\",\n    \"data\": {\n        \"userId\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"john.doe@example.com\",\n        \"verificationToken\": \"abc123def456...\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "2. Verify Email",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"{{verification_token}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/verify-email",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"verify-email"
+							]
+						},
+						"description": "Vérifier l'adresse email avec le token reçu.\n\n**Validations:**\n- Token valide requis\n- Token non expiré (24h)\n- Token non utilisé\n\n**Comportement:**\n- Active le compte (`isActive=true`)\n- Marque le token comme utilisé\n- L'utilisateur peut maintenant se connecter"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"token\": \"abc123def456...\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/auth/verify-email",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"verify-email"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"message\": \"Email verified successfully. You can now log in.\",\n    \"data\": {\n        \"userId\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"john.doe@example.com\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "3. Resend Verification Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.verificationToken) {",
+									"        pm.environment.set('verification_token', jsonData.data.verificationToken);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"john.doe@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/resend-verification",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"resend-verification"
+							]
+						},
+						"description": "Renvoyer l'email de vérification.\n\n**Sécurité:**\n- Ne révèle pas si l'email existe\n- Invalide les anciens tokens\n- Génère un nouveau token"
+					},
+					"response": []
+				},
+				{
+					"name": "4. Login (Connexion)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set('jwt_token', jsonData.data.token);",
+									"    pm.environment.set('refresh_token', jsonData.data.refreshToken);",
+									"    pm.environment.set('user_id', jsonData.data.user.id);",
+									"    console.log('JWT Token saved');",
+									"    console.log('Refresh Token saved');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"SecurePassword123!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Connexion utilisateur avec génération de JWT.\n\n**Validations:**\n- Email doit être vérifié\n- Password correct\n- Compte actif\n\n**Réponse:**\n- JWT token (expire 1h)\n- Refresh token (expire 30 jours)\n- Informations utilisateur\n\n**Logging:**\n- Succès/échec enregistré dans LoginHistory\n- IP et User-Agent capturés"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"SecurePassword123!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/auth/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"message\": \"Login successful\",\n    \"data\": {\n        \"token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...\",\n        \"refreshToken\": \"xyz789abc123...\",\n        \"expiresAt\": \"2025-12-29T10:00:00+00:00\",\n        \"user\": {\n            \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n            \"email\": \"john.doe@example.com\",\n            \"firstname\": \"John\",\n            \"lastname\": \"Doe\",\n            \"roles\": [\"ROLE_USER\"]\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "5. Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set('jwt_token', jsonData.data.token);",
+									"    pm.environment.set('refresh_token', jsonData.data.refreshToken);",
+									"    console.log('Tokens refreshed and saved');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refreshToken\": \"{{refresh_token}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/refresh",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"refresh"
+							]
+						},
+						"description": "Renouveler le JWT token avec le refresh token.\n\n**Token Rotation:**\n- Génère un nouveau JWT\n- Génère un nouveau refresh token\n- Révoque l'ancien refresh token\n\n**Sécurité:**\n- Prévient la réutilisation des tokens\n- Détecte les tokens volés"
+					},
+					"response": []
+				},
+				{
+					"name": "6. Get Current User (Me)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"me"
+							]
+						},
+						"description": "Récupérer les informations de l'utilisateur connecté.\n\n**Authentification:**\n- Requiert un JWT valide\n- Header: Authorization: Bearer {token}"
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/auth/me",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"auth",
+										"me"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"data\": {\n        \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"email\": \"john.doe@example.com\",\n        \"firstname\": \"John\",\n        \"lastname\": \"Doe\",\n        \"roles\": [\"ROLE_USER\"],\n        \"isActive\": true,\n        \"createdAt\": \"2025-11-29T10:00:00+00:00\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "7. Forgot Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.resetToken) {",
+									"        pm.environment.set('password_reset_token', jsonData.data.resetToken);",
+									"        console.log('Reset token saved:', jsonData.data.resetToken);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"john.doe@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/forgot-password",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"forgot-password"
+							]
+						},
+						"description": "Demander une réinitialisation de mot de passe.\n\n**Sécurité:**\n- Ne révèle pas si l'email existe\n- Token expire en 1 heure\n- Capture l'IP de la requête\n- Invalide les anciens tokens"
+					},
+					"response": []
+				},
+				{
+					"name": "8. Reset Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"{{password_reset_token}}\",\n    \"password\": \"NewSecurePassword456!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/reset-password",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"reset-password"
+							]
+						},
+						"description": "Réinitialiser le mot de passe avec le token.\n\n**Validations:**\n- Token valide et non expiré\n- Password minimum 8 caractères\n\n**Sécurité:**\n- Révoque tous les refresh tokens\n- Marque le token comme utilisé\n- Hash le nouveau password"
+					},
+					"response": []
+				},
+				{
+					"name": "9. Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refreshToken\": \"{{refresh_token}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						},
+						"description": "Déconnexion utilisateur.\n\n**Comportement:**\n- Révoque le refresh token\n- Le JWT reste valide jusqu'à expiration (1h max)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "💳 Plans & Subscriptions",
+			"description": "Gestion des plans d'abonnement et des souscriptions SaaS",
+			"item": [
+				{
+					"name": "Plans",
+					"item": [
+						{
+							"name": "1. List All Plans",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/plans/list",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"plans",
+										"list"
+									]
+								},
+								"description": "Liste tous les plans d'abonnement disponibles.\n\n**Données retournées:**\n- Tarifs et intervalles de facturation\n- Quotas (contacts, companies, deals, users, storage, API calls)\n- Fonctionnalités incluses\n- IDs Stripe (product_id, price_id)"
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/api/plans/list",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"api",
+												"plans",
+												"list"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [],
+									"cookie": [],
+									"body": "{\n    \"status\": \"success\",\n    \"data\": [\n        {\n            \"id\": \"550e8400-e29b-41d4-a716-446655440001\",\n            \"code\": \"free_monthly\",\n            \"name\": \"Free Plan\",\n            \"description\": \"Perfect for getting started\",\n            \"price\": 0,\n            \"currency\": \"USD\",\n            \"billing_interval\": \"monthly\",\n            \"trial_days\": 0,\n            \"is_active\": true,\n            \"is_popular\": false,\n            \"display_order\": 1,\n            \"quotas\": {\n                \"max_contacts\": 100,\n                \"max_companies\": 20,\n                \"max_deals\": 10,\n                \"max_users\": 1,\n                \"max_storage_bytes\": 104857600,\n                \"max_storage_mb\": 100,\n                \"max_api_calls_per_day\": 1000,\n                \"max_email_sends_per_month\": 100,\n                \"max_sms_sends_per_month\": 0\n            },\n            \"features\": [\n                \"Basic CRM features\",\n                \"Email support\"\n            ]\n        },\n        {\n            \"id\": \"550e8400-e29b-41d4-a716-446655440002\",\n            \"code\": \"pro_monthly\",\n            \"name\": \"Pro Monthly\",\n            \"description\": \"For growing businesses\",\n            \"price\": 49.99,\n            \"currency\": \"USD\",\n            \"billing_interval\": \"monthly\",\n            \"trial_days\": 14,\n            \"is_active\": true,\n            \"is_popular\": true,\n            \"display_order\": 2,\n            \"quotas\": {\n                \"max_contacts\": 10000,\n                \"max_companies\": 2000,\n                \"max_deals\": 500,\n                \"max_users\": 10,\n                \"max_storage_bytes\": 10737418240,\n                \"max_storage_mb\": 10240,\n                \"max_api_calls_per_day\": 10000,\n                \"max_email_sends_per_month\": 5000,\n                \"max_sms_sends_per_month\": 1000\n            },\n            \"features\": [\n                \"Advanced reporting\",\n                \"Custom fields\",\n                \"API access\",\n                \"Priority support\",\n                \"Integrations\"\n            ]\n        }\n    ]\n}"
+								}
+							]
+						},
+						{
+							"name": "2. Get Plan by Code",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/plans/pro_monthly",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"plans",
+										"pro_monthly"
+									]
+								},
+								"description": "Récupérer les détails d'un plan spécifique par son code.\n\n**Paramètre:**\n- `code`: Code du plan (ex: free_monthly, pro_monthly, enterprise_yearly)"
+							},
+							"response": []
+						},
+						{
+							"name": "3. Compare Plans",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/plans/compare",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"plans",
+										"compare"
+									]
+								},
+								"description": "Comparer tous les plans avec une matrice de fonctionnalités.\n\n**Utile pour:**\n- Page de pricing\n- Tableau comparatif\n- Aide au choix du plan"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Subscriptions",
+					"item": [
+						{
+							"name": "1. Get Current Subscription",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{jwt_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-Tenant-ID",
+										"value": "{{tenant_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/subscription/current",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"subscription",
+										"current"
+									]
+								},
+								"description": "Récupérer l'abonnement actuel du tenant.\n\n**Headers requis:**\n- Authorization: Bearer {jwt_token}\n- X-Tenant-ID: {tenant_id}\n\n**Réponse:**\n- Détails du plan\n- Status de la période d'essai\n- Informations de facturation\n- Dates importantes"
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-Tenant-ID",
+												"value": "tenant_123"
+											}
+										],
+										"url": {
+											"raw": "{{base_url}}/api/subscription/current",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"api",
+												"subscription",
+												"current"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [],
+									"cookie": [],
+									"body": "{\n    \"status\": \"success\",\n    \"data\": {\n        \"id\": \"550e8400-e29b-41d4-a716-446655440010\",\n        \"tenant_id\": \"tenant_123\",\n        \"status\": \"active\",\n        \"plan\": {\n            \"code\": \"pro_monthly\",\n            \"name\": \"Pro Monthly\",\n            \"price\": 49.99,\n            \"currency\": \"USD\",\n            \"billing_interval\": \"monthly\"\n        },\n        \"trial\": {\n            \"is_in_trial\": false,\n            \"trial_ends_at\": null,\n            \"days_remaining\": 0\n        },\n        \"billing\": {\n            \"current_period_start\": \"2025-11-01 00:00:00\",\n            \"current_period_end\": \"2025-12-01 00:00:00\",\n            \"days_until_renewal\": 15,\n            \"cancel_at_period_end\": false,\n            \"cancels_at\": null\n        },\n        \"dates\": {\n            \"start_date\": \"2025-11-01 00:00:00\",\n            \"end_date\": null,\n            \"canceled_at\": null\n        },\n        \"stripe\": {\n            \"subscription_id\": \"sub_1234567890abcdef\",\n            \"customer_id\": \"cus_1234567890abcdef\"\n        }\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "2. Subscribe to Plan",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"if (pm.response.code === 201) {",
+											"    var jsonData = pm.response.json();",
+											"    if (jsonData.data && jsonData.data.subscription) {",
+											"        pm.environment.set('subscription_id', jsonData.data.subscription.id);",
+											"    }",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{jwt_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Tenant-ID",
+										"value": "{{tenant_id}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"plan_code\": \"pro_monthly\",\n    \"email\": \"john.doe@example.com\",\n    \"payment_method_id\": \"pm_card_visa\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/subscription/subscribe",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"subscription",
+										"subscribe"
+									]
+								},
+								"description": "S'abonner à un plan.\n\n**Body:**\n- `plan_code`: Code du plan (ex: pro_monthly)\n- `email`: Email pour le client Stripe\n- `payment_method_id`: ID de la méthode de paiement Stripe\n\n**Process:**\n1. Crée/récupère le client Stripe\n2. Crée la subscription dans Stripe\n3. Crée la subscription en base\n4. Initialise les quotas\n\n**Test Cards (Stripe):**\n- `pm_card_visa`: Carte Visa réussie\n- `pm_card_mastercard`: Carte Mastercard\n- Pour tester: utilisez Stripe Elements côté frontend"
+							},
+							"response": []
+						},
+						{
+							"name": "3. Change Plan (Upgrade/Downgrade)",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{jwt_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Tenant-ID",
+										"value": "{{tenant_id}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"new_plan_code\": \"enterprise_monthly\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/subscription/change-plan",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"subscription",
+										"change-plan"
+									]
+								},
+								"description": "Changer de plan (upgrade ou downgrade).\n\n**Proration:**\n- Stripe calcule automatiquement la proration\n- Upgrade: charge immédiate pour la différence\n- Downgrade: crédit appliqué à la prochaine facture\n\n**Quotas:**\n- Mis à jour immédiatement avec le nouveau plan"
+							},
+							"response": []
+						},
+						{
+							"name": "4. Cancel Subscription",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{jwt_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Tenant-ID",
+										"value": "{{tenant_id}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"immediately\": false\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/subscription/cancel",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"subscription",
+										"cancel"
+									]
+								},
+								"description": "Annuler l'abonnement.\n\n**Options:**\n- `immediately: false` - Annulation à la fin de la période (défaut)\n- `immediately: true` - Annulation immédiate\n\n**Comportement:**\n- immediately=false: accès jusqu'à la fin de la période payée\n- immediately=true: accès coupé immédiatement"
+							},
+							"response": []
+						},
+						{
+							"name": "5. Reactivate Subscription",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{jwt_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Tenant-ID",
+										"value": "{{tenant_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/subscription/reactivate",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"subscription",
+										"reactivate"
+									]
+								},
+								"description": "Réactiver un abonnement annulé.\n\n**Conditions:**\n- Fonctionne seulement si `cancel_at_period_end=true`\n- Ne fonctionne pas si déjà annulé complètement"
+							},
+							"response": []
+						},
+						{
+							"name": "6. Get Usage & Quotas",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{jwt_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-Tenant-ID",
+										"value": "{{tenant_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/subscription/usage",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"subscription",
+										"usage"
+									]
+								},
+								"description": "Récupérer l'utilisation actuelle et les quotas.\n\n**Données retournées:**\n- Limite de chaque quota\n- Utilisation actuelle\n- Pourcentage utilisé\n- Reste disponible\n- Type de limite (hard/soft)"
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "X-Tenant-ID",
+												"value": "tenant_123"
+											}
+										],
+										"url": {
+											"raw": "{{base_url}}/api/subscription/usage",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"api",
+												"subscription",
+												"usage"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [],
+									"cookie": [],
+									"body": "{\n    \"status\": \"success\",\n    \"data\": {\n        \"subscription\": {\n            \"plan\": \"Pro Monthly\",\n            \"status\": \"active\"\n        },\n        \"quotas\": [\n            {\n                \"quota_type\": \"contacts\",\n                \"limit\": 10000,\n                \"current_usage\": 2543,\n                \"percentage\": 25.43,\n                \"is_exceeded\": false,\n                \"remaining\": 7457,\n                \"is_hard_limit\": true\n            },\n            {\n                \"quota_type\": \"companies\",\n                \"limit\": 2000,\n                \"current_usage\": 487,\n                \"percentage\": 24.35,\n                \"is_exceeded\": false,\n                \"remaining\": 1513,\n                \"is_hard_limit\": true\n            },\n            {\n                \"quota_type\": \"storage_bytes\",\n                \"limit\": 10737418240,\n                \"current_usage\": 5368709120,\n                \"percentage\": 50.0,\n                \"is_exceeded\": false,\n                \"remaining\": 5368709120,\n                \"is_hard_limit\": true\n            }\n        ]\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "7. Get Billing History",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{jwt_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-Tenant-ID",
+										"value": "{{tenant_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/subscription/billing-history",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"subscription",
+										"billing-history"
+									]
+								},
+								"description": "Récupérer l'historique de facturation.\n\n**Retourne:**\n- Toutes les factures de l'abonnement\n- Statuts: draft, open, paid, void, uncollectible\n- Montants: subtotal, tax, total\n- Dates de paiement\n- Line items détaillés"
+							},
+							"response": []
+						},
+						{
+							"name": "8. List Payment Methods",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{jwt_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-Tenant-ID",
+										"value": "{{tenant_id}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/subscription/payment-methods",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"subscription",
+										"payment-methods"
+									]
+								},
+								"description": "Lister les méthodes de paiement enregistrées.\n\n**Données Stripe:**\n- Type de carte (Visa, Mastercard, etc.)\n- 4 derniers chiffres\n- Date d'expiration\n- Carte par défaut"
+							},
+							"response": []
+						},
+						{
+							"name": "9. Add Payment Method",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{jwt_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Tenant-ID",
+										"value": "{{tenant_id}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"payment_method_id\": \"pm_1234567890abcdef\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/subscription/payment-methods/add",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"subscription",
+										"payment-methods",
+										"add"
+									]
+								},
+								"description": "Ajouter une méthode de paiement.\n\n**Process:**\n1. Créer PaymentMethod avec Stripe Elements (frontend)\n2. Envoyer l'ID à cette API\n3. Attaché au client Stripe"
+							},
+							"response": []
+						},
+						{
+							"name": "10. Remove Payment Method",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{jwt_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/subscription/payment-methods/:paymentMethodId",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"subscription",
+										"payment-methods",
+										":paymentMethodId"
+									],
+									"variable": [
+										{
+											"key": "paymentMethodId",
+											"value": "pm_1234567890abcdef"
+										}
+									]
+								},
+								"description": "Supprimer une méthode de paiement."
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "🔔 Webhooks",
+			"description": "Endpoints pour recevoir les événements Stripe (ne pas appeler directement)",
+			"item": [
+				{
+					"name": "Stripe Webhook Handler",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Stripe-Signature",
+								"value": "t=1234567890,v1=signature_here",
+								"type": "text",
+								"description": "Signature Stripe pour vérification"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"evt_1234567890\",\n    \"object\": \"event\",\n    \"type\": \"invoice.paid\",\n    \"data\": {\n        \"object\": {\n            \"id\": \"in_1234567890\",\n            \"amount_paid\": 4999,\n            \"currency\": \"usd\",\n            \"customer\": \"cus_1234567890\",\n            \"subscription\": \"sub_1234567890\"\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/webhooks/stripe",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhooks",
+								"stripe"
+							]
+						},
+						"description": "⚠️ **Endpoint pour Stripe uniquement - Ne pas appeler manuellement**\n\n**Configuration:**\n1. Aller dans Stripe Dashboard → Webhooks\n2. Ajouter l'endpoint: `https://yourdomain.com/webhooks/stripe`\n3. Sélectionner les événements à écouter\n4. Copier le signing secret → .env `STRIPE_WEBHOOK_SECRET`\n\n**Événements gérés (15+):**\n\n**Subscriptions:**\n- `customer.subscription.created`\n- `customer.subscription.updated`\n- `customer.subscription.deleted`\n- `customer.subscription.trial_will_end`\n\n**Invoices:**\n- `invoice.created`\n- `invoice.finalized`\n- `invoice.paid`\n- `invoice.payment_failed`\n- `invoice.payment_action_required`\n\n**Payments:**\n- `payment_intent.succeeded`\n- `payment_intent.payment_failed`\n\n**Customers:**\n- `customer.created`\n- `customer.updated`\n- `customer.deleted`\n\n**Payment Methods:**\n- `payment_method.attached`\n- `payment_method.detached`\n\n**Sécurité:**\n- Vérification de signature obligatoire\n- Prévient les requêtes non autorisées"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Auto-refresh JWT if expired (optional)",
+					"// You can implement token refresh logic here"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Global test script",
+					"pm.test('Response status code is valid', function () {",
+					"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 204, 400, 401, 403, 404, 409, 500]);",
+					"});",
+					"",
+					"if (pm.response.code >= 200 && pm.response.code < 300) {",
+					"    pm.test('Response has correct structure', function () {",
+					"        var jsonData = pm.response.json();",
+					"        pm.expect(jsonData).to.have.property('status');",
+					"    });",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refresh_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "tenant_id",
+			"value": "tenant_123",
+			"type": "string"
+		},
+		{
+			"key": "verification_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "password_reset_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "subscription_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
