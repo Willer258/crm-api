@@ -18,6 +18,9 @@ class Note
     #[Groups(['note:edit', 'note:list' , 'contact:info', 'company:info' , 'activity:read' , 'deal:info'])]
     private ?int $id = null;
 
+    #[ORM\ManyToOne(targetEntity: Workspace::class)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    private ?Workspace $workspace = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(['note:edit', 'note:list' , 'contact:info', 'company:info' , 'activity:read' , 'deal:info'])]
@@ -97,6 +100,17 @@ class Note
     {
         $this->contact = $contact;
 
+        return $this;
+    }
+
+    public function getWorkspace(): ?Workspace
+    {
+        return $this->workspace;
+    }
+
+    public function setWorkspace(?Workspace $workspace): static
+    {
+        $this->workspace = $workspace;
         return $this;
     }
 }

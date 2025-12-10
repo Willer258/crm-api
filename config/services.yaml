@@ -42,15 +42,6 @@ services:
     App\Security\MasterAuthenticator:
         parent: lexik_jwt_authentication.security.jwt_authenticator
 
-
-    App\MultiTenancy\ConnectionWrapper:
-        parent: Doctrine\DBAL\Connection
-
-    App\MultiTenancy\KernelListener:
-        tags:
-            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 10000 }
-            - { name: kernel.event_listener, event: console.command, method: onKernelRequest }
-
     # App\Listeners\PopupExceptionHandler:
     #     tags:
     #         - {name: kernel.event_listener, event: kernel.exception, method: onKernelException}
@@ -72,14 +63,6 @@ services:
         arguments: ['@security.role_hierarchy']
 
     App\Command\GeneratePostmanCollectionCommand:
-        arguments:
-            $projectDir: '%kernel.project_dir%'
-
-    App\Command\BackupTenantCommand:
-        arguments:
-            $projectDir: '%kernel.project_dir%'
-
-    App\Service\TenantProvisioningService:
         arguments:
             $projectDir: '%kernel.project_dir%'
 

@@ -21,6 +21,11 @@ class Pipeline
     #[Groups(['pipeline:edit', 'pipeline:list', 'pipeline:info' , 'deal:info'])]
     private ?int $id = null;
 
+    #[ORM\ManyToOne(targetEntity: Workspace::class)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Groups(['pipeline:info'])]
+    private ?Workspace $workspace = null;
+
     #[ORM\Column(length: 255)]
     #[Groups(['pipeline:edit', 'pipeline:list', 'pipeline:info' , 'deal:info'])]
     private ?string $name = null;
@@ -114,6 +119,17 @@ class Pipeline
             }
         }
 
+        return $this;
+    }
+
+    public function getWorkspace(): ?Workspace
+    {
+        return $this->workspace;
+    }
+
+    public function setWorkspace(?Workspace $workspace): static
+    {
+        $this->workspace = $workspace;
         return $this;
     }
 }
