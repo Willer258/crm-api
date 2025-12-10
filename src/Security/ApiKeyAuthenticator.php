@@ -5,7 +5,6 @@ namespace App\Security;
 
 
 use App\Entity\User;
-use App\MultiTenancy\Zone;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,7 +25,7 @@ class ApiKeyAuthenticator extends AbstractAuthenticator
 
     private $allowedSources = ['CORE', 'AUTH', 'FORM', 'MASTER'];
 
-    public function __construct(private ParameterBagInterface $bag, private RouterInterface $router, private Zone $zone,private RequestStack $requestStack)
+    public function __construct(private ParameterBagInterface $bag, private RouterInterface $router, private RequestStack $requestStack)
     {
     }
 
@@ -94,11 +93,10 @@ class ApiKeyAuthenticator extends AbstractAuthenticator
         $userBadge = new UserBadge($apiToken, function () use ($source) {
             $apiUser = new User();
             $apiUser->setEmail($source);
-            $roles = [];
+            $roles = ['ROLE_SERVICE'];
             if ($this->requestStack->getCurrentRequest()?->headers->get('roles')) {
-                $roles = explode(',', $this->requestStack->getCurrentRequest()?->headers->get('roles'));
+                $roles = array_merge($roles, explode(',', $this->requestStack->getCurrentRequest()?->headers->get('roles')));
             }
-            $roles[] = 'ROLE_SERVICE_' . strtoupper($this->zone->getCurrent());
             $apiUser->setRoles($roles);
             return $apiUser;
         });

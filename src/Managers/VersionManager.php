@@ -2,7 +2,6 @@
 
 namespace App\Managers;
 
-use App\MultiTenancy\Zone;
 use Psr\Log\LoggerInterface;
 
 class VersionManager
@@ -28,13 +27,9 @@ class VersionManager
 
     private $path = __DIR__ . '/../../version.json';
 
-    public function __construct(private LoggerInterface $logger, private Zone $zone)
+    public function __construct(private LoggerInterface $logger)
     {
-        $folder = __DIR__ . '/../../versions/';
-        if (!is_dir($folder)) {
-            mkdir($folder, 0777, true);
-        }
-        $this->path = $folder . $this->zone->getCurrent() . '_version.json';
+        $this->path = __DIR__ . '/../../version.json';
         if (file_exists($this->path)) {
             $this->version = json_decode(file_get_contents($this->path), true);
         } else {

@@ -11,7 +11,6 @@ use Ramsey\Uuid\Uuid;
 use App\Utils\Sanitizer;
 use Psr\Log\LoggerInterface;
 use App\Interfaces\ManagerInterface;
-use App\MultiTenancy\Zone;
 use App\Repository\SchoolRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -31,7 +30,6 @@ class ServiceManager implements ManagerInterface
         private ParameterBagInterface $bag,
         private HttpClientInterface   $http,
         private LoggerInterface       $logger,
-        private Zone                  $zone,
         private  Security $security
     )
     {
@@ -53,18 +51,15 @@ class ServiceManager implements ManagerInterface
         $prefix = $this->bag->get('SERVICE_PREFIX');
         $suffix = $this->bag->get('SERVICE_SUFFIX');
         $token = sha1($prefix . $key . $timestamp . $suffix);
-        $zone = $this->zone->getCurrent();
-        // dump($token);
-        // dump($zone);
-//          dump($url,$token,$zone);
+
         $roles = [];
         if ($this->security->getUser()) {
             $roles = $this->security->getUser()->getRoles();
         }
         if ($debug) {
-            $this->logger->critical('url ' . $url . ', token ' . $token . ', zone ' . $zone);
+            $this->logger->critical('url ' . $url . ', token ' . $token);
         }
-        $response = $this->http->request('GET', $url, ['headers' => ['X-AUTH-TOKEN' => $token, 'Zone' => $zone, 'roles' => $roles]]);
+        $response = $this->http->request('GET', $url, ['headers' => ['X-AUTH-TOKEN' => $token, 'roles' => $roles]]);
 //        echo $response->getContent(false);
 //        exit;
         // $error =  $response->getInfo();
@@ -89,17 +84,15 @@ class ServiceManager implements ManagerInterface
         $prefix = $this->bag->get('SERVICE_PREFIX');
         $suffix = $this->bag->get('SERVICE_SUFFIX');
         $token = sha1($prefix . $key . $timestamp . $suffix);
-        $zone = $this->zone->getCurrent();
-        // try {
+
         if ($debug) {
-            $this->logger->critical('url ' . $url . ', token ' . $token . ', zone ' . $zone . ', body ' . json_encode($body));
+            $this->logger->critical('url ' . $url . ', token ' . $token . ', body ' . json_encode($body));
         }
         $roles = [];
         if ($this->security->getUser()) {
             $roles = $this->security->getUser()->getRoles();
         }
-//                dd($url, $token, $zone, json_encode($body),json_encode($roles));
-        $response = $this->http->request('POST', $url, ['headers' => ['X-AUTH-TOKEN' => $token, 'Zone' => $zone, 'roles' => $roles], 'body' => json_encode($body)]);
+        $response = $this->http->request('POST', $url, ['headers' => ['X-AUTH-TOKEN' => $token, 'roles' => $roles], 'body' => json_encode($body)]);
 //        echo $response->getContent(false);
 //exit;
         $content = json_decode($response->getContent(false), true);
@@ -155,7 +148,6 @@ class ServiceManager implements ManagerInterface
         $prefix = $this->bag->get('SERVICE_PREFIX');
         $suffix = $this->bag->get('SERVICE_SUFFIX');
         $token = sha1($prefix . $key . $timestamp . $suffix);
-        $zone = $this->zone->getCurrent();
 
         $cFile = curl_file_create($filePath);
         $post = array('signature' => $cFile);
@@ -163,7 +155,6 @@ class ServiceManager implements ManagerInterface
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'X-AUTH-TOKEN: ' . $token,
-            'Zone: ' . $zone,
         ]);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);

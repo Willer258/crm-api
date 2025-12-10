@@ -2,7 +2,6 @@
 
 namespace App\Security\Voter;
 
-use App\MultiTenancy\Zone;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -13,7 +12,7 @@ class UserVoter
 // extends Voter
 {
 
-    public function __construct(private RoleHierarchy $hierarchy, private Zone $zone)
+    public function __construct(private RoleHierarchy $hierarchy)
     {
 
     }
@@ -28,14 +27,14 @@ class UserVoter
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
-//        dd($attribute, $user);
+
         // if the user is anonymous, do not grant access
         if (!$user instanceof UserInterface) {
             return false;
         }
-        dd($attribute);
+
         $access = $this->hierarchy->getReachableRoleNames($user->getRoles());
-        return in_array($attribute, $access) || in_array($attribute . '_' . strtoupper($this->zone->getCurrent()), $access);
+        return in_array($attribute, $access);
     }
 }
 
