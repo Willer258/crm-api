@@ -23,6 +23,11 @@ class Contact
     #[Groups(['contact:edit', 'contact:list', 'contact:info', 'company:info', 'deal:info' , 'activity:read'])]
     private ?int $id = null;
 
+    #[ORM\ManyToOne(targetEntity: Workspace::class)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Groups(['contact:edit', 'contact:list', 'contact:info'])]
+    private ?Workspace $workspace = null;
+
     /**
      * @var Collection<int, Property>
      */
@@ -447,6 +452,17 @@ class Contact
             }
         }
 
+        return $this;
+    }
+
+    public function getWorkspace(): ?Workspace
+    {
+        return $this->workspace;
+    }
+
+    public function setWorkspace(?Workspace $workspace): static
+    {
+        $this->workspace = $workspace;
         return $this;
     }
 

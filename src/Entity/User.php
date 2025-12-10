@@ -42,6 +42,16 @@ class User  implements UserInterface, PasswordAuthenticatedUserInterface, JWTUse
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $godfather = null;
 
+    #[ORM\ManyToOne(targetEntity: Workspace::class, inversedBy: 'users')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?Workspace $currentWorkspace = null;
+
+    /**
+     * @var Collection<int, WorkspaceMember>
+     */
+    #[ORM\OneToMany(targetEntity: WorkspaceMember::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
+    private Collection $workspaceMemberships;
+
     // public function __construct($username, array $roles)
     // {
 
@@ -67,6 +77,7 @@ class User  implements UserInterface, PasswordAuthenticatedUserInterface, JWTUse
         }
         // Initialiser password avec une valeur par défaut vide pour les users JWT
         $this->password = $payload['password'] ?? '';
+        $this->workspaceMemberships = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -219,5 +230,57 @@ class User  implements UserInterface, PasswordAuthenticatedUserInterface, JWTUse
         $this->godfather = $godfather;
 
         return $this;
+    }
+
+    public function getCurrentWorkspace(): ?Workspace
+    {
+        return $this->currentWorkspace;
+    }
+
+    public function setCurrentWorkspace(?Workspace $currentWorkspace): self
+    {
+        $this->currentWorkspace = $currentWorkspace;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, WorkspaceMember>
+     */
+    public function getWorkspaceMemberships(): Collection
+    {
+        return $this->workspaceMemberships;
+    }
+
+    public function addWorkspaceMembership(WorkspaceMember $workspaceMembership): self
+    {
+        if (!$this->workspaceMemberships->contains($workspaceMembership)) {
+            $this->workspaceMemberships->add($workspaceMembership);
+            $workspaceMembership->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWorkspaceMembership(WorkspaceMember $workspaceMembership): self
+    {
+        if ($this->workspaceMemberships->removeElement($workspaceMembership)) {
+            // set the owning side to null (unless already changed)
+            if ($workspaceMembership->getUser() === $this) {
+                $workspaceMembership->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get all workspaces the user belongs to
+     */
+    public function getWorkspaces(): array
+    {
+        return $this->workspaceMemberships
+            ->filter(fn(WorkspaceMember $m) => $m->isActive())
+            ->map(fn(WorkspaceMember $m) => $m->getWorkspace())
+            ->toArray();
     }
 }

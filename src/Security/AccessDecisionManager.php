@@ -23,8 +23,12 @@ final class AccessDecisionManager implements AccessDecisionManagerInterface
 
     private $strategy;
 
-    public function __construct(private Zone                  $zone, ?AccessDecisionStrategyInterface $strategy = null,
-                                private UrlGeneratorInterface $router, private RequestStack $requestStack, private ParameterBagInterface $bag
+    public function __construct(
+        private Zone $zone,
+        private UrlGeneratorInterface $router,
+        private RequestStack $requestStack,
+        private ParameterBagInterface $bag,
+        ?AccessDecisionStrategyInterface $strategy = null
     )
     {
         $this->strategy = $strategy ?? new AffirmativeStrategy();
@@ -33,13 +37,10 @@ final class AccessDecisionManager implements AccessDecisionManagerInterface
 
     public function decide(TokenInterface $token, array $attributes, $object = null): bool
     {
-        // ⚠️ SECURITY WARNING: Authentication is currently DISABLED for development
-        // TODO: Remove this line and uncomment the code below to enable proper authentication
-        // TODO: Configure route permissions via /admin/save/route/requirements before activating
-        return true;
-
-        // --- AUTHENTICATION CODE (Currently disabled) ---
-//        dump('attributes => ', $attributes);
+        // ✅ AUTHENTICATION ENABLED
+        // Route permissions are managed via multi-tenant role system
+        // Admin routes use tenant-specific roles: ROLE_ADMIN_{TENANT}
+        // Public routes use PUBLIC_ACCESS attribute
 
         $admin = 'ROLE_ADMIN_' . strtoupper($this->zone->getCurrent());
         $request = $this->requestStack->getMainRequest();

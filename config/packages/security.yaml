@@ -12,10 +12,15 @@ security:
         ROLE_CUSTOMER: ['ROLE_PRE_AUTH']
         ROLE_MANAGER: ['ROLE_USER','ROLE_CUSTOMER']
         ROLE_ADMIN: ['ROLE_MANAGER']
+        ROLE_SUPER_ADMIN: ['ROLE_ADMIN']
 
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         # used to reload user from session & other features (e.g. switch_user)
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
         jwt:
             lexik_jwt:
                 class: App\Entity\User
@@ -24,13 +29,25 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
+        admin:
+            pattern: ^/admin
+            lazy: true
+            provider: app_user_provider
+            form_login:
+                login_path: admin_login
+                check_path: admin_login
+                default_target_path: admin_dashboard
+                enable_csrf: true
+            logout:
+                path: admin_logout
+                target: admin_login
 
         service:
             pattern: ^/service
             stateless: true
+            provider: app_user_provider
             custom_authenticators:
                 - App\Security\ApiKeyAuthenticator
-
 
         main:
             lazy: true
@@ -50,6 +67,8 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+        - { path: ^/admin/login, roles: PUBLIC_ACCESS }
+        - { path: ^/admin, roles: ROLE_SUPER_ADMIN }
 #        - { path: ^/*, roles: PUBLIC_ACCESS }
         # - { path: ^/api, roles: PUBLIC_ACCESS }
         # - { path: ^/service, roles: ROLE_SERVICE }

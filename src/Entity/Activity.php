@@ -21,6 +21,11 @@ class Activity
     #[Groups(["activity:read", "company:info", "contact:info", "pipeline:info" , "deal:info"])]
     private ?int $id = null;
 
+    #[ORM\ManyToOne(targetEntity: Workspace::class)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Groups(["activity:read"])]
+    private ?Workspace $workspace = null;
+
     #[ORM\Column(length: 255)]
     #[Groups(["activity:read", "company:info", "contact:info","pipeline:info" , "deal:info"])]
     private ?string $type = null;
@@ -294,6 +299,17 @@ class Activity
     {
         $this->name = $name;
 
+        return $this;
+    }
+
+    public function getWorkspace(): ?Workspace
+    {
+        return $this->workspace;
+    }
+
+    public function setWorkspace(?Workspace $workspace): static
+    {
+        $this->workspace = $workspace;
         return $this;
     }
 }

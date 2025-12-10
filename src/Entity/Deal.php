@@ -21,6 +21,11 @@ class Deal
     #[Groups(['contact:info' , 'deal:info', 'company:info', 'activity:read','pipeline:info' ])]
     private ?int $id = null;
 
+    #[ORM\ManyToOne(targetEntity: Workspace::class)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Groups(['deal:info'])]
+    private ?Workspace $workspace = null;
+
     #[ORM\ManyToOne(inversedBy: 'deals')]
     #[Groups(['deal:info' , 'pipeline:info'])]
     private ?Contact $contact = null;
@@ -325,6 +330,17 @@ class Deal
     {
         $this->company = $company;
 
+        return $this;
+    }
+
+    public function getWorkspace(): ?Workspace
+    {
+        return $this->workspace;
+    }
+
+    public function setWorkspace(?Workspace $workspace): static
+    {
+        $this->workspace = $workspace;
         return $this;
     }
 }
