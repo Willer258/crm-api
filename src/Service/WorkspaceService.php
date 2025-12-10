@@ -73,6 +73,54 @@ class WorkspaceService
             $workspace->setLogo($data['logo']);
         }
 
+        if (isset($data['description'])) {
+            $workspace->setDescription($data['description']);
+        }
+
+        if (isset($data['industry'])) {
+            $workspace->setIndustry($data['industry']);
+        }
+
+        if (isset($data['employeeCount'])) {
+            $workspace->setEmployeeCount($data['employeeCount']);
+        }
+
+        if (isset($data['website'])) {
+            $workspace->setWebsite($data['website']);
+        }
+
+        if (isset($data['phone'])) {
+            $workspace->setPhone($data['phone']);
+        }
+
+        if (isset($data['email'])) {
+            $workspace->setEmail($data['email']);
+        }
+
+        if (isset($data['address'])) {
+            $workspace->setAddress($data['address']);
+        }
+
+        if (isset($data['city'])) {
+            $workspace->setCity($data['city']);
+        }
+
+        if (isset($data['postalCode'])) {
+            $workspace->setPostalCode($data['postalCode']);
+        }
+
+        if (isset($data['country'])) {
+            $workspace->setCountry($data['country']);
+        }
+
+        if (isset($data['siret'])) {
+            $workspace->setSiret($data['siret']);
+        }
+
+        if (isset($data['vatNumber'])) {
+            $workspace->setVatNumber($data['vatNumber']);
+        }
+
         if (isset($data['isActive'])) {
             $workspace->setIsActive($data['isActive']);
         }
