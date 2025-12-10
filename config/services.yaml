@@ -22,6 +22,9 @@ parameters:
 
     SERVICE_PREFIX: '%env(SERVICE_PREFIX)%'
     SERVICE_SUFFIX: '%env(SERVICE_SUFFIX)%'
+
+    # File upload directory
+    upload_folder: '%kernel.project_dir%/public/uploads'
     
 services:
     # default configuration for services in *this* file
@@ -73,3 +76,7 @@ services:
     App\Service\StripeService:
         arguments:
             $stripeSecretKey: '%env(STRIPE_SECRET_KEY)%'
+
+    App\Service\FileService:
+        arguments:
+            $uploadFolder: '%upload_folder%'

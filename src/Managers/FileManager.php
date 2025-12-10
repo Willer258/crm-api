@@ -6,6 +6,8 @@ use App\Entity\Asset;
 use App\Entity\Company;
 use App\Entity\Contact;
 use App\Entity\Deal;
+use App\Entity\Workspace;
+use App\Service\WorkspaceResolver;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -14,6 +16,7 @@ class FileManager
 {
     private EntityManagerInterface $em;
     private string $uploadDirectory;
+    private WorkspaceResolver $workspaceResolver;
 
     // Configuration de sécurité
     private const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -49,9 +52,11 @@ class FileManager
 
     public function __construct(
         EntityManagerInterface $em,
-        ParameterBagInterface $params
+        ParameterBagInterface $params,
+        WorkspaceResolver $workspaceResolver
     ) {
         $this->em = $em;
+        $this->workspaceResolver = $workspaceResolver;
         // Récupérer le répertoire d'upload depuis les paramètres ou utiliser un défaut
         $this->uploadDirectory = $params->get('kernel.project_dir') . '/var/uploads';
 
@@ -65,7 +70,7 @@ class FileManager
      * Upload et crée un asset à partir d'un fichier uploadé
      *
      * @param UploadedFile $file
-     * @param array $data Données additionnelles (contact, company, deal)
+     * @param array $data Données additionnelles (contact, company, deal, workspace)
      * @return Asset
      * @throws \RuntimeException Si validation échoue
      */
@@ -73,6 +78,12 @@ class FileManager
     {
         // Validation du fichier
         $this->validateFile($file);
+
+        // Récupérer le workspace courant
+        $workspace = $this->getCurrentWorkspace($data);
+        if (!$workspace) {
+            throw new \RuntimeException('Workspace not found');
+        }
 
         // Générer un nom de fichier sécurisé
         $secureFilename = $this->generateSecureFilename($file);
@@ -88,6 +99,7 @@ class FileManager
         $asset->setSrc('/uploads/' . $secureFilename); // URL relative
         $asset->setName($file->getClientOriginalName());
         $asset->setType($fileType);
+        $asset->setWorkspace($workspace);
 
         // Associer aux entités si précisé
         $this->associateToEntities($asset, $data);
@@ -342,5 +354,22 @@ class FileManager
     public function getAllowedMimeTypes(): array
     {
         return array_keys(self::ALLOWED_MIME_TYPES);
+    }
+
+    /**
+     * Récupère le workspace courant
+     */
+    private function getCurrentWorkspace(array $data): ?Workspace
+    {
+        // Si workspace_id est fourni dans les données, l'utiliser
+        if (isset($data['workspace'])) {
+            if ($data['workspace'] instanceof Workspace) {
+                return $data['workspace'];
+            }
+            return $this->em->find(Workspace::class, $data['workspace']);
+        }
+
+        // Sinon, utiliser le workspace courant du résolveur
+        return $this->workspaceResolver->getCurrentWorkspace();
     }
 }
