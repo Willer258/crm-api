@@ -1,34 +1,62 @@
-security:
-    access_decision_manager:
-            service: App\Security\AccessDecisionManager
-    # enable_authenticator_manager: true
-    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
-    password_hashers:
-        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
-        App\Entity\User:
-            algorithm: auto
+# Configuration de sécurité Symfony
+# Documentation: https://symfony.com/doc/current/security.html
 
+security:
+    # Gestionnaire de décision d'accès personnalisé (workspace-aware)
+    access_decision_manager:
+        service: App\Security\AccessDecisionManager
+
+    # Configuration du hashage des mots de passe
+    # Utilise Argon2id pour une sécurité optimale (recommandé OWASP)
+    # Fallback sur bcrypt si Argon2id n'est pas disponible
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+            algorithm: argon2id
+            # Coût mémoire: 64 MB (65536 KB) - résistant aux attaques GPU
+            memory_cost: 65536
+            # Coût temps: 4 itérations - balance sécurité/performance
+            time_cost: 4
+        App\Entity\User:
+            algorithm: argon2id
+            memory_cost: 65536
+            time_cost: 4
+
+    # Hiérarchie des rôles
+    # Chaque rôle hérite des rôles entre crochets
     role_hierarchy:
         ROLE_CUSTOMER: ['ROLE_PRE_AUTH']
-        ROLE_MANAGER: ['ROLE_USER','ROLE_CUSTOMER']
+        ROLE_MANAGER: ['ROLE_USER', 'ROLE_CUSTOMER']
         ROLE_ADMIN: ['ROLE_MANAGER']
         ROLE_SUPER_ADMIN: ['ROLE_ADMIN']
 
-    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+    # Fournisseurs d'utilisateurs
     providers:
-        # used to reload user from session & other features (e.g. switch_user)
+        # Fournisseur principal basé sur l'entité User
         app_user_provider:
             entity:
                 class: App\Entity\User
                 property: email
+        # Fournisseur JWT pour l'authentification par token
         jwt:
             lexik_jwt:
                 class: App\Entity\User
+
+    # Configuration des firewalls
     firewalls:
+        # Firewall pour les outils de développement (désactivé en sécurité)
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
+        # Firewall pour les requêtes CORS preflight (OPTIONS)
+        # Doit être avant les autres firewalls pour permettre CORS
+        options:
+            pattern: ^/
+            methods: [OPTIONS]
+            security: false
+
+        # Firewall pour les routes de service (API interne)
+        # Utilise l'authentification par clé API
         service:
             pattern: ^/service
             stateless: true
@@ -36,35 +64,55 @@ security:
             custom_authenticators:
                 - App\Security\ApiKeyAuthenticator
 
+        # Firewall principal pour l'API
+        # Authentification JWT stateless
         main:
             lazy: true
             stateless: true
             provider: jwt
             jwt: ~
-#            guard:
-#                authenticator:
-#                    - lexik_jwt_authentication.jwt_token_authenticator
 
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#the-firewall
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
-
-    # Easy way to control access for large sections of your site
-    # Note: Only the *first* access control that matches will be used
+    # Contrôle d'accès par route
+    # Note: Seule la PREMIÈRE règle correspondante est appliquée
+    # TODO: Configurer les accès selon les besoins de production
     access_control:
+        # Routes publiques (authentification)
+        - { path: ^/auth/register, roles: PUBLIC_ACCESS }
+        - { path: ^/auth/login, roles: PUBLIC_ACCESS }
+        - { path: ^/auth/verify-email-otp, roles: PUBLIC_ACCESS }
+        - { path: ^/auth/resend-otp, roles: PUBLIC_ACCESS }
+        - { path: ^/auth/forgot-password, roles: PUBLIC_ACCESS }
+        - { path: ^/auth/reset-password, roles: PUBLIC_ACCESS }
+        - { path: ^/auth/refresh, roles: PUBLIC_ACCESS }
+        - { path: ^/auth/magic-link, roles: PUBLIC_ACCESS }
+        - { path: ^/auth/oauth, roles: PUBLIC_ACCESS }
+        - { path: ^/auth/2fa/verify, roles: PUBLIC_ACCESS }
+        - { path: ^/auth/2fa/recovery, roles: PUBLIC_ACCESS }
+        # Toutes les autres routes nécessitent une authentification
+        # Décommenter en production:
+        # - { path: ^/auth, roles: ROLE_USER }
+        # - { path: ^/admin, roles: ROLE_ADMIN }
+        # - { path: ^/, roles: ROLE_USER }
+        # Pour le développement, tout est public:
         - { path: ^/*, roles: PUBLIC_ACCESS }
 
+# Configuration pour l'environnement de test
 when@test:
     security:
         password_hashers:
-            # By default, password hashers are resource intensive and take time. This is
-            # important to generate secure password hashes. In tests however, secure hashes
-            # are not important, waste resources and increase test times. The following
-            # reduces the work factor to the lowest possible values.
+            # En test, on réduit les coûts pour accélérer les tests
             Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
                 algorithm: auto
-                cost: 4 # Lowest possible value for bcrypt
-                time_cost: 3 # Lowest possible value for argon
-                memory_cost: 10 # Lowest possible value for argon
+                cost: 4           # Minimum pour bcrypt
+                time_cost: 3      # Minimum pour argon
+                memory_cost: 10   # Minimum pour argon (en KB)
+
+# Configuration pour l'environnement de production
+when@prod:
+    security:
+        # En production, on peut augmenter les coûts si le serveur le permet
+        password_hashers:
+            Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+                algorithm: argon2id
+                memory_cost: 131072  # 128 MB pour plus de sécurité
+                time_cost: 6

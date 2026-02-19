@@ -20,6 +20,10 @@ parameters:
     SHORTENER_API_URL: '%env(SHORTENER_API_URL)%'
     SELL_API_URL: '%env(SELL_API_URL)%'
 
+    # Frontend configuration
+    frontend_url: '%env(FRONTEND_URL)%'
+    frontend_locale: '%env(FRONTEND_LOCALE)%'
+
     SERVICE_PREFIX: '%env(SERVICE_PREFIX)%'
     SERVICE_SUFFIX: '%env(SERVICE_SUFFIX)%'
 
@@ -80,3 +84,19 @@ services:
     App\Service\FileService:
         arguments:
             $uploadFolder: '%upload_folder%'
+
+    App\Service\EmailService:
+        arguments:
+            $frontendUrl: '%frontend_url%'
+            $frontendLocale: '%frontend_locale%'
+
+    App\Service\WhatsAppService:
+        arguments:
+            $evolutionApiUrl: '%env(EVOLUTION_API_URL)%'
+            $evolutionInstanceName: '%env(EVOLUTION_INSTANCE_NAME)%'
+            $evolutionApiKey: '%env(EVOLUTION_API_KEY)%'
+
+    App\Service\CrmEmailService:
+        arguments:
+            $fromEmail: '%env(CRM_FROM_EMAIL)%'
+            $fromName: '%env(CRM_FROM_NAME)%'

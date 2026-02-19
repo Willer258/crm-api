@@ -3,17 +3,17 @@
 namespace App\Repository;
 
 use App\Entity\Tag;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Service\WorkspaceResolver;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Tag>
+ * @extends WorkspaceAwareRepository<Tag>
  */
-class TagRepository extends ServiceEntityRepository
+class TagRepository extends WorkspaceAwareRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, WorkspaceResolver $workspaceResolver)
     {
-        parent::__construct($registry, Tag::class);
+        parent::__construct($registry, Tag::class, $workspaceResolver);
     }
 
     /**

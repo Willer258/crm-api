@@ -222,13 +222,13 @@ Body:
 
 ## 📋 Organisation de la Collection
 
-### 🔐 Authentication (9 endpoints)
+### 🔐 Authentication (8 endpoints)
 
 | # | Endpoint | Méthode | Description |
 |---|----------|---------|-------------|
 | 1 | `/auth/register` | POST | Créer un compte |
-| 2 | `/auth/verify-email` | POST | Vérifier email |
-| 3 | `/auth/resend-verification` | POST | Renvoyer email |
+| 2 | `/auth/verify-email-otp` | POST | Vérifier email avec OTP |
+| 3 | `/auth/resend-otp` | POST | Renvoyer code OTP |
 | 4 | `/auth/login` | POST | Se connecter |
 | 5 | `/auth/refresh` | POST | Renouveler JWT |
 | 6 | `/auth/me` | GET | Infos utilisateur |
@@ -447,12 +447,12 @@ Déjà configuré dans les requêtes appropriées.
 2. Sélectionner l'environnement créé
 3. Vérifier qu'il est bien actif (marqué d'une coche)
 
-### Problème: "Invalid verification token"
+### Problème: "Invalid verification code"
 
-**Cause:** Token expiré (24h pour email, 1h pour password)
+**Cause:** Code OTP expiré (10 minutes) ou tentatives épuisées (5 max)
 
 **Solution:**
-1. Utiliser `/auth/resend-verification` pour email
+1. Utiliser `/auth/resend-otp` pour obtenir un nouveau code OTP
 2. Utiliser `/auth/forgot-password` pour password reset
 
 ### Problème: Payment method invalid

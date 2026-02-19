@@ -22,8 +22,8 @@ http://localhost:8000/auth
 
 ### New User Flow
 
-1. **Register** (`POST /auth/register`) - Create account
-2. **Verify Email** (`POST /auth/verify-email`) - Verify email address
+1. **Register** (`POST /auth/register`) - Create account, receive OTP code via email
+2. **Verify Email** (`POST /auth/verify-email-otp`) - Verify email address with OTP code
 3. **Login** (`POST /auth/login`) - Get JWT and refresh token
 4. Access protected resources with JWT token
 
@@ -116,16 +116,17 @@ Create a new user account. Email verification is required before login.
 
 ---
 
-### 2. Verify Email
+### 2. Verify Email with OTP
 
-Verify email address using the token sent via email.
+Verify email address using the 6-digit OTP code sent via email.
 
-**Endpoint:** `POST /auth/verify-email`
+**Endpoint:** `POST /auth/verify-email-otp`
 
 **Request Body:**
 ```json
 {
-  "token": "verification_token_from_email"
+  "email": "user@example.com",
+  "code": "123456"
 }
 ```
 
@@ -143,39 +144,51 @@ Verify email address using the token sent via email.
 
 **Error Responses:**
 
-- **400 Bad Request** - Missing token
+- **400 Bad Request** - Missing email or code
 ```json
 {
   "status": "error",
-  "message": "Verification token is required"
+  "message": "Email and verification code are required"
 }
 ```
 
-- **404 Not Found** - Invalid token
+- **404 Not Found** - Invalid or expired OTP
 ```json
 {
   "status": "error",
-  "message": "Invalid verification token"
+  "message": "No valid verification code found. Please request a new one."
 }
 ```
 
-- **400 Bad Request** - Expired or used token
+- **400 Bad Request** - Wrong code
 ```json
 {
   "status": "error",
-  "message": "Verification token has expired or already been used"
+  "message": "Invalid verification code.",
+  "attemptsLeft": 3
 }
 ```
 
-**Token Expiration:** 24 hours
+- **429 Too Many Requests** - Rate limit exceeded
+```json
+{
+  "status": "error",
+  "message": "Too many verification attempts. Please try again later."
+}
+```
+
+**OTP Details:**
+- Expiration: 10 minutes
+- Max attempts: 5
+- Rate limiting: 10 attempts per 15 minutes per IP
 
 ---
 
-### 3. Resend Verification Email
+### 3. Resend OTP Code
 
-Resend email verification link if the original one expired.
+Resend a new OTP verification code if the original one expired.
 
-**Endpoint:** `POST /auth/resend-verification`
+**Endpoint:** `POST /auth/resend-otp`
 
 **Request Body:**
 ```json
@@ -188,9 +201,9 @@ Resend email verification link if the original one expired.
 ```json
 {
   "status": "success",
-  "message": "Verification email sent successfully.",
+  "message": "Verification code sent successfully.",
   "data": {
-    "verificationToken": "new_token..." // Only in development
+    "otpCode": "123456" // Only in development environment
   }
 }
 ```

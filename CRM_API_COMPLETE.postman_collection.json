@@ -2,7 +2,7 @@
     "info": {
         "_postman_id": "crm-api-complete-1765374765",
         "name": "CRM API - Complete Collection",
-        "description": "Collection Postman complète pour le CRM API\n\n**Base URL:** http://crm-api.test\n\n**Features:**\n- ✅ Auto-capture JWT token après login\n- ✅ Auto-capture workspace_id\n- ✅ Auto-capture IDs (contact, company, deal, etc.)\n- ✅ 122 endpoints organisés en 20 catégories\n- ✅ Scripts automatiques pour tous les endpoints critiques\n- ✅ Exemples de données réalistes\n\n**Quick Start:**\n1. Exécuter 'Auth > Register' (optionnel)\n2. Exécuter 'Auth > Login' → Token et Workspace ID sauvegardés automatiquement\n3. Tous les autres endpoints sont prêts à l'emploi!\n\nGenerated: 2025-12-10 13:52:45",
+        "description": "Collection Postman complète pour le CRM API\n\n**Base URL:** http://crm-api.test\n\n**Features:**\n- ✅ Auto-capture JWT token après login\n- ✅ Auto-capture workspace_id\n- ✅ Auto-capture IDs (contact, company, deal, etc.)\n- ✅ OTP Email Verification System\n- ✅ Two-Factor Authentication (TOTP)\n- ✅ Magic Links (Passwordless)\n- ✅ OAuth2/OIDC (Google, GitHub, Keycloak)\n- ✅ Session Management\n- ✅ 140+ endpoints organisés en 25 catégories\n- ✅ Scripts automatiques pour tous les endpoints critiques\n- ✅ Exemples de données réalistes\n\n**Authentication Flow (Standard):**\n1. Execute 'Auth > Auth Register' → OTP code sent to email\n2. Execute 'Auth > Auth Verify Email OTP' with code from email\n3. Execute 'Auth > Auth Login' → JWT Token saved automatically\n4. All other endpoints are ready to use!\n\n**Alternative Auth Methods:**\n- 2FA TOTP: Use 'Two-Factor Authentication' folder\n- Magic Links: Use 'Magic Links' folder\n- OAuth2: Use 'OAuth2 / OIDC' folder\n\nUpdated: 2025-12-10 (Added 2FA, Magic Links, OAuth2, Session Management)",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "auth": {
@@ -156,6 +156,31 @@
             "key": "plan_id",
             "value": "",
             "type": "string"
+        },
+        {
+            "key": "otp_code",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "totp_secret",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "magic_link_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "oauth_state",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "session_id",
+            "value": "",
+            "type": "string"
         }
     ],
     "item": [
@@ -188,7 +213,8 @@
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"email\": \"demo@example.com\",\n    \"password\": \"Demo123456!\",\n    \"firstName\": \"Demo\",\n    \"lastName\": \"User\"\n}"
-                        }
+                        },
+                        "description": "**Créer un nouveau compte utilisateur**\n\nInscription avec vérification par email OTP.\n\n**Body:**\n```json\n{\n    \"email\": \"user@example.com\",\n    \"password\": \"Password123!\",\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\"\n}\n```\n\n**Validation:**\n- Email: format valide, unique\n- Password: minimum 8 caractères\n\n**Flow:**\n1. Compte créé (inactif)\n2. Code OTP 6 chiffres envoyé par email\n3. Utiliser `Auth Verify Email OTP` pour activer\n\n**Réponse (201):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"User registered successfully\",\n    \"data\": {\n        \"userId\": 1,\n        \"email\": \"user@example.com\",\n        \"otpCode\": \"123456\"  // Dev uniquement\n    }\n}\n```\n\n**Erreurs:**\n- 400: Email/password manquant ou invalide\n- 409: Email déjà utilisé"
                     },
                     "response": [],
                     "event": [
@@ -198,19 +224,34 @@
                                 "exec": [
                                     "if (pm.response.code === 201 || pm.response.code === 200) {",
                                     "    const res = pm.response.json();",
-                                    "    const body = JSON.parse(pm.request.body.raw || '{}');",
-                                    "    if (body.email) pm.collectionVariables.set('user_email', body.email);",
-                                    "    if (res.user && res.user.id) pm.collectionVariables.set('user_id', res.user.id);",
-                                    "    console.log('✅ User registered:', res.user?.email || body.email);",
+                                    "    console.log('✅ User registered successfully');",
+                                    "    ",
+                                    "    // Save user details",
+                                    "    if (res.data) {",
+                                    "        if (res.data.userId) {",
+                                    "            pm.collectionVariables.set('user_id', res.data.userId);",
+                                    "            console.log('📝 User ID saved:', res.data.userId);",
+                                    "        }",
+                                    "        if (res.data.email) {",
+                                    "            pm.collectionVariables.set('user_email', res.data.email);",
+                                    "            console.log('📧 Email saved:', res.data.email);",
+                                    "        }",
+                                    "        if (res.data.otpCode) {",
+                                    "            pm.collectionVariables.set('otp_code', res.data.otpCode);",
+                                    "            console.log('🔐 OTP Code (dev only):', res.data.otpCode);",
+                                    "            console.log('📬 Check your email for the OTP code');",
+                                    "        }",
+                                    "    }",
+                                    "    ",
+                                    "    console.log('⏭️  Next: Use \"Auth Verify Email OTP\" with the code from your email');",
                                     "}"
-                                ],
-                                "type": "text/javascript"
+                                ]
                             }
                         }
                     ]
                 },
                 {
-                    "name": "Auth Verify Email",
+                    "name": "Auth Verify Email OTP",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -220,13 +261,13 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/auth/verify-email",
+                            "raw": "{{base_url}}/auth/verify-email-otp",
                             "host": [
                                 "{{base_url}}"
                             ],
                             "path": [
                                 "auth",
-                                "verify-email"
+                                "verify-email-otp"
                             ]
                         },
                         "auth": {
@@ -234,34 +275,76 @@
                         },
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"token\": \"verification-token-here\"\n}"
-                        }
+                            "raw": "{\n    \"email\": \"{{user_email}}\",\n    \"code\": \"123456\"\n}"
+                        },
+                        "description": "**Vérifier l'email avec le code OTP**\n\nActive le compte utilisateur après vérification du code reçu par email.\n\n**Body:**\n```json\n{\n    \"email\": \"user@example.com\",\n    \"code\": \"123456\"\n}\n```\n\n**Sécurité:**\n- Code valide 10 minutes\n- Maximum 5 tentatives par code\n- Rate limiting: 10 tentatives/15 min\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Email verified successfully\",\n    \"data\": {\n        \"userId\": 1,\n        \"email\": \"user@example.com\"\n    }\n}\n```\n\n**Erreurs:**\n- 400: Code manquant ou expiré\n- 404: Aucun OTP trouvé\n- 429: Trop de tentatives"
                     },
-                    "response": []
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const res = pm.response.json();",
+                                    "    console.log('✅ Email verified successfully');",
+                                    "    if (res.data && res.data.userId) {",
+                                    "        pm.collectionVariables.set('user_id', res.data.userId);",
+                                    "        console.log('📝 User ID saved:', res.data.userId);",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ]
                 },
                 {
-                    "name": "Auth Resend Verification",
+                    "name": "Auth Resend OTP",
                     "request": {
                         "method": "POST",
                         "header": [
                             {
-                                "key": "X-Workspace-Id",
-                                "value": "{{workspace_id}}",
-                                "type": "text"
+                                "key": "Content-Type",
+                                "value": "application/json"
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/auth/resend-verification",
+                            "raw": "{{base_url}}/auth/resend-otp",
                             "host": [
                                 "{{base_url}}"
                             ],
                             "path": [
                                 "auth",
-                                "resend-verification"
+                                "resend-otp"
                             ]
-                        }
+                        },
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"{{user_email}}\"\n}"
+                        },
+                        "description": "**Renvoyer le code OTP de vérification**\n\nGénère et envoie un nouveau code OTP par email.\n\n**Body:**\n```json\n{\n    \"email\": \"user@example.com\"\n}\n```\n\n**Sécurité:**\n- Rate limiting: 5 demandes/15 min par IP\n- Anciens codes automatiquement invalidés\n- Nouveau code valide 10 minutes\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Verification code sent successfully\",\n    \"data\": {\n        \"otpCode\": \"654321\"  // Dev uniquement\n    }\n}\n```\n\n**Note:** Réponse identique même si l'email n'existe pas (sécurité)"
                     },
-                    "response": []
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const res = pm.response.json();",
+                                    "    console.log('✅ New OTP code sent');",
+                                    "    if (res.data && res.data.otpCode) {",
+                                    "        console.log('🔐 OTP Code (dev only):', res.data.otpCode);",
+                                    "        pm.collectionVariables.set('otp_code', res.data.otpCode);",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ]
                 },
                 {
                     "name": "Auth Login",
@@ -289,7 +372,8 @@
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"email\": \"demo@example.com\",\n    \"password\": \"Demo123456!\"\n}"
-                        }
+                        },
+                        "description": "**Connexion utilisateur**\n\nAuthentifie l'utilisateur et retourne les tokens JWT.\n\n**Body:**\n```json\n{\n    \"email\": \"user@example.com\",\n    \"password\": \"Password123!\"\n}\n```\n\n**Flow standard:**\n1. Vérification credentials\n2. Génération JWT (15 min) + Refresh Token (14 jours)\n3. Enregistrement dans l'historique de connexion\n\n**Flow avec 2FA activé:**\n1. Vérification credentials\n2. Retourne `requires2fa: true`\n3. Client appelle `/auth/2fa/verify` avec le code TOTP\n\n**Réponse standard (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"token\": \"eyJhbGciOiJSUzI1NiIs...\",\n        \"refreshToken\": \"a1b2c3d4e5f6...\",\n        \"expiresAt\": \"2025-12-24T12:00:00+00:00\",\n        \"user\": {\n            \"id\": 1,\n            \"email\": \"user@example.com\",\n            \"firstname\": \"John\",\n            \"lastname\": \"Doe\",\n            \"roles\": [\"ROLE_USER\"]\n        }\n    }\n}\n```\n\n**Réponse 2FA requis (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"requires2fa\": true,\n        \"email\": \"user@example.com\"\n    }\n}\n```\n\n**Erreurs:**\n- 400: Credentials manquants\n- 401: Credentials invalides\n- 403: Email non vérifié"
                     },
                     "response": [],
                     "event": [
@@ -299,16 +383,28 @@
                                 "exec": [
                                     "if (pm.response.code === 200) {",
                                     "    const res = pm.response.json();",
-                                    "    pm.collectionVariables.set('jwt_token', res.token);",
-                                    "    if (res.refreshToken) pm.collectionVariables.set('refresh_token', res.refreshToken);",
-                                    "    if (res.user) {",
-                                    "        pm.collectionVariables.set('user_id', res.user.id);",
-                                    "        if (res.user.currentWorkspace) {",
-                                    "            pm.collectionVariables.set('workspace_id', res.user.currentWorkspace.id);",
-                                    "            console.log('✅ Logged in - Workspace:', res.user.currentWorkspace.name);",
-                                    "        }",
+                                    "    ",
+                                    "    // Vérifier si 2FA requis",
+                                    "    if (res.data && res.data.requires2fa) {",
+                                    "        console.log(\"🔐 2FA Required - use 2FA Verify endpoint\");",
+                                    "        pm.collectionVariables.set(\"user_email\", res.data.email);",
+                                    "        return;",
                                     "    }",
-                                    "    console.log('✅ JWT Token saved');",
+                                    "    ",
+                                    "    // Login standard",
+                                    "    if (res.data && res.data.token) {",
+                                    "        pm.collectionVariables.set(\"jwt_token\", res.data.token);",
+                                    "        console.log(\"✅ JWT Token saved\");",
+                                    "    }",
+                                    "    if (res.data && res.data.refreshToken) {",
+                                    "        pm.collectionVariables.set(\"refresh_token\", res.data.refreshToken);",
+                                    "        console.log(\"🔄 Refresh Token saved\");",
+                                    "    }",
+                                    "    if (res.data && res.data.user) {",
+                                    "        pm.collectionVariables.set(\"user_id\", res.data.user.id);",
+                                    "        pm.collectionVariables.set(\"user_email\", res.data.user.email);",
+                                    "        console.log(\"👤 User:\", res.data.user.email);",
+                                    "    }",
                                     "}"
                                 ],
                                 "type": "text/javascript"
@@ -322,9 +418,8 @@
                         "method": "POST",
                         "header": [
                             {
-                                "key": "X-Workspace-Id",
-                                "value": "{{workspace_id}}",
-                                "type": "text"
+                                "key": "Content-Type",
+                                "value": "application/json"
                             }
                         ],
                         "url": {
@@ -336,7 +431,12 @@
                                 "auth",
                                 "refresh"
                             ]
-                        }
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"refreshToken\": \"{{refresh_token}}\"\n}"
+                        },
+                        "description": "**Renouveler le token JWT**\n\nGénère un nouveau JWT à partir du refresh token.\n\n**Body:**\n```json\n{\n    \"refreshToken\": \"a1b2c3d4e5f6...\"\n}\n```\n\n**Sécurité - Rotation des tokens:**\n- L'ancien refresh token est révoqué\n- Un nouveau refresh token est généré\n- Empêche la réutilisation de tokens volés\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"token\": \"eyJhbGciOiJSUzI1NiIs...\",\n        \"refreshToken\": \"nouveau-token...\",\n        \"expiresAt\": \"2025-12-24T12:00:00+00:00\"\n    }\n}\n```\n\n**Erreurs:**\n- 400: Refresh token manquant\n- 401: Token expiré ou révoqué\n- 404: Token invalide"
                     },
                     "response": [],
                     "event": [
@@ -346,8 +446,14 @@
                                 "exec": [
                                     "if (pm.response.code === 200) {",
                                     "    const res = pm.response.json();",
-                                    "    pm.collectionVariables.set('jwt_token', res.token);",
-                                    "    console.log('✅ JWT Token refreshed');",
+                                    "    if (res.data && res.data.token) {",
+                                    "        pm.collectionVariables.set(\"jwt_token\", res.data.token);",
+                                    "        console.log(\"✅ JWT Token refreshed\");",
+                                    "    }",
+                                    "    if (res.data && res.data.refreshToken) {",
+                                    "        pm.collectionVariables.set(\"refresh_token\", res.data.refreshToken);",
+                                    "        console.log(\"🔄 New Refresh Token saved (rotation)\");",
+                                    "    }",
                                     "}"
                                 ],
                                 "type": "text/javascript"
@@ -361,9 +467,8 @@
                         "method": "POST",
                         "header": [
                             {
-                                "key": "X-Workspace-Id",
-                                "value": "{{workspace_id}}",
-                                "type": "text"
+                                "key": "Content-Type",
+                                "value": "application/json"
                             }
                         ],
                         "url": {
@@ -375,9 +480,28 @@
                                 "auth",
                                 "logout"
                             ]
-                        }
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"refreshToken\": \"{{refresh_token}}\"\n}"
+                        },
+                        "description": "**Déconnexion utilisateur**\n\nRévoque le refresh token pour invalider la session.\n\n**Body:**\n```json\n{\n    \"refreshToken\": \"a1b2c3d4e5f6...\"\n}\n```\n\n**Note:** Le JWT reste valide jusqu'à son expiration (15 min).\nPour une déconnexion immédiate complète, le client doit aussi supprimer le JWT localement.\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Logged out successfully\"\n}\n```\n\n**Pour déconnecter TOUTES les sessions:** Utiliser `Session Management > Revoke All Sessions`"
                     },
-                    "response": []
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    pm.collectionVariables.set(\"refresh_token\", \"\");",
+                                    "    console.log(\"✅ Logged out - Refresh token revoked\");",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
                 },
                 {
                     "name": "Auth Forgot Password",
@@ -405,7 +529,8 @@
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"email\": \"demo@example.com\"\n}"
-                        }
+                        },
+                        "description": "**Demander une réinitialisation de mot de passe**\n\nEnvoie un email avec un lien de réinitialisation.\n\n**Body:**\n```json\n{\n    \"email\": \"user@example.com\"\n}\n```\n\n**Sécurité:**\n- Token valide 1 heure\n- Anciens tokens automatiquement invalidés\n- Réponse identique si email existe ou non\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"If an account exists with this email, a password reset link will be sent.\",\n    \"data\": {\n        \"resetToken\": \"abc123...\"  // Dev uniquement\n    }\n}\n```"
                     },
                     "response": []
                 },
@@ -435,7 +560,8 @@
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"token\": \"reset-token-here\",\n    \"password\": \"NewPassword123!\"\n}"
-                        }
+                        },
+                        "description": "**Réinitialiser le mot de passe**\n\nDéfinit un nouveau mot de passe avec le token reçu par email.\n\n**Body:**\n```json\n{\n    \"token\": \"abc123...\",\n    \"password\": \"NewPassword456!\"\n}\n```\n\n**Validation:**\n- Token valide et non expiré\n- Nouveau mot de passe: minimum 8 caractères\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Password reset successfully\"\n}\n```\n\n**Erreurs:**\n- 400: Token ou password manquant\n- 400: Token expiré ou déjà utilisé\n- 404: Token invalide"
                     },
                     "response": []
                 },
@@ -459,7 +585,813 @@
                                 "auth",
                                 "me"
                             ]
+                        },
+                        "description": "**Obtenir les informations de l'utilisateur connecté**\n\nRetourne le profil complet de l'utilisateur authentifié.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"id\": 1,\n        \"email\": \"user@example.com\",\n        \"firstname\": \"John\",\n        \"lastname\": \"Doe\",\n        \"roles\": [\"ROLE_USER\"],\n        \"isActive\": true,\n        \"createdAt\": \"2025-01-01T00:00:00+00:00\",\n        \"currentWorkspace\": {\n            \"id\": 1,\n            \"name\": \"My Workspace\"\n        },\n        \"twoFactorEnabled\": false\n    }\n}\n```\n\n**Erreurs:**\n- 401: Token invalide ou expiré"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Auth Change Password",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/change-password",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "change-password"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"currentPassword\": \"OldPassword123!\",\n    \"newPassword\": \"NewSecurePassword456!\",\n    \"logoutOtherDevices\": true\n}"
+                        },
+                        "description": "**Changer le mot de passe**\n\nPermet à l'utilisateur de modifier son mot de passe.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\n```\n\n**Body:**\n```json\n{\n    \"currentPassword\": \"OldPassword123!\",\n    \"newPassword\": \"NewPassword456!\",\n    \"logoutOtherDevices\": true\n}\n```\n\n**Paramètres:**\n- `currentPassword`: Mot de passe actuel (requis)\n- `newPassword`: Nouveau mot de passe, min 8 caractères (requis)\n- `logoutOtherDevices`: Si true, révoque toutes les autres sessions (optionnel)\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Password changed successfully\"\n}\n```\n\n**Erreurs:**\n- 400: Mot de passe actuel incorrect\n- 400: Nouveau mot de passe trop court"
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Two-Factor Authentication (2FA)",
+            "description": "Endpoints pour l'authentification à deux facteurs TOTP.\n\nCompatible avec:\n- Google Authenticator\n- Authy\n- 1Password\n- Bitwarden\n- Toute app compatible TOTP RFC 6238",
+            "item": [
+                {
+                    "name": "2FA Setup - Initier configuration",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/2fa/setup",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "2fa",
+                                "setup"
+                            ]
+                        },
+                        "description": "**Initialiser la configuration 2FA**\n\nGénère un secret TOTP et retourne les informations pour configurer une app authenticator.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\n```\n\n**Compatible avec:**\n- Google Authenticator\n- Authy\n- 1Password\n- Bitwarden\n- Microsoft Authenticator\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"secret\": \"JBSWY3DPEHPK3PXP\",\n        \"qrCodeUrl\": \"otpauth://totp/CRM%20App:user@example.com?secret=JBSWY3DPEHPK3PXP&issuer=CRM%20App\",\n        \"manualEntryKey\": \"JBSWY3DPEHPK3PXP\"\n    }\n}\n```\n\n**Étapes suivantes:**\n1. Scanner le QR code avec l'app authenticator\n2. Appeler `/auth/2fa/enable` avec un code valide"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const res = pm.response.json();",
+                                    "    if (res.data && res.data.secret) {",
+                                    "        pm.collectionVariables.set('totp_secret', res.data.secret);",
+                                    "        console.log('\\u2705 2FA Secret saved:', res.data.secret);",
+                                    "        console.log('\\ud83d\\udcf1 Scan QR code with authenticator app');",
+                                    "        console.log('QR URL:', res.data.qrCodeUrl);",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
                         }
+                    ]
+                },
+                {
+                    "name": "2FA Enable - Activer le 2FA",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/2fa/enable",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "2fa",
+                                "enable"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"code\": \"123456\"\n}"
+                        },
+                        "description": "**Activer l'authentification à deux facteurs**\n\nVérifie un code TOTP et active le 2FA pour le compte.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\n```\n\n**Body:**\n```json\n{\n    \"code\": \"123456\"\n}\n```\n\n**Prérequis:** Avoir configuré le secret dans une app authenticator via `/auth/2fa/setup`\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"2FA enabled successfully\",\n    \"data\": {\n        \"recoveryCodes\": [\n            \"ABCD-1234\",\n            \"EFGH-5678\",\n            \"IJKL-9012\",\n            ...\n        ]\n    }\n}\n```\n\n**⚠️ IMPORTANT:** Sauvegarder les codes de récupération ! Ils permettent de se connecter si l'app authenticator n'est pas disponible.\n\n**Erreurs:**\n- 400: Code invalide\n- 400: 2FA déjà activé"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const res = pm.response.json();",
+                                    "    console.log('\\u2705 2FA Enabled successfully');",
+                                    "    if (res.data && res.data.recoveryCodes) {",
+                                    "        console.log('\\u26a0\\ufe0f SAVE THESE RECOVERY CODES:');",
+                                    "        res.data.recoveryCodes.forEach((code, i) => {",
+                                    "            console.log(`  ${i+1}. ${code}`);",
+                                    "        });",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "2FA Disable - Désactiver le 2FA",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/2fa/disable",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "2fa",
+                                "disable"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"password\": \"YourPassword123!\"\n}"
+                        },
+                        "description": "**Désactiver l'authentification à deux facteurs**\n\nDésactive le 2FA pour le compte. Requiert le mot de passe pour confirmation.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\n```\n\n**Body:**\n```json\n{\n    \"password\": \"YourPassword123!\"\n}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"2FA disabled successfully\"\n}\n```\n\n**Erreurs:**\n- 400: Mot de passe incorrect\n- 400: 2FA non activé"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "2FA Verify - Vérifier code lors du login",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/2fa/verify",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "2fa",
+                                "verify"
+                            ]
+                        },
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"{{user_email}}\",\n    \"code\": \"123456\"\n}"
+                        },
+                        "description": "**Compléter le login avec le code 2FA**\n\nDeuxième étape du login quand le 2FA est activé.\n\n**Pas d'authentification requise** (utilisé pendant le flow de login)\n\n**Body:**\n```json\n{\n    \"email\": \"user@example.com\",\n    \"code\": \"123456\"\n}\n```\n\n**Flow:**\n1. `/auth/login` retourne `requires2fa: true`\n2. L'utilisateur entre le code de son app authenticator\n3. Appeler cet endpoint avec email + code\n4. Recevoir les tokens JWT\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"token\": \"eyJhbGciOiJSUzI1NiIs...\",\n        \"refreshToken\": \"a1b2c3d4e5f6...\",\n        \"user\": {...}\n    }\n}\n```\n\n**Erreurs:**\n- 400: Code invalide\n- 401: Trop de tentatives"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const res = pm.response.json();",
+                                    "    if (res.data && res.data.token) {",
+                                    "        pm.collectionVariables.set('jwt_token', res.data.token);",
+                                    "        pm.collectionVariables.set('refresh_token', res.data.refreshToken);",
+                                    "        console.log('\\u2705 2FA Verified - JWT Token saved');",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "2FA Recovery - Utiliser code de récupération",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/2fa/recovery",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "2fa",
+                                "recovery"
+                            ]
+                        },
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"{{user_email}}\",\n    \"recoveryCode\": \"XXXX-XXXX\"\n}"
+                        },
+                        "description": "**Se connecter avec un code de récupération**\n\nAlternative au code TOTP si l'app authenticator n'est pas disponible.\n\n**Pas d'authentification requise**\n\n**Body:**\n```json\n{\n    \"email\": \"user@example.com\",\n    \"recoveryCode\": \"ABCD-1234\"\n}\n```\n\n**⚠️ Important:**\n- Chaque code ne peut être utilisé qu'UNE SEULE FOIS\n- Le code est invalidé après utilisation\n- Régénérer les codes si épuisés\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"token\": \"eyJhbGciOiJSUzI1NiIs...\",\n        \"refreshToken\": \"a1b2c3d4e5f6...\",\n        \"remainingCodes\": 9\n    }\n}\n```"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const res = pm.response.json();",
+                                    "    if (res.data && res.data.token) {",
+                                    "        pm.collectionVariables.set('jwt_token', res.data.token);",
+                                    "        pm.collectionVariables.set('refresh_token', res.data.refreshToken);",
+                                    "        console.log('\\u2705 Recovery successful - JWT Token saved');",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "2FA Regenerate Recovery Codes",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/auth/2fa/recovery-codes",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "2fa",
+                                "recovery-codes"
+                            ]
+                        },
+                        "description": "**Régénérer les codes de récupération**\n\nGénère un nouveau jeu de codes de récupération.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\n```\n\n**⚠️ ATTENTION:** Les anciens codes sont INVALIDÉS !\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"recoveryCodes\": [\n            \"WXYZ-1234\",\n            \"MNOP-5678\",\n            ...\n        ]\n    }\n}\n```\n\nSauvegarder ces nouveaux codes dans un endroit sûr."
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const res = pm.response.json();",
+                                    "    console.log('\\u2705 New recovery codes generated');",
+                                    "    if (res.data && res.data.recoveryCodes) {",
+                                    "        console.log('\\u26a0\\ufe0f SAVE THESE NEW CODES:');",
+                                    "        res.data.recoveryCodes.forEach((code, i) => {",
+                                    "            console.log(`  ${i+1}. ${code}`);",
+                                    "        });",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "2FA Status",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/auth/2fa/status",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "2fa",
+                                "status"
+                            ]
+                        },
+                        "description": "**Vérifier l'état du 2FA**\n\nRetourne si le 2FA est activé pour l'utilisateur connecté.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"enabled\": true,\n        \"enabledAt\": \"2025-01-15T10:30:00+00:00\",\n        \"remainingRecoveryCodes\": 8\n    }\n}\n```"
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Magic Links (Passwordless)",
+            "description": "Authentification sans mot de passe via liens magiques envoyés par email.\n\nIdéal pour:\n- Utilisateurs qui oublient leur mot de passe\n- Authentification rapide depuis un email\n- Appareils de confiance",
+            "item": [
+                {
+                    "name": "Magic Link Request",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/magic-link/request",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "magic-link",
+                                "request"
+                            ]
+                        },
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"user@example.com\"\n}"
+                        },
+                        "description": "**Demander un magic link**\n\nEnvoie un lien de connexion par email (authentification sans mot de passe).\n\n**Pas d'authentification requise**\n\n**Body:**\n```json\n{\n    \"email\": \"user@example.com\"\n}\n```\n\n**Cas d'usage:**\n- Utilisateurs qui oublient leur mot de passe\n- Connexion rapide depuis un email\n- Appareils de confiance\n\n**Sécurité:**\n- Lien valide 15 minutes\n- Usage unique (invalidé après utilisation)\n- Rate limiting: 3 demandes/15 min par compte\n- Rate limiting: 5 demandes/15 min par IP\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"If an account exists, a magic link will be sent.\",\n    \"data\": {\n        \"expiresIn\": \"900 seconds\",\n        \"magicLinkToken\": \"xyz789...\"  // Dev uniquement\n    }\n}\n```"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const res = pm.response.json();",
+                                    "    console.log('\\u2705 Magic link request sent');",
+                                    "    if (res.data && res.data.magicLinkToken) {",
+                                    "        pm.collectionVariables.set('magic_link_token', res.data.magicLinkToken);",
+                                    "        console.log('\\ud83d\\udd17 Magic link token (dev):', res.data.magicLinkToken);",
+                                    "    }",
+                                    "    console.log('\\ud83d\\udce7 Check your email for the magic link');",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Magic Link Verify",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/magic-link/verify",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "magic-link",
+                                "verify"
+                            ]
+                        },
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"token\": \"{{magic_link_token}}\"\n}"
+                        },
+                        "description": "**Vérifier et utiliser le magic link**\n\nAuthentifie l'utilisateur avec le token du magic link.\n\n**Pas d'authentification requise**\n\n**Body:**\n```json\n{\n    \"token\": \"xyz789...\"\n}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"token\": \"eyJhbGciOiJSUzI1NiIs...\",\n        \"refreshToken\": \"a1b2c3d4e5f6...\",\n        \"user\": {...}\n    }\n}\n```\n\n**Erreurs:**\n- 400: Token manquant\n- 400: Token expiré\n- 400: Token déjà utilisé\n- 404: Token invalide"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const res = pm.response.json();",
+                                    "    if (res.data && res.data.token) {",
+                                    "        pm.collectionVariables.set('jwt_token', res.data.token);",
+                                    "        pm.collectionVariables.set('refresh_token', res.data.refreshToken);",
+                                    "        console.log('\\u2705 Magic link verified - Logged in');",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "OAuth2 / OIDC",
+            "description": "Authentification via fournisseurs OAuth2 externes.\n\nFournisseurs supportés:\n- Google\n- GitHub\n- Keycloak (SSO)\n\n**Configuration requise:** Variables d'environnement OAuth dans le backend.",
+            "item": [
+                {
+                    "name": "OAuth Providers List",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/auth/oauth/providers",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "oauth",
+                                "providers"
+                            ]
+                        },
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "description": "**Lister les fournisseurs OAuth disponibles**\n\nRetourne la liste des fournisseurs OAuth configurés.\n\n**Pas d'authentification requise**\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"providers\": [\n            {\n                \"name\": \"google\",\n                \"displayName\": \"Google\",\n                \"enabled\": true\n            },\n            {\n                \"name\": \"github\",\n                \"displayName\": \"GitHub\",\n                \"enabled\": true\n            },\n            {\n                \"name\": \"keycloak\",\n                \"displayName\": \"SSO Entreprise\",\n                \"enabled\": false\n            }\n        ]\n    }\n}\n```"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "OAuth Google Connect",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/auth/oauth/google/connect",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "oauth",
+                                "google",
+                                "connect"
+                            ]
+                        },
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "description": "**Initier la connexion Google OAuth**\n\nRetourne l'URL d'autorisation Google pour rediriger l'utilisateur.\n\n**Pas d'authentification requise**\n\n**Flow OAuth:**\n1. Appeler cet endpoint\n2. Rediriger l'utilisateur vers `authorizationUrl`\n3. L'utilisateur se connecte sur Google\n4. Google redirige vers le callback avec un `code`\n5. Appeler `OAuth Google Callback` avec le code\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"authorizationUrl\": \"https://accounts.google.com/o/oauth2/v2/auth?...\",\n        \"state\": \"random-state-string\"\n    }\n}\n```\n\n**Note:** Sauvegarder le `state` pour le vérifier au callback (protection CSRF)"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const res = pm.response.json();",
+                                    "    if (res.data && res.data.state) {",
+                                    "        pm.collectionVariables.set('oauth_state', res.data.state);",
+                                    "        console.log('\\ud83d\\udd17 OAuth State saved');",
+                                    "        console.log('\\u27a1\\ufe0f  Redirect user to:', res.data.authorizationUrl);",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "OAuth Google Callback",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/oauth/google/callback",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "oauth",
+                                "google",
+                                "callback"
+                            ]
+                        },
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"code\": \"authorization_code_from_google\",\n    \"state\": \"{{oauth_state}}\"\n}"
+                        },
+                        "description": "**Callback Google OAuth**\n\nÉchange le code d'autorisation contre des tokens et connecte l'utilisateur.\n\n**Body:**\n```json\n{\n    \"code\": \"authorization_code_from_google\",\n    \"state\": \"random-state-string\"\n}\n```\n\n**Comportement:**\n- Si l'email Google correspond à un compte existant → connexion\n- Sinon → création d'un nouveau compte (sans mot de passe)\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"token\": \"eyJhbGciOiJSUzI1NiIs...\",\n        \"refreshToken\": \"a1b2c3d4e5f6...\",\n        \"user\": {...},\n        \"isNewUser\": false\n    }\n}\n```"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const res = pm.response.json();",
+                                    "    if (res.data && res.data.token) {",
+                                    "        pm.collectionVariables.set('jwt_token', res.data.token);",
+                                    "        pm.collectionVariables.set('refresh_token', res.data.refreshToken);",
+                                    "        console.log('\\u2705 Google OAuth successful');",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "OAuth GitHub Connect",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/auth/oauth/github/connect",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "oauth",
+                                "github",
+                                "connect"
+                            ]
+                        },
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "description": "**Initier la connexion GitHub OAuth**\n\nRetourne l'URL d'autorisation GitHub.\n\n**Pas d'authentification requise**\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"authorizationUrl\": \"https://github.com/login/oauth/authorize?...\",\n        \"state\": \"random-state-string\"\n    }\n}\n```"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const res = pm.response.json();",
+                                    "    if (res.data && res.data.state) {",
+                                    "        pm.collectionVariables.set('oauth_state', res.data.state);",
+                                    "        console.log('\\ud83d\\udd17 OAuth State saved');",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "OAuth GitHub Callback",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/oauth/github/callback",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "oauth",
+                                "github",
+                                "callback"
+                            ]
+                        },
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"code\": \"authorization_code_from_github\"\n}"
+                        },
+                        "description": "**Callback GitHub OAuth**\n\nÉchange le code d'autorisation GitHub contre des tokens.\n\n**Body:**\n```json\n{\n    \"code\": \"authorization_code_from_github\"\n}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"token\": \"eyJhbGciOiJSUzI1NiIs...\",\n        \"refreshToken\": \"a1b2c3d4e5f6...\",\n        \"user\": {...}\n    }\n}\n```"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const res = pm.response.json();",
+                                    "    if (res.data && res.data.token) {",
+                                    "        pm.collectionVariables.set('jwt_token', res.data.token);",
+                                    "        pm.collectionVariables.set('refresh_token', res.data.refreshToken);",
+                                    "        console.log('\\u2705 GitHub OAuth successful');",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "OAuth Keycloak Connect",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/auth/oauth/keycloak/connect",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "oauth",
+                                "keycloak",
+                                "connect"
+                            ]
+                        },
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "description": "**Initier la connexion Keycloak SSO**\n\nRetourne l'URL d'autorisation Keycloak (SSO entreprise).\n\n**Configuration requise:**\nVariables d'environnement Keycloak (realm, client_id, etc.)\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"authorizationUrl\": \"https://keycloak.example.com/auth/realms/...\",\n        \"state\": \"random-state-string\"\n    }\n}\n```"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "OAuth Keycloak Callback",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/oauth/keycloak/callback",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "oauth",
+                                "keycloak",
+                                "callback"
+                            ]
+                        },
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"code\": \"authorization_code_from_keycloak\"\n}"
+                        },
+                        "description": "**Callback Keycloak SSO**\n\nÉchange le code d'autorisation Keycloak.\n\n**Body:**\n```json\n{\n    \"code\": \"authorization_code_from_keycloak\"\n}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"token\": \"eyJhbGciOiJSUzI1NiIs...\",\n        \"refreshToken\": \"a1b2c3d4e5f6...\",\n        \"user\": {...}\n    }\n}\n```"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "OAuth List Connections",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/auth/oauth/connections",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "oauth",
+                                "connections"
+                            ]
+                        },
+                        "description": "**Lister les connexions OAuth de l'utilisateur**\n\nAffiche les comptes OAuth liés au compte utilisateur.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"provider\": \"google\",\n            \"providerEmail\": \"user@gmail.com\",\n            \"connectedAt\": \"2025-01-10T15:00:00+00:00\",\n            \"lastUsedAt\": \"2025-12-10T10:00:00+00:00\"\n        },\n        {\n            \"id\": 2,\n            \"provider\": \"github\",\n            \"providerEmail\": \"user@github.com\",\n            \"connectedAt\": \"2025-02-20T12:00:00+00:00\"\n        }\n    ]\n}\n```"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "OAuth Disconnect Provider",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/auth/oauth/google/disconnect",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "oauth",
+                                "google",
+                                "disconnect"
+                            ]
+                        },
+                        "description": "**Déconnecter un fournisseur OAuth**\n\nSupprime la liaison entre le compte et un fournisseur OAuth.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\n```\n\n**URL:** `/auth/oauth/{provider}/disconnect`\n- Remplacer `{provider}` par: google, github, keycloak\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Google account disconnected successfully\"\n}\n```\n\n**Erreurs:**\n- 400: Impossible de déconnecter si c'est la seule méthode d'authentification\n- 404: Aucune connexion trouvée pour ce fournisseur"
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Session Management",
+            "description": "Gestion des sessions actives de l'utilisateur.\n\nPermet de:\n- Voir toutes les sessions actives\n- Révoquer des sessions spécifiques\n- Se déconnecter de tous les appareils",
+            "item": [
+                {
+                    "name": "List Active Sessions",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/auth/sessions",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "sessions"
+                            ]
+                        },
+                        "description": "**Lister les sessions actives**\n\nAffiche toutes les sessions (refresh tokens) actives de l'utilisateur.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"deviceName\": \"Chrome on Windows\",\n            \"ipAddress\": \"192.168.1.100\",\n            \"location\": \"Paris, France\",\n            \"createdAt\": \"2025-12-01T10:00:00+00:00\",\n            \"lastUsedAt\": \"2025-12-10T14:30:00+00:00\",\n            \"isCurrent\": true\n        },\n        {\n            \"id\": 2,\n            \"deviceName\": \"Safari on iPhone\",\n            \"ipAddress\": \"82.123.45.67\",\n            \"createdAt\": \"2025-12-05T08:00:00+00:00\",\n            \"lastUsedAt\": \"2025-12-09T20:15:00+00:00\",\n            \"isCurrent\": false\n        }\n    ]\n}\n```\n\n**Utilisation:** Identifier des sessions suspectes ou des appareils non reconnus"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const res = pm.response.json();",
+                                    "    if (res.data && res.data.length > 0) {",
+                                    "        pm.collectionVariables.set('session_id', res.data[0].id);",
+                                    "        console.log('\\u2705 Sessions loaded:', res.data.length);",
+                                    "        console.log('First session ID saved:', res.data[0].id);",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Revoke Specific Session",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/auth/sessions/{{session_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "sessions",
+                                "{{session_id}}"
+                            ]
+                        },
+                        "description": "**Révoquer une session spécifique**\n\nDéconnecte un appareil spécifique à distance.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\n```\n\n**URL:** `/auth/sessions/{id}`\n- Remplacer `{id}` par l'ID de la session à révoquer\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Session revoked successfully\"\n}\n```\n\n**Erreurs:**\n- 404: Session non trouvée\n- 403: La session n'appartient pas à l'utilisateur"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Revoke All Sessions (Logout Everywhere)",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/auth/sessions",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "sessions"
+                            ]
+                        },
+                        "description": "**Révoquer TOUTES les sessions**\n\nDéconnecte l'utilisateur de TOUS ses appareils.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\n```\n\n**⚠️ ATTENTION:** Cela déconnecte AUSSI l'appareil actuel !\nL'utilisateur devra se reconnecter.\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"All sessions revoked successfully\",\n    \"data\": {\n        \"revokedCount\": 5\n    }\n}\n```\n\n**Cas d'usage:**\n- Suspicion de compromission du compte\n- Changement de mot de passe\n- Départ d'un employé"
                     },
                     "response": []
                 }
@@ -496,7 +1428,8 @@
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"name\": \"Mon Workspace\",\n    \"logo\": null\n}"
-                        }
+                        },
+                        "description": "**Créer un nouveau workspace**\n\nCrée un espace de travail et définit l'utilisateur comme propriétaire.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\n```\n\n**Body:**\n```json\n{\n    \"name\": \"Mon Entreprise\",\n    \"description\": \"Workspace principal\"\n}\n```\n\n**Réponse (201):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"Mon Entreprise\",\n        \"code\": \"WS_ABC123\",\n        \"owner\": {...}\n    }\n}\n```"
                     },
                     "response": [],
                     "event": [
@@ -537,7 +1470,8 @@
                                 "workspace",
                                 "list"
                             ]
-                        }
+                        },
+                        "description": "**Lister les workspaces de l'utilisateur**\n\nRetourne tous les workspaces dont l'utilisateur est membre.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"Mon Entreprise\",\n            \"role\": \"owner\",\n            \"memberCount\": 5\n        },\n        {\n            \"id\": 2,\n            \"name\": \"Projet Client\",\n            \"role\": \"member\",\n            \"memberCount\": 3\n        }\n    ]\n}\n```"
                     },
                     "response": [],
                     "event": [
@@ -578,7 +1512,8 @@
                                 "workspace",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Obtenir les détails d'un workspace**\n\nRetourne les informations complètes d'un workspace.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"Mon Entreprise\",\n        \"description\": \"...\",\n        \"code\": \"WS_ABC123\",\n        \"owner\": {...},\n        \"members\": [...],\n        \"createdAt\": \"...\"\n    }\n}\n```"
                     },
                     "response": []
                 },
@@ -611,7 +1546,8 @@
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"workspaceId\": \"{{workspace_id}}\"\n}"
-                        }
+                        },
+                        "description": "**Changer de workspace actif**\n\nDéfinit le workspace actif pour l'utilisateur.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Workspace switched successfully\",\n    \"data\": {\n        \"currentWorkspace\": {...}\n    }\n}\n```\n\n**Note:** Les requêtes suivantes utiliseront ce workspace"
                     },
                     "response": []
                 },
@@ -636,7 +1572,8 @@
                                 "{id}",
                                 "invite"
                             ]
-                        }
+                        },
+                        "description": "**Inviter un utilisateur dans le workspace**\n\nEnvoie une invitation par email pour rejoindre le workspace.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\n```\n\n**Body:**\n```json\n{\n    \"email\": \"collegue@example.com\",\n    \"role\": \"member\"\n}\n```\n\n**Rôles disponibles:**\n- `member`: Accès standard\n- `admin`: Gestion du workspace\n- `owner`: Propriétaire (unique)\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Invitation sent successfully\"\n}\n```"
                     },
                     "response": []
                 },
@@ -662,7 +1599,8 @@
                                 "member",
                                 "{userId}"
                             ]
-                        }
+                        },
+                        "description": "**Retirer un membre du workspace**\n\nSupprime un utilisateur du workspace.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\n```\n\n**Permissions requises:** Admin ou Owner du workspace\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Member removed successfully\"\n}\n```\n\n**Erreurs:**\n- 403: Permissions insuffisantes\n- 400: Impossible de retirer le propriétaire"
                     },
                     "response": []
                 },
@@ -686,7 +1624,8 @@
                                 "workspace",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Obtenir les détails d'un workspace**\n\nRetourne les informations complètes d'un workspace.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"Mon Entreprise\",\n        \"description\": \"...\",\n        \"code\": \"WS_ABC123\",\n        \"owner\": {...},\n        \"members\": [...],\n        \"createdAt\": \"...\"\n    }\n}\n```"
                     },
                     "response": []
                 }
@@ -716,7 +1655,8 @@
                                 "search",
                                 "{contains}"
                             ]
-                        }
+                        },
+                        "description": "**Rechercher des contacts**\n\nRecherche rapide par nom, email ou téléphone.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\nX-Workspace-Id: {workspace_id}\n```\n\n**URL:** `/contact/search/{terme}`\n- Exemple: `/contact/search/dupont`\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"firstname\": \"Jean\",\n            \"lastname\": \"Dupont\",\n            \"email\": \"jean.dupont@example.com\"\n        }\n    ]\n}\n```"
                     },
                     "response": []
                 },
@@ -748,7 +1688,8 @@
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"pagination\": {\n        \"page\": 1,\n        \"limit\": 25\n    }\n}"
-                        }
+                        },
+                        "description": "**Lister les contacts avec pagination**\n\nRetourne la liste paginée des contacts du workspace.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\nX-Workspace-Id: {workspace_id}\n```\n\n**Body:**\n```json\n{\n    \"pagination\": {\n        \"page\": 1,\n        \"limit\": 25\n    },\n    \"filters\": {\n        \"search\": \"dupont\",\n        \"company_id\": 5,\n        \"tags\": [1, 2]\n    },\n    \"sort\": {\n        \"field\": \"lastname\",\n        \"order\": \"ASC\"\n    }\n}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": [...],\n    \"page\": 1,\n    \"limit\": 25,\n    \"total\": 150\n}\n```"
                     },
                     "response": [],
                     "event": [
@@ -790,7 +1731,8 @@
                                 "info",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Obtenir les détails d'un contact**\n\nRetourne toutes les informations d'un contact.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\nX-Workspace-Id: {workspace_id}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"id\": 1,\n        \"firstname\": \"Jean\",\n        \"lastname\": \"Dupont\",\n        \"emails\": [...],\n        \"phones\": [...],\n        \"company\": {...},\n        \"deals\": [...],\n        \"activities\": [...],\n        \"notes\": [...],\n        \"tags\": [...]\n    }\n}\n```"
                     },
                     "response": []
                 },
@@ -814,7 +1756,8 @@
                                 "contact",
                                 "import"
                             ]
-                        }
+                        },
+                        "description": "**Importer des contacts depuis un fichier**\n\nImport en masse depuis CSV ou Excel.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\nX-Workspace-Id: {workspace_id}\nContent-Type: multipart/form-data\n```\n\n**Body (form-data):**\n- `file`: Fichier CSV ou XLSX\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"imported\": 45,\n        \"skipped\": 3,\n        \"errors\": [...]\n    }\n}\n```"
                     },
                     "response": []
                 },
@@ -846,7 +1789,8 @@
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"firstName\": \"Jean\",\n    \"lastName\": \"Dupont\",\n    \"email\": \"jean.dupont@example.com\",\n    \"phone\": \"+33612345678\",\n    \"company\": \"{{company_id}}\"\n}"
-                        }
+                        },
+                        "description": "**Créer ou modifier un contact**\n\nCréation si pas d'ID, modification sinon.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\nX-Workspace-Id: {workspace_id}\n```\n\n**Body (création):**\n```json\n{\n    \"firstname\": \"Marie\",\n    \"lastname\": \"Martin\",\n    \"email\": \"marie@example.com\",\n    \"phone\": \"+33612345678\",\n    \"company_id\": 5\n}\n```\n\n**Body (modification):**\n```json\n{\n    \"id\": 1,\n    \"firstname\": \"Marie\",\n    \"lastname\": \"Martin-Dupont\"\n}\n```\n\n**Réponse (200/201):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {...}\n}\n```"
                     },
                     "response": [],
                     "event": [
@@ -889,7 +1833,8 @@
                                 "{id}",
                                 "{idCompany}"
                             ]
-                        }
+                        },
+                        "description": "**Associer un contact à une entreprise**\n\nLie un contact existant à une entreprise.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\nX-Workspace-Id: {workspace_id}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Contact associated with company\"\n}\n```"
                     },
                     "response": []
                 },
@@ -914,7 +1859,8 @@
                                 "unassociate",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Dissocier un contact de son entreprise**\n\nRetire le lien entre un contact et son entreprise.\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Contact unassociated from company\"\n}\n```"
                     },
                     "response": []
                 },
@@ -940,7 +1886,8 @@
                                 "{sourceId}",
                                 "{targetId}"
                             ]
-                        }
+                        },
+                        "description": "**Fusionner deux contacts**\n\nFusionne le contact source dans le contact cible.\n\n**Comportement:**\n- Les données du source complètent le target\n- Les relations (deals, activities) sont transférées\n- Le contact source est supprimé\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Contacts merged successfully\",\n    \"data\": {\n        \"mergedContact\": {...}\n    }\n}\n```"
                     },
                     "response": []
                 },
@@ -964,7 +1911,8 @@
                                 "contact",
                                 "addPhoto"
                             ]
-                        }
+                        },
+                        "description": "**Ajouter une photo au contact**\n\nUpload une image de profil.\n\n**Headers requis:**\n```\nContent-Type: multipart/form-data\n```\n\n**Body (form-data):**\n- `contact_id`: ID du contact\n- `photo`: Fichier image (JPG, PNG)\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"photoUrl\": \"https://...\"\n    }\n}\n```"
                     },
                     "response": []
                 },
@@ -989,7 +1937,8 @@
                                 "delete",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Supprimer un contact**\n\nSuppression définitive du contact.\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Contact deleted successfully\"\n}\n```"
                     },
                     "response": []
                 }
@@ -1026,7 +1975,8 @@
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"pagination\": {\n        \"page\": 1,\n        \"limit\": 25\n    }\n}"
-                        }
+                        },
+                        "description": "**Lister les entreprises**\n\nListe paginée des entreprises du workspace.\n\n**Body:**\n```json\n{\n    \"pagination\": {\"page\": 1, \"limit\": 25},\n    \"filters\": {\"search\": \"tech\"},\n    \"sort\": {\"field\": \"name\", \"order\": \"ASC\"}\n}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": [...],\n    \"total\": 50\n}\n```"
                     },
                     "response": [],
                     "event": [
@@ -1068,7 +2018,8 @@
                                 "search",
                                 "{contains}"
                             ]
-                        }
+                        },
+                        "description": "**Rechercher des entreprises**\n\nRecherche rapide par nom.\n\n**URL:** `/company/search/{terme}`\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": [...]\n}\n```"
                     },
                     "response": []
                 },
@@ -1093,7 +2044,8 @@
                                 "info",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Détails d'une entreprise**\n\nInformations complètes avec contacts et deals associés.\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"Tech Corp\",\n        \"contacts\": [...],\n        \"deals\": [...],\n        \"activities\": [...]\n    }\n}\n```"
                     },
                     "response": []
                 },
@@ -1117,7 +2069,8 @@
                                 "company",
                                 "import"
                             ]
-                        }
+                        },
+                        "description": "**Importer des entreprises**\n\nImport depuis CSV ou Excel.\n\n**Body (form-data):**\n- `file`: Fichier CSV ou XLSX"
                     },
                     "response": []
                 },
@@ -1149,7 +2102,8 @@
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"name\": \"Acme Corp\",\n    \"email\": \"contact@acme.com\",\n    \"phone\": \"+33123456789\",\n    \"website\": \"https://acme.com\"\n}"
-                        }
+                        },
+                        "description": "**Créer ou modifier une entreprise**\n\n**Body:**\n```json\n{\n    \"name\": \"Tech Corp\",\n    \"website\": \"https://techcorp.com\",\n    \"industry\": \"Technology\",\n    \"size\": \"50-200\"\n}\n```"
                     },
                     "response": [],
                     "event": [
@@ -1190,7 +2144,8 @@
                                 "company",
                                 "addPhoto"
                             ]
-                        }
+                        },
+                        "description": "**Ajouter un logo**\n\nUpload du logo de l'entreprise."
                     },
                     "response": []
                 },
@@ -1216,7 +2171,8 @@
                                 "{sourceId}",
                                 "{targetId}"
                             ]
-                        }
+                        },
+                        "description": "**Fusionner deux entreprises**\n\nFusionne source dans target, transfère les contacts et deals."
                     },
                     "response": []
                 },
@@ -1241,7 +2197,8 @@
                                 "delete",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Supprimer une entreprise**\n\n**Note:** Les contacts associés ne sont PAS supprimés."
                     },
                     "response": []
                 }
@@ -1278,7 +2235,8 @@
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"title\": \"Deal 50K€\",\n    \"value\": 50000,\n    \"currency\": \"EUR\",\n    \"contact\": \"{{contact_id}}\",\n    \"company\": \"{{company_id}}\",\n    \"pipeline\": \"{{pipeline_id}}\",\n    \"expectedCloseDate\": \"2025-12-31\"\n}"
-                        }
+                        },
+                        "description": "**Créer ou modifier un deal**\n\n**Body:**\n```json\n{\n    \"name\": \"Contrat annuel\",\n    \"amount\": 50000,\n    \"pipeline_id\": 1,\n    \"pipeline_step_id\": 2,\n    \"contact_id\": 5,\n    \"company_id\": 3,\n    \"expectedCloseDate\": \"2025-03-15\"\n}\n```"
                     },
                     "response": [],
                     "event": [
@@ -1320,7 +2278,8 @@
                                 "info",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Détails d'un deal**\n\nInformations complètes avec historique.\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"Contrat annuel\",\n        \"amount\": 50000,\n        \"pipeline\": {...},\n        \"currentStep\": {...},\n        \"contact\": {...},\n        \"company\": {...},\n        \"activities\": [...],\n        \"history\": [...]\n    }\n}\n```"
                     },
                     "response": []
                 },
@@ -1346,7 +2305,8 @@
                                 "step",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Changer l'étape du deal**\n\nDéplace le deal dans le pipeline.\n\n**Body:**\n```json\n{\n    \"pipeline_step_id\": 3\n}\n```"
                     },
                     "response": []
                 },
@@ -1371,7 +2331,8 @@
                                 "win",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Marquer le deal comme gagné**\n\nClôture le deal avec succès."
                     },
                     "response": []
                 },
@@ -1396,7 +2357,8 @@
                                 "lose",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Marquer le deal comme perdu**\n\n**Body (optionnel):**\n```json\n{\n    \"lostReason\": \"Prix trop élevé\"\n}\n```"
                     },
                     "response": []
                 },
@@ -1422,7 +2384,8 @@
                                 "unwin",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Réouvrir un deal clôturé**\n\nRemet le deal en cours."
                     },
                     "response": []
                 },
@@ -1448,7 +2411,8 @@
                                 "contact",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Dissocier le contact principal**\n\nRetire le lien avec le contact principal du deal."
                     },
                     "response": []
                 },
@@ -1474,7 +2438,8 @@
                                 "company",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Dissocier l'entreprise**\n\nRetire le lien avec l'entreprise du deal."
                     },
                     "response": []
                 },
@@ -1501,7 +2466,8 @@
                                 "{dealId}",
                                 "{contactId}"
                             ]
-                        }
+                        },
+                        "description": "**Retirer un participant**\n\nSupprime un contact de la liste des participants."
                     },
                     "response": []
                 },
@@ -1526,7 +2492,8 @@
                                 "delete",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Supprimer un deal**\n\nSuppression soft (archivage)."
                     },
                     "response": []
                 }
@@ -1555,7 +2522,8 @@
                                 "activity",
                                 "list"
                             ]
-                        }
+                        },
+                        "description": "**Lister les activités**\n\n**Body:**\n```json\n{\n    \"filters\": {\n        \"type\": \"call\",\n        \"contact_id\": 5,\n        \"from\": \"2025-01-01\",\n        \"to\": \"2025-12-31\"\n    }\n}\n```\n\n**Types:** call, meeting, email, task, note"
                     },
                     "response": [],
                     "event": [
@@ -1596,7 +2564,8 @@
                                 "activity",
                                 "calendar"
                             ]
-                        }
+                        },
+                        "description": "**Vue calendrier des activités**\n\n**Body:**\n```json\n{\n    \"start\": \"2025-01-01\",\n    \"end\": \"2025-01-31\"\n}\n```"
                     },
                     "response": []
                 },
@@ -1620,7 +2589,8 @@
                                 "activity",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Obtenir les détails d'une activité**\n\nRetourne toutes les informations d'une activité spécifique.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\nX-Workspace-Id: {workspace_id}\n```\n\n**URL:** `/activity/{id}`\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"id\": 1,\n        \"type\": \"meeting\",\n        \"subject\": \"Réunion commerciale\",\n        \"description\": \"Discussion du contrat annuel\",\n        \"scheduledAt\": \"2025-01-20T14:00:00+00:00\",\n        \"duration\": 60,\n        \"completed\": false,\n        \"contact\": {...},\n        \"deal\": {...},\n        \"createdBy\": {...}\n    }\n}\n```\n\n**Types d'activités:**\n- `call`: Appel téléphonique\n- `meeting`: Réunion\n- `email`: Email envoyé/reçu\n- `task`: Tâche à faire\n- `note`: Note/commentaire"
                     },
                     "response": []
                 },
@@ -1652,7 +2622,8 @@
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"title\": \"Appel de suivi\",\n    \"type\": \"call\",\n    \"contact\": \"{{contact_id}}\",\n    \"scheduledAt\": \"2025-12-15T14:00:00Z\",\n    \"duration\": 30\n}"
-                        }
+                        },
+                        "description": "**Créer ou modifier une activité**\n\n**Body:**\n```json\n{\n    \"type\": \"meeting\",\n    \"subject\": \"Réunion commerciale\",\n    \"description\": \"Discussion contrat\",\n    \"scheduledAt\": \"2025-01-20T14:00:00\",\n    \"duration\": 60,\n    \"contact_id\": 5,\n    \"deal_id\": 3\n}\n```"
                     },
                     "response": [],
                     "event": [
@@ -1694,7 +2665,8 @@
                                 "delete",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Supprimer une activité**\n\nSupprime définitivement une activité.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\nX-Workspace-Id: {workspace_id}\n```\n\n**URL:** `/activity/delete/{id}`\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Activity deleted successfully\"\n}\n```\n\n**Erreurs:**\n- 404: Activité non trouvée\n- 403: Pas les permissions"
                     },
                     "response": []
                 }
@@ -1723,7 +2695,8 @@
                                 "pipeline",
                                 "list"
                             ]
-                        }
+                        },
+                        "description": "**Lister les pipelines**\n\nRetourne tous les pipelines du workspace."
                     },
                     "response": [],
                     "event": [
@@ -1764,7 +2737,8 @@
                                 "pipeline",
                                 "edit"
                             ]
-                        }
+                        },
+                        "description": "**Créer ou modifier un pipeline**\n\n**Body:**\n```json\n{\n    \"name\": \"Pipeline Commercial\",\n    \"description\": \"Process de vente standard\"\n}\n```"
                     },
                     "response": [],
                     "event": [
@@ -1806,7 +2780,8 @@
                                 "info",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Détails d'un pipeline**\n\nRetourne le pipeline avec toutes ses étapes."
                     },
                     "response": [],
                     "event": [
@@ -1848,7 +2823,8 @@
                                 "delete",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Supprimer un pipeline**\n\n**Note:** Impossible si des deals sont associés."
                     },
                     "response": []
                 },
@@ -1873,7 +2849,8 @@
                                 "step",
                                 "list"
                             ]
-                        }
+                        },
+                        "description": "**Lister toutes les étapes de pipeline**\n\nRetourne toutes les étapes de tous les pipelines du workspace.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\nX-Workspace-Id: {workspace_id}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"Prospection\",\n            \"position\": 1,\n            \"probability\": 10,\n            \"pipeline\": {\"id\": 1, \"name\": \"Sales\"}\n        },\n        {\n            \"id\": 2,\n            \"name\": \"Qualification\",\n            \"position\": 2,\n            \"probability\": 25,\n            \"pipeline\": {\"id\": 1, \"name\": \"Sales\"}\n        }\n    ]\n}\n```"
                     },
                     "response": []
                 },
@@ -1899,7 +2876,8 @@
                                 "list",
                                 "{pipelineId}"
                             ]
-                        }
+                        },
+                        "description": "**Lister les étapes d'un pipeline spécifique**\n\nRetourne les étapes ordonnées d'un pipeline donné.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\nX-Workspace-Id: {workspace_id}\n```\n\n**URL:** `/pipeline/step/list/{pipelineId}`\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": [\n        {\"id\": 1, \"name\": \"Prospection\", \"position\": 1, \"probability\": 10},\n        {\"id\": 2, \"name\": \"Qualification\", \"position\": 2, \"probability\": 25},\n        {\"id\": 3, \"name\": \"Proposition\", \"position\": 3, \"probability\": 50},\n        {\"id\": 4, \"name\": \"Négociation\", \"position\": 4, \"probability\": 75},\n        {\"id\": 5, \"name\": \"Closing\", \"position\": 5, \"probability\": 90}\n    ]\n}\n```"
                     },
                     "response": []
                 },
@@ -1932,7 +2910,8 @@
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"name\": \"Qualification\",\n    \"pipeline\": \"{{pipeline_id}}\",\n    \"position\": 1\n}"
-                        }
+                        },
+                        "description": "**Créer ou modifier une étape**\n\n**Body:**\n```json\n{\n    \"pipeline_id\": 1,\n    \"name\": \"Négociation\",\n    \"position\": 3,\n    \"probability\": 50\n}\n```"
                     },
                     "response": [],
                     "event": [
@@ -1975,7 +2954,8 @@
                                 "delete",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Supprimer une étape de pipeline**\n\nSupprime une étape. Impossible si des deals sont à cette étape.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\nX-Workspace-Id: {workspace_id}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Pipeline step deleted successfully\"\n}\n```\n\n**Erreurs:**\n- 400: Des deals sont associés à cette étape\n- 404: Étape non trouvée"
                     },
                     "response": []
                 }
@@ -2004,7 +2984,8 @@
                                 "tag",
                                 "list"
                             ]
-                        }
+                        },
+                        "description": "**Lister les tags**\n\nRetourne tous les tags du workspace."
                     },
                     "response": [],
                     "event": [
@@ -2053,7 +3034,8 @@
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"name\": \"VIP\",\n    \"color\": \"#FF0000\"\n}"
-                        }
+                        },
+                        "description": "**Créer un tag**\n\n**Body:**\n```json\n{\n    \"name\": \"VIP\",\n    \"color\": \"#FF5733\"\n}\n```"
                     },
                     "response": [],
                     "event": [
@@ -2094,7 +3076,8 @@
                                 "tag",
                                 "assign"
                             ]
-                        }
+                        },
+                        "description": "**Assigner un tag**\n\n**Body:**\n```json\n{\n    \"tag_id\": 1,\n    \"entity_type\": \"contact\",\n    \"entity_id\": 5\n}\n```"
                     },
                     "response": []
                 }
@@ -2131,7 +3114,8 @@
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"content\": \"Note importante sur ce contact\",\n    \"entityType\": \"contact\",\n    \"entityId\": \"{{contact_id}}\"\n}"
-                        }
+                        },
+                        "description": "**Créer ou modifier une note**\n\n**Body:**\n```json\n{\n    \"content\": \"Discussion intéressante...\",\n    \"contact_id\": 5,\n    \"deal_id\": null\n}\n```"
                     },
                     "response": [],
                     "event": [
@@ -2173,7 +3157,8 @@
                                 "delete",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Supprimer une note**\n\nSupprime définitivement une note.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\nX-Workspace-Id: {workspace_id}\n```\n\n**URL:** `/note/delete/{id}`\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Note deleted successfully\"\n}\n```"
                     },
                     "response": []
                 }
@@ -2202,7 +3187,8 @@
                                 "file",
                                 "uploader"
                             ]
-                        }
+                        },
+                        "description": "**Endpoint d'upload de fichiers**\n\nUpload générique de fichiers."
                     },
                     "response": [],
                     "event": [
@@ -2243,7 +3229,8 @@
                                 "file",
                                 "list"
                             ]
-                        }
+                        },
+                        "description": "**Lister les fichiers**\n\nFichiers associés à une entité."
                     },
                     "response": [],
                     "event": [
@@ -2284,7 +3271,8 @@
                                 "file",
                                 "upload"
                             ]
-                        }
+                        },
+                        "description": "**Uploader un fichier**\n\n**Body (form-data):**\n- `file`: Le fichier\n- `entity_type`: contact, company, deal\n- `entity_id`: ID de l'entité"
                     },
                     "response": [],
                     "event": [
@@ -2325,7 +3313,8 @@
                                 "file",
                                 "config"
                             ]
-                        }
+                        },
+                        "description": "**Configuration d'upload**\n\nRetourne les types et tailles autorisés."
                     },
                     "response": []
                 },
@@ -2349,7 +3338,8 @@
                                 "file",
                                 "edit"
                             ]
-                        }
+                        },
+                        "description": "**Modifier les métadonnées d'un fichier**\n\nMet à jour les informations d'un fichier (nom, description, tags).\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\nX-Workspace-Id: {workspace_id}\n```\n\n**Body:**\n```json\n{\n    \"id\": 1,\n    \"name\": \"Nouveau nom\",\n    \"description\": \"Description mise à jour\",\n    \"tags\": [1, 2, 3]\n}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {...}\n}\n```"
                     },
                     "response": []
                 },
@@ -2374,7 +3364,8 @@
                                 "delete",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Supprimer un fichier**\n\nSupprime un fichier et son contenu du stockage.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\nX-Workspace-Id: {workspace_id}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"File deleted successfully\"\n}\n```"
                     },
                     "response": []
                 }
@@ -2402,7 +3393,8 @@
                             "path": [
                                 "mail"
                             ]
-                        }
+                        },
+                        "description": "**Lister les adresses email**\n\nRetourne toutes les adresses email associées à une entité (contact ou entreprise).\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\nX-Workspace-Id: {workspace_id}\n```\n\n**Query params:**\n- `entity_type`: contact ou company\n- `entity_id`: ID de l'entité\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": [\n        {\"id\": 1, \"email\": \"pro@example.com\", \"type\": \"work\", \"isPrimary\": true},\n        {\"id\": 2, \"email\": \"perso@example.com\", \"type\": \"personal\", \"isPrimary\": false}\n    ]\n}\n```"
                     },
                     "response": []
                 },
@@ -2426,9 +3418,27 @@
                                 "mail",
                                 "edit"
                             ]
-                        }
+                        },
+                        "description": "**Ajouter ou modifier une adresse email**\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\nX-Workspace-Id: {workspace_id}\n```\n\n**Body (création):**\n```json\n{\n    \"email\": \"nouveau@example.com\",\n    \"type\": \"work\",\n    \"isPrimary\": false,\n    \"contact_id\": 5\n}\n```\n\n**Body (modification):**\n```json\n{\n    \"id\": 1,\n    \"email\": \"modifie@example.com\",\n    \"isPrimary\": true\n}\n```\n\n**Types:** work, personal, other"
                     },
-                    "response": []
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200 || pm.response.code === 201) {",
+                                    "    const res = pm.response.json();",
+                                    "    if (res.mail && res.mail.id) {",
+                                    "        pm.collectionVariables.set('mail_id', res.mail.id);",
+                                    "        console.log('✅ Mail saved:', res.mail.email, 'ID:', res.mail.id);",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
                 },
                 {
                     "name": "Mail Delete {id}",
@@ -2451,7 +3461,8 @@
                                 "delete",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Supprimer une adresse email**\n\n**URL:** `/mail/delete/{id}`\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Email deleted successfully\"\n}\n```"
                     },
                     "response": []
                 }
@@ -2480,7 +3491,8 @@
                                 "phone",
                                 "number"
                             ]
-                        }
+                        },
+                        "description": "**Lister les numéros de téléphone**\n\nRetourne tous les numéros associés à une entité.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\nX-Workspace-Id: {workspace_id}\n```\n\n**Query params:**\n- `entity_type`: contact ou company\n- `entity_id`: ID de l'entité\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": [\n        {\"id\": 1, \"number\": \"+33612345678\", \"type\": \"mobile\", \"isPrimary\": true},\n        {\"id\": 2, \"number\": \"+33123456789\", \"type\": \"office\", \"isPrimary\": false}\n    ]\n}\n```"
                     },
                     "response": []
                 },
@@ -2505,7 +3517,8 @@
                                 "number",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Détails d'un numéro de téléphone**\n\n**URL:** `/phone/number/{id}`\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"id\": 1,\n        \"number\": \"+33612345678\",\n        \"type\": \"mobile\",\n        \"isPrimary\": true,\n        \"contact\": {...}\n    }\n}\n```"
                     },
                     "response": []
                 },
@@ -2530,9 +3543,27 @@
                                 "number",
                                 "edit"
                             ]
-                        }
+                        },
+                        "description": "**Ajouter ou modifier un numéro**\n\n**Body:**\n```json\n{\n    \"number\": \"+33698765432\",\n    \"type\": \"mobile\",\n    \"isPrimary\": true,\n    \"contact_id\": 5\n}\n```\n\n**Types:** mobile, office, home, fax, other"
                     },
-                    "response": []
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200 || pm.response.code === 201) {",
+                                    "    const res = pm.response.json();",
+                                    "    if (res.phoneNumber && res.phoneNumber.id) {",
+                                    "        pm.collectionVariables.set('phone_id', res.phoneNumber.id);",
+                                    "        console.log('✅ Phone saved:', res.phoneNumber.number, 'ID:', res.phoneNumber.id);",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
                 },
                 {
                     "name": "Phone Number Delete {id}",
@@ -2556,7 +3587,8 @@
                                 "delete",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Supprimer un numéro de téléphone**\n\n**URL:** `/phone/number/delete/{id}`\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Phone number deleted successfully\"\n}\n```"
                     },
                     "response": []
                 }
@@ -2585,7 +3617,8 @@
                                 "property",
                                 "list"
                             ]
-                        }
+                        },
+                        "description": "**Lister les propriétés personnalisées**\n\nRetourne toutes les propriétés custom définies pour le workspace.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\nX-Workspace-Id: {workspace_id}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"Secteur d'activité\",\n            \"code\": \"sector\",\n            \"type\": \"select\",\n            \"entityType\": \"company\",\n            \"options\": [\"Tech\", \"Finance\", \"Santé\"]\n        },\n        {\n            \"id\": 2,\n            \"name\": \"Score\",\n            \"code\": \"score\",\n            \"type\": \"number\",\n            \"entityType\": \"contact\"\n        }\n    ]\n}\n```\n\n**Types de propriétés:** text, number, date, select, multiselect, boolean"
                     },
                     "response": []
                 },
@@ -2609,9 +3642,27 @@
                                 "property",
                                 "edit"
                             ]
-                        }
+                        },
+                        "description": "**Créer ou modifier une propriété personnalisée**\n\n**Body:**\n```json\n{\n    \"name\": \"Secteur d'activité\",\n    \"code\": \"sector\",\n    \"type\": \"select\",\n    \"entityType\": \"company\",\n    \"options\": [\"Tech\", \"Finance\", \"Santé\", \"Retail\"],\n    \"required\": false\n}\n```\n\n**entityType:** contact, company, deal"
                     },
-                    "response": []
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200 || pm.response.code === 201) {",
+                                    "    const res = pm.response.json();",
+                                    "    if (res.property && res.property.id) {",
+                                    "        pm.collectionVariables.set('property_id', res.property.id);",
+                                    "        console.log('✅ Property saved, ID:', res.property.id);",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
                 },
                 {
                     "name": "Property Delete {id}",
@@ -2634,7 +3685,8 @@
                                 "delete",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Supprimer une propriété personnalisée**\n\n⚠️ Supprime aussi toutes les valeurs associées !\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Property deleted successfully\"\n}\n```"
                     },
                     "response": []
                 },
@@ -2659,7 +3711,8 @@
                                 "model",
                                 "list"
                             ]
-                        }
+                        },
+                        "description": "**Lister les modèles de propriétés**\n\nModèles prédéfinis pour créer rapidement des propriétés.\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": [\n        {\"id\": 1, \"name\": \"Industrie\", \"type\": \"select\"},\n        {\"id\": 2, \"name\": \"Taille entreprise\", \"type\": \"select\"},\n        {\"id\": 3, \"name\": \"Budget\", \"type\": \"number\"}\n    ]\n}\n```"
                     },
                     "response": []
                 },
@@ -2684,9 +3737,27 @@
                                 "model",
                                 "edit"
                             ]
-                        }
+                        },
+                        "description": "**Créer ou modifier un modèle de propriété**\n\n**Body:**\n```json\n{\n    \"name\": \"Source lead\",\n    \"type\": \"select\",\n    \"defaultOptions\": [\"Site web\", \"Salon\", \"Recommandation\", \"Publicité\"]\n}\n```"
                     },
-                    "response": []
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200 || pm.response.code === 201) {",
+                                    "    const res = pm.response.json();",
+                                    "    if (res.propertyModel && res.propertyModel.id) {",
+                                    "        pm.collectionVariables.set('property_model_id', res.propertyModel.id);",
+                                    "        console.log('✅ Property Model saved, ID:', res.propertyModel.id);",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
                 },
                 {
                     "name": "Property Model Delete {id}",
@@ -2710,7 +3781,8 @@
                                 "delete",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Supprimer un modèle de propriété**\n\nNe supprime pas les propriétés créées à partir de ce modèle.\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Property model deleted successfully\"\n}\n```"
                     },
                     "response": []
                 }
@@ -2740,7 +3812,8 @@
                                 "type",
                                 "list"
                             ]
-                        }
+                        },
+                        "description": "**Lister les types d'entités**\n\nRetourne les types d'objets gérés par le CRM.\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": [\n        {\"id\": 1, \"code\": \"contact\", \"name\": \"Contact\", \"icon\": \"user\"},\n        {\"id\": 2, \"code\": \"company\", \"name\": \"Entreprise\", \"icon\": \"building\"},\n        {\"id\": 3, \"code\": \"deal\", \"name\": \"Affaire\", \"icon\": \"handshake\"},\n        {\"id\": 4, \"code\": \"activity\", \"name\": \"Activité\", \"icon\": \"calendar\"}\n    ]\n}\n```"
                     },
                     "response": []
                 },
@@ -2765,7 +3838,8 @@
                                 "type",
                                 "{code}"
                             ]
-                        }
+                        },
+                        "description": "**Détails d'un type d'entité**\n\n**URL:** `/item/type/{code}`\n- Exemple: `/item/type/contact`\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"id\": 1,\n        \"code\": \"contact\",\n        \"name\": \"Contact\",\n        \"icon\": \"user\",\n        \"properties\": [...],\n        \"fields\": [...]\n    }\n}\n```"
                     },
                     "response": []
                 },
@@ -2790,9 +3864,27 @@
                                 "type",
                                 "edit"
                             ]
-                        }
+                        },
+                        "description": "**Créer ou modifier un type d'entité**\n\n**Body:**\n```json\n{\n    \"code\": \"lead\",\n    \"name\": \"Lead\",\n    \"icon\": \"star\",\n    \"color\": \"#FFD700\"\n}\n```"
                     },
-                    "response": []
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200 || pm.response.code === 201) {",
+                                    "    const res = pm.response.json();",
+                                    "    if (res.itemType && res.itemType.id) {",
+                                    "        pm.collectionVariables.set('item_type_id', res.itemType.id);",
+                                    "        console.log('✅ Item Type saved:', res.itemType.code, 'ID:', res.itemType.id);",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
                 },
                 {
                     "name": "Item Type Delete {id}",
@@ -2816,7 +3908,8 @@
                                 "delete",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Supprimer un type d'entité**\n\n⚠️ Les types système (contact, company, deal) ne peuvent pas être supprimés.\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Item type deleted successfully\"\n}\n```"
                     },
                     "response": []
                 }
@@ -2847,7 +3940,8 @@
                                 "contact",
                                 "file"
                             ]
-                        }
+                        },
+                        "description": "**Valider un fichier d'import contacts**\n\nVérifie le format avant import."
                     },
                     "response": []
                 },
@@ -2873,7 +3967,8 @@
                                 "company",
                                 "file"
                             ]
-                        }
+                        },
+                        "description": "**Valider un fichier d'import entreprises**\n\nVérifie le format et la structure du fichier avant import.\n\n**Headers requis:**\n```\nContent-Type: multipart/form-data\nAuthorization: Bearer {jwt_token}\nX-Workspace-Id: {workspace_id}\n```\n\n**Body (form-data):**\n- `file`: Fichier CSV ou XLSX\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"valid\": true,\n        \"rowCount\": 150,\n        \"columns\": [\"name\", \"website\", \"industry\"],\n        \"warnings\": [],\n        \"errors\": []\n    }\n}\n```"
                     },
                     "response": []
                 },
@@ -2899,7 +3994,8 @@
                                 "contact",
                                 "row"
                             ]
-                        }
+                        },
+                        "description": "**Valider une ligne de contact**\n\nValide les données d'un contact avant insertion.\n\n**Body:**\n```json\n{\n    \"firstname\": \"Jean\",\n    \"lastname\": \"Dupont\",\n    \"email\": \"jean@example.com\",\n    \"phone\": \"+33612345678\"\n}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"valid\": true,\n        \"errors\": [],\n        \"normalized\": {\n            \"phone\": \"+33 6 12 34 56 78\"\n        }\n    }\n}\n```"
                     },
                     "response": []
                 },
@@ -2925,7 +4021,8 @@
                                 "company",
                                 "row"
                             ]
-                        }
+                        },
+                        "description": "**Valider une ligne d'entreprise**\n\nValide les données d'une entreprise avant insertion.\n\n**Body:**\n```json\n{\n    \"name\": \"Tech Corp\",\n    \"website\": \"techcorp.com\",\n    \"industry\": \"Technology\"\n}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"valid\": true,\n        \"normalized\": {\n            \"website\": \"https://techcorp.com\"\n        }\n    }\n}\n```"
                     },
                     "response": []
                 },
@@ -2951,7 +4048,8 @@
                                 "contact",
                                 "duplicates"
                             ]
-                        }
+                        },
+                        "description": "**Détecter les doublons de contacts**\n\nVérifie si des contacts similaires existent déjà.\n\n**Body:**\n```json\n{\n    \"contacts\": [\n        {\"email\": \"jean@example.com\", \"firstname\": \"Jean\", \"lastname\": \"Dupont\"},\n        {\"email\": \"marie@example.com\", \"firstname\": \"Marie\", \"lastname\": \"Martin\"}\n    ]\n}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"duplicates\": [\n            {\n                \"index\": 0,\n                \"matches\": [{\"id\": 5, \"email\": \"jean@example.com\", \"similarity\": 100}]\n            }\n        ],\n        \"unique\": [1]\n    }\n}\n```"
                     },
                     "response": []
                 },
@@ -2977,7 +4075,8 @@
                                 "company",
                                 "duplicates"
                             ]
-                        }
+                        },
+                        "description": "**Détecter les doublons d'entreprises**\n\nVérifie si des entreprises similaires existent déjà.\n\n**Body:**\n```json\n{\n    \"companies\": [\n        {\"name\": \"Tech Corp\", \"website\": \"techcorp.com\"},\n        {\"name\": \"New Company\"}\n    ]\n}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"duplicates\": [...],\n        \"unique\": [1]\n    }\n}\n```"
                     },
                     "response": []
                 }
@@ -3005,7 +4104,8 @@
                             "path": [
                                 "export-full"
                             ]
-                        }
+                        },
+                        "description": "**Exporter toutes les données**\n\nGénère un ZIP contenant tous les CSV du workspace."
                     },
                     "response": []
                 }
@@ -3035,9 +4135,27 @@
                                 "plans",
                                 "list"
                             ]
-                        }
+                        },
+                        "description": "**Lister les plans d'abonnement disponibles**\n\nRetourne tous les plans proposés.\n\n**Pas d'authentification requise**\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"code\": \"free\",\n            \"name\": \"Gratuit\",\n            \"price\": 0,\n            \"features\": [\"100 contacts\", \"1 utilisateur\"]\n        },\n        {\n            \"id\": 2,\n            \"code\": \"pro\",\n            \"name\": \"Pro\",\n            \"price\": 29,\n            \"priceYearly\": 290,\n            \"features\": [\"Contacts illimités\", \"5 utilisateurs\", \"Support prioritaire\"]\n        }\n    ]\n}\n```"
                     },
-                    "response": []
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const res = pm.response.json();",
+                                    "    if (res.data && res.data.length > 0 && res.data[0].id) {",
+                                    "        pm.collectionVariables.set('plan_id', res.data[0].id);",
+                                    "        console.log('✅ First plan:', res.data[0].name, 'ID:', res.data[0].id);",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
                 },
                 {
                     "name": "Api Plans {code}",
@@ -3060,7 +4178,8 @@
                                 "plans",
                                 "{code}"
                             ]
-                        }
+                        },
+                        "description": "**Détails d'un plan**\n\n**URL:** `/api/plans/{code}`\n- Exemple: `/api/plans/pro`\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"code\": \"pro\",\n        \"name\": \"Pro\",\n        \"price\": 29,\n        \"limits\": {\n            \"contacts\": -1,\n            \"users\": 5,\n            \"storage\": \"10GB\"\n        },\n        \"features\": [...]\n    }\n}\n```"
                     },
                     "response": []
                 },
@@ -3085,7 +4204,8 @@
                                 "plans",
                                 "compare"
                             ]
-                        }
+                        },
+                        "description": "**Comparer les plans**\n\nAffiche un tableau comparatif de tous les plans.\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"features\": [\n            {\"name\": \"Contacts\", \"free\": \"100\", \"pro\": \"Illimité\", \"enterprise\": \"Illimité\"},\n            {\"name\": \"Utilisateurs\", \"free\": \"1\", \"pro\": \"5\", \"enterprise\": \"Illimité\"}\n        ]\n    }\n}\n```"
                     },
                     "response": []
                 },
@@ -3110,7 +4230,8 @@
                                 "subscription",
                                 "current"
                             ]
-                        }
+                        },
+                        "description": "**Obtenir l'abonnement actuel**\n\nRetourne les détails de l'abonnement du workspace.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\nX-Workspace-Id: {workspace_id}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"plan\": \"pro\",\n        \"status\": \"active\",\n        \"currentPeriodStart\": \"2025-01-01\",\n        \"currentPeriodEnd\": \"2025-02-01\",\n        \"cancelAtPeriodEnd\": false,\n        \"usage\": {\n            \"contacts\": 450,\n            \"users\": 3\n        }\n    }\n}\n```"
                     },
                     "response": []
                 },
@@ -3135,9 +4256,27 @@
                                 "subscription",
                                 "subscribe"
                             ]
-                        }
+                        },
+                        "description": "**S'abonner à un plan**\n\nCrée un nouvel abonnement.\n\n**Body:**\n```json\n{\n    \"planCode\": \"pro\",\n    \"billingCycle\": \"monthly\",\n    \"paymentMethodId\": \"pm_xxx\"\n}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"subscriptionId\": \"sub_xxx\",\n        \"status\": \"active\"\n    }\n}\n```"
                     },
-                    "response": []
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200 || pm.response.code === 201) {",
+                                    "    const res = pm.response.json();",
+                                    "    if (res.subscription && res.subscription.id) {",
+                                    "        pm.collectionVariables.set('subscription_id', res.subscription.id);",
+                                    "        console.log('✅ Subscription created, ID:', res.subscription.id);",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
                 },
                 {
                     "name": "Api Subscription Change Plan",
@@ -3160,7 +4299,8 @@
                                 "subscription",
                                 "change-plan"
                             ]
-                        }
+                        },
+                        "description": "**Changer de plan**\n\nUpgrade ou downgrade du plan actuel.\n\n**Body:**\n```json\n{\n    \"newPlanCode\": \"enterprise\",\n    \"immediate\": true\n}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Plan changed successfully\",\n    \"data\": {\n        \"effectiveDate\": \"2025-01-15\",\n        \"prorata\": 15.50\n    }\n}\n```"
                     },
                     "response": []
                 },
@@ -3185,7 +4325,8 @@
                                 "subscription",
                                 "cancel"
                             ]
-                        }
+                        },
+                        "description": "**Annuler l'abonnement**\n\nAnnule à la fin de la période en cours.\n\n**Body (optionnel):**\n```json\n{\n    \"reason\": \"Trop cher\",\n    \"immediate\": false\n}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Subscription will be canceled on 2025-02-01\"\n}\n```"
                     },
                     "response": []
                 },
@@ -3210,7 +4351,8 @@
                                 "subscription",
                                 "reactivate"
                             ]
-                        }
+                        },
+                        "description": "**Réactiver l'abonnement**\n\nAnnule une demande d'annulation en attente.\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Subscription reactivated\"\n}\n```"
                     },
                     "response": []
                 },
@@ -3235,7 +4377,8 @@
                                 "subscription",
                                 "usage"
                             ]
-                        }
+                        },
+                        "description": "**Voir l'utilisation actuelle**\n\nStatistiques d'utilisation par rapport aux limites du plan.\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"contacts\": {\"used\": 450, \"limit\": -1, \"percentage\": null},\n        \"users\": {\"used\": 3, \"limit\": 5, \"percentage\": 60},\n        \"storage\": {\"used\": \"2.5GB\", \"limit\": \"10GB\", \"percentage\": 25}\n    }\n}\n```"
                     },
                     "response": []
                 },
@@ -3260,7 +4403,8 @@
                                 "subscription",
                                 "billing-history"
                             ]
-                        }
+                        },
+                        "description": "**Historique de facturation**\n\nListe des factures passées.\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": [\n        {\n            \"id\": \"inv_xxx\",\n            \"date\": \"2025-01-01\",\n            \"amount\": 29.00,\n            \"status\": \"paid\",\n            \"pdfUrl\": \"https://...\"\n        }\n    ]\n}\n```"
                     },
                     "response": []
                 },
@@ -3285,7 +4429,8 @@
                                 "subscription",
                                 "payment-methods"
                             ]
-                        }
+                        },
+                        "description": "**Lister les méthodes de paiement**\n\nCartes bancaires enregistrées.\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": [\n        {\n            \"id\": \"pm_xxx\",\n            \"type\": \"card\",\n            \"brand\": \"visa\",\n            \"last4\": \"4242\",\n            \"expMonth\": 12,\n            \"expYear\": 2027,\n            \"isDefault\": true\n        }\n    ]\n}\n```"
                     },
                     "response": []
                 },
@@ -3311,7 +4456,8 @@
                                 "payment-methods",
                                 "add"
                             ]
-                        }
+                        },
+                        "description": "**Ajouter une méthode de paiement**\n\n**Body:**\n```json\n{\n    \"paymentMethodId\": \"pm_xxx\",\n    \"setAsDefault\": true\n}\n```\n\n**Note:** Le `paymentMethodId` est obtenu via Stripe.js côté client."
                     },
                     "response": []
                 },
@@ -3337,7 +4483,8 @@
                                 "payment-methods",
                                 "{paymentMethodId}"
                             ]
-                        }
+                        },
+                        "description": "**Supprimer une méthode de paiement**\n\n**URL:** `/api/subscription/payment-methods/{paymentMethodId}`\n\n**Erreurs:**\n- 400: Impossible de supprimer la méthode par défaut si c'est la seule"
                     },
                     "response": []
                 }
@@ -3366,7 +4513,8 @@
                                 "webhooks",
                                 "stripe"
                             ]
-                        }
+                        },
+                        "description": "**Webhook Stripe**\n\nEndpoint pour les événements Stripe (paiements, abonnements)."
                     },
                     "response": []
                 }
@@ -3396,7 +4544,8 @@
                                 "contact",
                                 "search"
                             ]
-                        }
+                        },
+                        "description": "**Recherche pour synchronisation**\n\nRecherche un contact pour la synchronisation externe.\n\n**Body:**\n```json\n{\n    \"email\": \"jean@example.com\",\n    \"externalId\": \"ext_123\"\n}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"found\": true,\n        \"contact\": {...}\n    }\n}\n```"
                     },
                     "response": []
                 },
@@ -3420,7 +4569,8 @@
                                 "sync",
                                 "contact"
                             ]
-                        }
+                        },
+                        "description": "**Synchroniser un contact**\n\nCrée ou met à jour un contact depuis une source externe.\n\n**Body:**\n```json\n{\n    \"externalId\": \"ext_123\",\n    \"source\": \"hubspot\",\n    \"data\": {\n        \"firstname\": \"Jean\",\n        \"lastname\": \"Dupont\",\n        \"email\": \"jean@example.com\"\n    }\n}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"action\": \"created\",\n        \"contact\": {...}\n    }\n}\n```"
                     },
                     "response": []
                 },
@@ -3444,7 +4594,8 @@
                                 "sync",
                                 "deal"
                             ]
-                        }
+                        },
+                        "description": "**Synchroniser un deal**\n\nCrée ou met à jour un deal depuis une source externe.\n\n**Body:**\n```json\n{\n    \"externalId\": \"deal_ext_456\",\n    \"source\": \"pipedrive\",\n    \"data\": {\n        \"name\": \"Contrat annuel\",\n        \"amount\": 50000,\n        \"stage\": \"negotiation\"\n    }\n}\n```"
                     },
                     "response": []
                 },
@@ -3470,7 +4621,8 @@
                                 "{id}",
                                 "tags"
                             ]
-                        }
+                        },
+                        "description": "**Synchroniser les tags d'un deal**\n\nMet à jour les tags d'un deal.\n\n**Body:**\n```json\n{\n    \"tags\": [\"important\", \"q1-2025\"]\n}\n```"
                     },
                     "response": []
                 },
@@ -3496,7 +4648,8 @@
                                 "{id}",
                                 "step"
                             ]
-                        }
+                        },
+                        "description": "**Synchroniser l'étape d'un deal**\n\nMet à jour l'étape du pipeline.\n\n**Body:**\n```json\n{\n    \"stepCode\": \"negotiation\"\n}\n```"
                     },
                     "response": []
                 },
@@ -3522,7 +4675,8 @@
                                 "{id}",
                                 "status"
                             ]
-                        }
+                        },
+                        "description": "**Synchroniser le statut d'un deal**\n\nMet à jour le statut (won/lost/open).\n\n**Body:**\n```json\n{\n    \"status\": \"won\",\n    \"closedAt\": \"2025-01-15\"\n}\n```"
                     },
                     "response": []
                 },
@@ -3548,7 +4702,8 @@
                                 "{id}",
                                 "tags"
                             ]
-                        }
+                        },
+                        "description": "**Synchroniser les tags d'un contact**\n\nMet à jour les tags d'un contact.\n\n**Body:**\n```json\n{\n    \"tags\": [\"vip\", \"newsletter\"]\n}\n```"
                     },
                     "response": []
                 },
@@ -3572,7 +4727,8 @@
                                 "sync",
                                 "fetch-from-form"
                             ]
-                        }
+                        },
+                        "description": "**Récupérer données d'un formulaire**\n\nTraite les soumissions de formulaires web.\n\n**Body:**\n```json\n{\n    \"formId\": \"contact-form\",\n    \"data\": {\n        \"name\": \"Jean Dupont\",\n        \"email\": \"jean@example.com\",\n        \"message\": \"Je suis intéressé...\"\n    }\n}\n```"
                     },
                     "response": []
                 }
@@ -3601,7 +4757,8 @@
                                 "user",
                                 "list"
                             ]
-                        }
+                        },
+                        "description": "**Lister les utilisateurs**\n\nAdmin: tous les users. Autres: users du workspace."
                     },
                     "response": []
                 },
@@ -3626,7 +4783,8 @@
                                 "info",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Détails d'un utilisateur**\n\nRetourne les informations d'un utilisateur spécifique.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\n```\n\n**Permissions:**\n- Admin: tous les utilisateurs\n- Autres: uniquement les membres du même workspace\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"id\": 5,\n        \"email\": \"user@example.com\",\n        \"firstname\": \"Jean\",\n        \"lastname\": \"Dupont\",\n        \"roles\": [\"ROLE_USER\"],\n        \"isActive\": true,\n        \"lastLoginAt\": \"2025-01-10T15:30:00+00:00\"\n    }\n}\n```"
                     },
                     "response": []
                 },
@@ -3650,7 +4808,8 @@
                                 "user",
                                 "create"
                             ]
-                        }
+                        },
+                        "description": "**Créer un utilisateur**\n\n**Body:**\n```json\n{\n    \"email\": \"new@example.com\",\n    \"password\": \"Password123!\",\n    \"firstname\": \"New\",\n    \"lastname\": \"User\",\n    \"roles\": [\"ROLE_USER\"]\n}\n```"
                     },
                     "response": []
                 },
@@ -3675,7 +4834,8 @@
                                 "edit",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Modifier un utilisateur**\n\nMet à jour les informations d'un utilisateur.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\n```\n\n**Permissions:** Admin uniquement\n\n**Body:**\n```json\n{\n    \"firstname\": \"Jean-Pierre\",\n    \"lastname\": \"Dupont\",\n    \"roles\": [\"ROLE_USER\", \"ROLE_MANAGER\"],\n    \"isActive\": true\n}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {...}\n}\n```"
                     },
                     "response": []
                 },
@@ -3700,7 +4860,8 @@
                                 "change-password",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Changer le mot de passe d'un utilisateur**\n\nAdmin uniquement."
                     },
                     "response": []
                 },
@@ -3725,7 +4886,8 @@
                                 "delete",
                                 "{id}"
                             ]
-                        }
+                        },
+                        "description": "**Supprimer un utilisateur**\n\nDésactive ou supprime un utilisateur.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\n```\n\n**Permissions:** Admin uniquement\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"User deleted successfully\"\n}\n```\n\n**Note:** Les données associées (notes, activités créées) sont conservées."
                     },
                     "response": []
                 },
@@ -3749,7 +4911,8 @@
                                 "user",
                                 "profile"
                             ]
-                        }
+                        },
+                        "description": "**Obtenir son propre profil**\n\nRetourne le profil de l'utilisateur connecté.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"id\": 1,\n        \"email\": \"user@example.com\",\n        \"firstname\": \"Jean\",\n        \"lastname\": \"Dupont\",\n        \"roles\": [\"ROLE_USER\"],\n        \"currentWorkspace\": {...},\n        \"preferences\": {...}\n    }\n}\n```"
                     },
                     "response": []
                 },
@@ -3774,7 +4937,8 @@
                                 "profile",
                                 "edit"
                             ]
-                        }
+                        },
+                        "description": "**Modifier son profil**\n\nMet à jour le profil de l'utilisateur connecté.\n\n**Headers requis:**\n```\nAuthorization: Bearer {jwt_token}\n```\n\n**Body:**\n```json\n{\n    \"firstname\": \"Jean-Pierre\",\n    \"lastname\": \"Dupont\",\n    \"preferences\": {\n        \"language\": \"fr\",\n        \"timezone\": \"Europe/Paris\",\n        \"notifications\": {\n            \"email\": true,\n            \"push\": false\n        }\n    }\n}\n```\n\n**Réponse (200):**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {...}\n}\n```"
                     },
                     "response": []
                 }

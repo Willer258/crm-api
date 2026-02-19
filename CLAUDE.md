@@ -4,10 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a **Symfony 7.2 CRM application** with multi-tenant architecture, built with:
+This is a **Symfony 7.2 CRM application** built with:
 - **PHP 8.2+** with strict typing and modern features
 - **Doctrine ORM 3.3+** for database management
-- **MySQL** with database-per-tenant architecture
+- **MySQL** database
 - **JWT Authentication** via `lexik/jwt-authentication-bundle`
 - **RESTful API** with attribute-based routing
 - **TypeScript/JavaScript** integration for React and Vue.js frontends
@@ -34,10 +34,6 @@ This is a **Symfony 7.2 CRM application** with multi-tenant architecture, built 
 - Debug application: `php bin/console app:debug`
 - Generate JS classes: `php bin/console app:generate-js-class`
 - Generate access map: `php bin/console app:generate-access-map`
-- Tenant management:
-  - Set tenant: `php bin/console app:tenant:set <tenant>`
-  - Get current tenant: `php bin/console app:tenant:get`
-  - Execute command for each tenant: `php bin/console app:tenant:foreach <command>`
 
 ### Composer
 - Install dependencies: `composer install`
@@ -49,18 +45,6 @@ This is a **Symfony 7.2 CRM application** with multi-tenant architecture, built 
 - Stop server: `symfony server:stop`
 
 ## Architecture Overview
-
-### Multi-Tenancy System
-This CRM implements a sophisticated multi-tenant architecture:
-- **Switcher** (`src/MultiTenancy/Switcher.php`): Handles tenant switching and database connection management
-- **ConnectionWrapper** (`src/MultiTenancy/ConnectionWrapper.php`): Wraps Doctrine connections for tenant-specific databases
-- **KernelListener** (`src/MultiTenancy/KernelListener.php`): Listens to kernel events to switch tenants automatically
-- **Zone** (`src/MultiTenancy/Zone.php`): Manages tenant zones and configurations
-
-Tenant switching is controlled by:
-- Request headers or parameters
-- Command-line tenant file (`tenant.txt`)
-- Environment configuration
 
 ### Core CRM Entities
 The system manages standard CRM entities with relationships:
@@ -91,7 +75,7 @@ Business logic is encapsulated in Manager classes (`src/Managers/`):
   - Generate keys: `php bin/console lexik:jwt:generate-keypair`
 - **API Key Authentication**: Custom authenticator (`src/Security/ApiKeyAuthenticator.php`) for service-to-service communication
   - Pattern: `/service/*` routes
-- **Master Authenticator**: Special authentication (`src/Security/MasterAuthenticator.php`) for cross-tenant operations
+- **Master Authenticator**: Special authentication (`src/Security/MasterAuthenticator.php`) for administrative operations
 - **Access Decision Manager**: Custom logic (`src/Security/AccessDecisionManager.php`) for fine-grained permissions
 - **Role Hierarchy**:
   - `ROLE_PRE_AUTH`: Pre-authenticated users
@@ -133,10 +117,9 @@ Controllers follow RESTful patterns with attribute-based routing:
 - Asset mapping for modern JavaScript bundling
 
 ### Database Configuration
-- Uses MySQL with custom connection wrapper for multi-tenancy
+- Uses MySQL database
 - Doctrine ORM with attribute-based mapping
 - UUID support via `ramsey/uuid-doctrine`
-- Database per tenant architecture
 
 ## Development Guidelines
 
@@ -181,12 +164,6 @@ Controllers follow RESTful patterns with attribute-based routing:
 - Implement proper authorization checks in controllers
 - Validate and sanitize all user inputs
 
-### Multi-Tenant Development
-- Always consider tenant context in business logic
-- Use the Switcher class for programmatic tenant changes
-- Test functionality across different tenant configurations
-- Be aware of cross-tenant data isolation requirements
-
 ## Common Patterns
 
 ### Manager Usage
@@ -204,12 +181,6 @@ return $this->json([
     'data' => $result,
     'message' => 'Optional message'
 ], 200, [], ['groups' => 'serialization:group']);
-```
-
-### Tenant Switching
-```php
-$this->switcher->switchTo('tenant_name');
-// Perform tenant-specific operations
 ```
 
 ## API Endpoints Summary
@@ -343,14 +314,7 @@ All API responses follow this structure:
 ```
 Authorization: Bearer <JWT_TOKEN>
 X-API-KEY: <API_KEY>
-X-Tenant: <tenant_name>
 ```
-
-### Multi-Tenant Considerations
-- Each tenant has its own database
-- Use `app:tenant:set <tenant>` to switch tenants in CLI
-- Tenant switching happens automatically via headers in web requests
-- All data is isolated per tenant
 
 ## Dependencies
 

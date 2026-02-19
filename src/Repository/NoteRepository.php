@@ -3,17 +3,17 @@
 namespace App\Repository;
 
 use App\Entity\Note;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Service\WorkspaceResolver;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Note>
+ * @extends WorkspaceAwareRepository<Note>
  */
-class NoteRepository extends ServiceEntityRepository
+class NoteRepository extends WorkspaceAwareRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, WorkspaceResolver $workspaceResolver)
     {
-        parent::__construct($registry, Note::class);
+        parent::__construct($registry, Note::class, $workspaceResolver);
     }
 
     /**

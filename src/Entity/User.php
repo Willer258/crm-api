@@ -40,6 +40,18 @@ class User  implements UserInterface, PasswordAuthenticatedUserInterface, JWTUse
     private string $password;
 
     #[ORM\Column(length: 255, nullable: true)]
+    private ?string $firstname = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $lastname = null;
+
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $isActive = false;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $createdAt = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $godfather = null;
 
     #[ORM\ManyToOne(targetEntity: Workspace::class, inversedBy: 'users')]
@@ -51,6 +63,18 @@ class User  implements UserInterface, PasswordAuthenticatedUserInterface, JWTUse
      */
     #[ORM\OneToMany(targetEntity: WorkspaceMember::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
     private Collection $workspaceMemberships;
+
+    /**
+     * @var Collection<int, OAuthConnection>
+     */
+    #[ORM\OneToMany(targetEntity: OAuthConnection::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
+    private Collection $oauthConnections;
+
+    /**
+     * Two-factor authentication settings
+     */
+    #[ORM\OneToOne(targetEntity: TwoFactorAuth::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
+    private ?TwoFactorAuth $twoFactorAuth = null;
 
     // public function __construct($username, array $roles)
     // {
@@ -77,7 +101,9 @@ class User  implements UserInterface, PasswordAuthenticatedUserInterface, JWTUse
         }
         // Initialiser password avec une valeur par défaut vide pour les users JWT
         $this->password = $payload['password'] ?? '';
+        $this->createdAt = new \DateTime();
         $this->workspaceMemberships = new ArrayCollection();
+        $this->oauthConnections = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -232,6 +258,50 @@ class User  implements UserInterface, PasswordAuthenticatedUserInterface, JWTUse
         return $this;
     }
 
+    public function getFirstname(): ?string
+    {
+        return $this->firstname;
+    }
+
+    public function setFirstname(?string $firstname): self
+    {
+        $this->firstname = $firstname;
+        return $this;
+    }
+
+    public function getLastname(): ?string
+    {
+        return $this->lastname;
+    }
+
+    public function setLastname(?string $lastname): self
+    {
+        $this->lastname = $lastname;
+        return $this;
+    }
+
+    public function getIsActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): self
+    {
+        $this->isActive = $isActive;
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
+
     public function getCurrentWorkspace(): ?Workspace
     {
         return $this->currentWorkspace;
@@ -282,5 +352,65 @@ class User  implements UserInterface, PasswordAuthenticatedUserInterface, JWTUse
             ->filter(fn(WorkspaceMember $m) => $m->isActive())
             ->map(fn(WorkspaceMember $m) => $m->getWorkspace())
             ->toArray();
+    }
+
+    /**
+     * @return Collection<int, OAuthConnection>
+     */
+    public function getOauthConnections(): Collection
+    {
+        return $this->oauthConnections;
+    }
+
+    public function addOauthConnection(OAuthConnection $oauthConnection): self
+    {
+        if (!$this->oauthConnections->contains($oauthConnection)) {
+            $this->oauthConnections->add($oauthConnection);
+        }
+
+        return $this;
+    }
+
+    public function removeOauthConnection(OAuthConnection $oauthConnection): self
+    {
+        $this->oauthConnections->removeElement($oauthConnection);
+
+        return $this;
+    }
+
+    /**
+     * Check if user has a connection to a specific OAuth provider
+     */
+    public function hasOAuthProvider(string $provider): bool
+    {
+        foreach ($this->oauthConnections as $connection) {
+            if ($connection->getProvider() === $provider) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get the 2FA settings for this user
+     */
+    public function getTwoFactorAuth(): ?TwoFactorAuth
+    {
+        return $this->twoFactorAuth;
+    }
+
+    public function setTwoFactorAuth(?TwoFactorAuth $twoFactorAuth): self
+    {
+        $this->twoFactorAuth = $twoFactorAuth;
+
+        return $this;
+    }
+
+    /**
+     * Check if 2FA is enabled for this user
+     */
+    public function isTwoFactorEnabled(): bool
+    {
+        return $this->twoFactorAuth !== null && $this->twoFactorAuth->isEnabled();
     }
 }

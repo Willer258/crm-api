@@ -22,10 +22,26 @@ class WorkspaceService
     }
 
     /**
+     * Get managed user from EntityManager (JWT users don't have ID loaded)
+     */
+    private function getManagedUser(User $user): ?User
+    {
+        if ($user->getId() !== null) {
+            return $user;
+        }
+        return $this->entityManager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
+    }
+
+    /**
      * Create a new workspace with an owner
      */
     public function createWorkspace(User $owner, string $name, ?string $logo = null): Workspace
     {
+        $managedOwner = $this->getManagedUser($owner);
+        if (!$managedOwner) {
+            throw new \InvalidArgumentException('Owner not found');
+        }
+
         $workspace = new Workspace();
         $workspace->setName($name);
         $workspace->setSlug($this->generateUniqueSlug($name));
@@ -39,15 +55,15 @@ class WorkspaceService
         // Add owner as workspace member
         $member = new WorkspaceMember();
         $member->setWorkspace($workspace);
-        $member->setUser($owner);
+        $member->setUser($managedOwner);
         $member->setRole(WorkspaceMemberRole::OWNER);
         $member->setIsActive(true);
 
         $this->entityManager->persist($member);
 
         // Set as owner's current workspace if they don't have one
-        if (!$owner->getCurrentWorkspace()) {
-            $owner->setCurrentWorkspace($workspace);
+        if (!$managedOwner->getCurrentWorkspace()) {
+            $managedOwner->setCurrentWorkspace($workspace);
         }
 
         $this->entityManager->flush();
@@ -215,7 +231,12 @@ class WorkspaceService
      */
     public function getUserWorkspaces(User $user): array
     {
-        $memberships = $this->workspaceMemberRepository->findWorkspacesByUser($user);
+        $managedUser = $this->getManagedUser($user);
+        if (!$managedUser) {
+            return [];
+        }
+
+        $memberships = $this->workspaceMemberRepository->findWorkspacesByUser($managedUser);
 
         return array_map(
             fn(WorkspaceMember $m) => $m->getWorkspace(),
@@ -236,7 +257,12 @@ class WorkspaceService
      */
     public function canManageWorkspace(Workspace $workspace, User $user): bool
     {
-        $member = $this->workspaceMemberRepository->findByWorkspaceAndUser($workspace, $user);
+        $managedUser = $this->getManagedUser($user);
+        if (!$managedUser) {
+            return false;
+        }
+
+        $member = $this->workspaceMemberRepository->findByWorkspaceAndUser($workspace, $managedUser);
 
         return $member && $member->getRole()->canManageMembers();
     }
@@ -246,7 +272,12 @@ class WorkspaceService
      */
     public function canEdit(Workspace $workspace, User $user): bool
     {
-        $member = $this->workspaceMemberRepository->findByWorkspaceAndUser($workspace, $user);
+        $managedUser = $this->getManagedUser($user);
+        if (!$managedUser) {
+            return false;
+        }
+
+        $member = $this->workspaceMemberRepository->findByWorkspaceAndUser($workspace, $managedUser);
 
         return $member && $member->getRole()->canEdit();
     }
@@ -256,7 +287,12 @@ class WorkspaceService
      */
     public function isMember(Workspace $workspace, User $user): bool
     {
-        return $this->workspaceMemberRepository->isMember($workspace, $user);
+        $managedUser = $this->getManagedUser($user);
+        if (!$managedUser) {
+            return false;
+        }
+
+        return $this->workspaceMemberRepository->isMember($workspace, $managedUser);
     }
 
     /**

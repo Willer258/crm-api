@@ -6,8 +6,8 @@ use App\Repository\WorkspaceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Types\UuidType;
-use Symfony\Component\Uid\Uuid;
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 #[ORM\Entity(repositoryClass: WorkspaceRepository::class)]
 #[ORM\Table(name: 'workspace')]
@@ -20,8 +20,8 @@ class Workspace
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(type: UuidType::NAME, unique: true)]
-    private ?Uuid $uuid = null;
+    #[ORM\Column(type: 'uuid', unique: true)]
+    private ?UuidInterface $uuid = null;
 
     #[ORM\Column(type: 'string', length: 255)]
     private ?string $name = null;
@@ -91,7 +91,7 @@ class Workspace
 
     public function __construct()
     {
-        $this->uuid = Uuid::v4();
+        $this->uuid = Uuid::uuid4();
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
         $this->members = new ArrayCollection();
@@ -103,12 +103,12 @@ class Workspace
         return $this->id;
     }
 
-    public function getUuid(): ?Uuid
+    public function getUuid(): ?UuidInterface
     {
         return $this->uuid;
     }
 
-    public function setUuid(Uuid $uuid): static
+    public function setUuid(UuidInterface $uuid): static
     {
         $this->uuid = $uuid;
         return $this;

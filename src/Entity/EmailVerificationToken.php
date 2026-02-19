@@ -37,8 +37,12 @@ class EmailVerificationToken
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $usedAt = null;
 
-    public function __construct()
+    public function __construct(?User $user = null)
     {
+        if ($user) {
+            $this->user = $user;
+        }
+        $this->token = bin2hex(random_bytes(32));
         $this->createdAt = new \DateTime();
         // Expire dans 24 heures
         $this->expiresAt = (new \DateTime())->modify('+24 hours');
@@ -114,5 +118,12 @@ class EmailVerificationToken
     public function isValid(): bool
     {
         return !$this->isExpired() && !$this->isUsed;
+    }
+
+    public function markAsUsed(): self
+    {
+        $this->isUsed = true;
+        $this->usedAt = new \DateTime();
+        return $this;
     }
 }

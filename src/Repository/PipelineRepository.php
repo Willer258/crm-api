@@ -3,17 +3,17 @@
 namespace App\Repository;
 
 use App\Entity\Pipeline;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Service\WorkspaceResolver;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Pipeline>
+ * @extends WorkspaceAwareRepository<Pipeline>
  */
-class PipelineRepository extends ServiceEntityRepository
+class PipelineRepository extends WorkspaceAwareRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, WorkspaceResolver $workspaceResolver)
     {
-        parent::__construct($registry, Pipeline::class);
+        parent::__construct($registry, Pipeline::class, $workspaceResolver);
     }
 
     /**

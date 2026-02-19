@@ -205,8 +205,8 @@ security:
         # Public authentication endpoints
         - { path: ^/auth/register, roles: PUBLIC_ACCESS }
         - { path: ^/auth/login, roles: PUBLIC_ACCESS }
-        - { path: ^/auth/verify-email, roles: PUBLIC_ACCESS }
-        - { path: ^/auth/resend-verification, roles: PUBLIC_ACCESS }
+        - { path: ^/auth/verify-email-otp, roles: PUBLIC_ACCESS }
+        - { path: ^/auth/resend-otp, roles: PUBLIC_ACCESS }
         - { path: ^/auth/forgot-password, roles: PUBLIC_ACCESS }
         - { path: ^/auth/reset-password, roles: PUBLIC_ACCESS }
         - { path: ^/auth/refresh, roles: PUBLIC_ACCESS }
@@ -338,19 +338,20 @@ is_active: 0 (false - not verified yet)
 
 ### 4. Verify Email (Manual for Testing)
 
-Get the verification token from the database:
+Get the OTP code from the database (in development):
 
 ```bash
-php bin/console doctrine:query:sql "SELECT token FROM email_verification_token ORDER BY created_at DESC LIMIT 1"
+php bin/console doctrine:query:sql "SELECT code FROM email_otp WHERE type = 'email_verification' ORDER BY created_at DESC LIMIT 1"
 ```
 
-Verify the email:
+Verify the email with OTP code:
 
 ```bash
-curl -X POST http://localhost:8000/auth/verify-email \
+curl -X POST http://localhost:8000/auth/verify-email-otp \
   -H "Content-Type: application/json" \
   -d '{
-    "token": "TOKEN_FROM_DATABASE"
+    "email": "demo@example.com",
+    "code": "123456"
   }'
 ```
 

@@ -47,9 +47,9 @@ A complete, enterprise-grade authentication system has been implemented for the 
 
 9 comprehensive endpoints:
 
-1. **POST /auth/register** - User registration with email verification
-2. **POST /auth/verify-email** - Email address verification
-3. **POST /auth/resend-verification** - Resend verification email
+1. **POST /auth/register** - User registration with OTP email verification
+2. **POST /auth/verify-email-otp** - Email address verification with OTP code
+3. **POST /auth/resend-otp** - Resend OTP verification code
 4. **POST /auth/login** - Login with JWT + refresh token generation
 5. **POST /auth/refresh** - Token refresh with rotation
 6. **POST /auth/logout** - Logout with token revocation

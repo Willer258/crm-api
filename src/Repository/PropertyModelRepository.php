@@ -3,17 +3,17 @@
 namespace App\Repository;
 
 use App\Entity\PropertyModel;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Service\WorkspaceResolver;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<PropertyModel>
+ * @extends WorkspaceAwareRepository<PropertyModel>
  */
-class PropertyModelRepository extends ServiceEntityRepository
+class PropertyModelRepository extends WorkspaceAwareRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, WorkspaceResolver $workspaceResolver)
     {
-        parent::__construct($registry, PropertyModel::class);
+        parent::__construct($registry, PropertyModel::class, $workspaceResolver);
     }
 
     //    /**

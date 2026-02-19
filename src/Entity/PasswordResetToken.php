@@ -40,8 +40,15 @@ class PasswordResetToken
     #[ORM\Column(type: 'string', length: 45, nullable: true)]
     private ?string $ipAddress = null;
 
-    public function __construct()
+    public function __construct(?User $user = null, ?string $ipAddress = null)
     {
+        if ($user) {
+            $this->user = $user;
+        }
+        if ($ipAddress) {
+            $this->ipAddress = $ipAddress;
+        }
+        $this->token = bin2hex(random_bytes(32));
         $this->createdAt = new \DateTime();
         // Expire dans 1 heure
         $this->expiresAt = (new \DateTime())->modify('+1 hour');
@@ -128,5 +135,12 @@ class PasswordResetToken
     public function isValid(): bool
     {
         return !$this->isExpired() && !$this->isUsed;
+    }
+
+    public function markAsUsed(): self
+    {
+        $this->isUsed = true;
+        $this->usedAt = new \DateTime();
+        return $this;
     }
 }

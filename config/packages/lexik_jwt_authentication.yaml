@@ -1,4 +1,37 @@
+# Configuration JWT Authentication
+# Documentation: https://github.com/lexik/LexikJWTAuthenticationBundle/blob/3.x/Resources/doc/index.rst
+
 lexik_jwt_authentication:
+    # Clé privée pour signer les tokens (RSA)
     secret_key: '%env(resolve:JWT_SECRET_KEY)%'
+    # Clé publique pour vérifier les tokens
     public_key: '%env(resolve:JWT_PUBLIC_KEY)%'
+    # Passphrase pour la clé privée
     pass_phrase: '%env(JWT_PASSPHRASE)%'
+
+    # Durée de vie du token JWT (15 minutes = 900 secondes)
+    # Les tokens courts sont plus sécurisés car ils limitent la fenêtre d'exposition
+    # en cas de vol. Utiliser le refresh token pour renouveler.
+    token_ttl: 900
+
+    # Tolérance d'horloge pour la validation des tokens (en secondes)
+    # Permet de gérer les légères différences d'horloge entre serveurs
+    clock_skew: 30
+
+    # Le claim utilisé pour identifier l'utilisateur dans le token
+    # (remplace user_identity_field dans les versions plus récentes)
+    user_id_claim: email
+
+# Configuration pour l'environnement de test
+when@test:
+    lexik_jwt_authentication:
+        # Token plus court pour les tests (5 minutes)
+        token_ttl: 300
+
+# Configuration pour l'environnement de production
+when@prod:
+    lexik_jwt_authentication:
+        # En production, on peut réduire encore la durée (10 minutes)
+        token_ttl: 600
+        # Pas de tolérance d'horloge en production
+        clock_skew: 0

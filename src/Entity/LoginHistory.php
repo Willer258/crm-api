@@ -47,8 +47,19 @@ class LoginHistory
     #[ORM\Column(type: 'string', length: 50, nullable: true)]
     private ?string $device = null;
 
-    public function __construct()
-    {
+    public function __construct(
+        ?User $user = null,
+        ?string $ipAddress = null,
+        ?string $userAgent = null,
+        bool $success = false,
+        ?string $failureReason = null
+    ) {
+        $this->user = $user;
+        $this->ipAddress = $ipAddress ?? 'unknown';
+        $this->userAgent = $userAgent;
+        $this->success = $success;
+        $this->failureReason = $failureReason;
+        $this->email = $user?->getEmail();
         $this->createdAt = new \DateTime();
     }
 

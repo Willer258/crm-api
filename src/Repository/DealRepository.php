@@ -3,17 +3,17 @@
 namespace App\Repository;
 
 use App\Entity\Deal;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Service\WorkspaceResolver;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Deal>
+ * @extends WorkspaceAwareRepository<Deal>
  */
-class DealRepository extends ServiceEntityRepository
+class DealRepository extends WorkspaceAwareRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, WorkspaceResolver $workspaceResolver)
     {
-        parent::__construct($registry, Deal::class);
+        parent::__construct($registry, Deal::class, $workspaceResolver);
     }
 
     /**
